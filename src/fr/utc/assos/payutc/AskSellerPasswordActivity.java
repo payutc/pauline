@@ -27,6 +27,7 @@ public class AskSellerPasswordActivity extends Activity {
         Log.d(LOG_TAG, "badge #"+id_seller);
 
         pbuy = new PBuy();
+        setContentView(R.layout.asksellerpassword);
     }
     
     public void onClick(View view) {
