@@ -16,7 +16,7 @@ public class PaulineActivity extends Activity {
 	public static final int STATE_PASS_SELLER 	= 1;
 	public static final int STATE_HOME			= 2;
 	public static final int STATE_SHOW_ARTICLE	= 3;
-	private int NFC_DEBUG           = 0; // IF 0 alors pas de NFC
+	private int NFC_DEBUG           = 1; // IF 0 alors pas de NFC
 	private NfcAdapter	mNfcAdapter;
 	
     /** Called when the activity is first created. */
@@ -24,19 +24,20 @@ public class PaulineActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG,"onCreate - PaulineActivity");
-        if(NFC_DEBUG != 0) {
-        	mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
-			if(mNfcAdapter == null) {
-				// TODO Make a popup information . NFC is not available
-				finish();
-				return;
-			}
-			if(!mNfcAdapter.isEnabled()) {
-				// TODO Make a popup information . NFC is disabled
-				finish();
-				return;
-			}
-        } else {
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
+		if(mNfcAdapter == null) {
+			// TODO Make a popup information . NFC is not available
+			//finish();
+			//return;
+			NFC_DEBUG = 0;
+		}
+		if(!mNfcAdapter.isEnabled()) {
+			// TODO Make a popup information . NFC is disabled
+			//finish();
+			//return;
+			NFC_DEBUG = 0;
+		}
+        if(NFC_DEBUG == 0) {
         	startAskSellerPasswordActivity();
         }
         setContentView(R.layout.main);
@@ -84,7 +85,7 @@ public class PaulineActivity extends Activity {
     @Override
 	protected void onResume() {
 		super.onResume();
-		if(NFC_DEBUG != 0)
+		if(NFC_DEBUG == 1)
 		{
 			PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0,
 				new Intent(getBaseContext(), getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -102,7 +103,7 @@ public class PaulineActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if(NFC_DEBUG != 0)
+		if(NFC_DEBUG == 1)
 			mNfcAdapter.disableForegroundDispatch(this);
 	}
     
