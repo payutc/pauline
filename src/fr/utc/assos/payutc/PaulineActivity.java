@@ -1,5 +1,6 @@
 package fr.utc.assos.payutc;
 
+import fr.utc.assos.payutc.soap.PBuy;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,12 +9,19 @@ import android.util.Log;
 
 public class PaulineActivity extends Activity {
 	public static final String LOG_TAG		= "PaulineActivity";
+	
 	public static final int STATE_BADGE_SELLER 	= 0;
 	public static final int STATE_PASS_SELLER 	= 1;
 	public static final int STATE_HOME			= 2;
 	public static final int STATE_SHOW_ARTICLE	= 3;
+	
+	public final static int ID_POI				= 2;
+	public final static int ID_FUNDATIOn		= 2;
+	
 	private final String ID_TRECOUVR			= "5B1BF88B";
+	
 	private Nfc myNfc = new Nfc();
+	
 	
     /** Called when the activity is first created. */
     @Override
@@ -25,6 +33,7 @@ public class PaulineActivity extends Activity {
         	startAskSellerPasswordActivity(ID_TRECOUVR);
         }
         setContentView(R.layout.main);
+        
     }
 
 	@Override

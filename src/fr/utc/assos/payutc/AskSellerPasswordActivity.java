@@ -1,14 +1,21 @@
 package fr.utc.assos.payutc;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import fr.utc.assos.payutc.soap.PBuy;
 
 public class AskSellerPasswordActivity extends Activity {
 	public final static String LOG_TAG = "AskSellerPasswordActivity";
+	private final int MEAN_OF_LOGIN		= 4; 
+	
+	
 	private Nfc myNfc = new Nfc();
 
+	public PBuy pbuy;
+	
+	String id_seller;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,8 +23,14 @@ public class AskSellerPasswordActivity extends Activity {
         myNfc.onCreate(getApplicationContext());
 
         Bundle b = getIntent().getExtras();
-        String id = b.getString("id");		// récupération du login renvoyé par le nfc
-        Log.d(LOG_TAG, "badge #"+id);
+        id_seller = b.getString("id");		// récupération du login renvoyé par le nfc
+        Log.d(LOG_TAG, "badge #"+id_seller);
+
+        pbuy = new PBuy();
+    }
+    
+    public void onClick(View view) {
+    	pbuy.loadSeller(id_seller, MEAN_OF_LOGIN, "1234", PaulineActivity.ID_POI);
     }
 
     protected void stop(Boolean success) {
