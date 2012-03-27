@@ -49,11 +49,6 @@ public class PaulineActivity extends Activity {
     	if (resultCode == RESULT_OK) {
     		startHomeActivity();
     	}
-    	else {
-    		// stay in this activity
-    		if(NFC_DEBUG == 0)
-    			startAskSellerPasswordActivity(ID_TRECOUVR);
-    	}
     }
     
     String ByteArrayToHexString(byte [] inarray) 
