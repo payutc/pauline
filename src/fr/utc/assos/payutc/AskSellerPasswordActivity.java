@@ -16,6 +16,7 @@ public class AskSellerPasswordActivity extends Activity {
         Bundle b = getIntent().getExtras();
         String id = b.getString("id");		// récupération du login renvoyé par le nfc
         Log.d(LOG_TAG, "badge #"+id);
+        setContentView(R.layout.asksellerpassword);
     }
 
     protected void stop(Boolean success) {
