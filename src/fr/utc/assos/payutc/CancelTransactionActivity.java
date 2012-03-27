@@ -11,7 +11,7 @@ public class CancelTransactionActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "onCreate HomeActivity");
+        Log.d(LOG_TAG, "onCreate CancelTransactionActivity");
     }
 
     protected void stop() {
