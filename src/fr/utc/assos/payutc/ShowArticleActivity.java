@@ -9,4 +9,5 @@ public class ShowArticleActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    
 }
