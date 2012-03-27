@@ -18,6 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="AskSellerPasswordActivity"></activity>
+        <activity android:name="HomeActivity"></activity>
+        <activity android:name="ShowArticleActivity"></activity>
     </application>
 
 </manifest>

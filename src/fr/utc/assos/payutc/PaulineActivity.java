@@ -17,7 +17,9 @@ public class PaulineActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(LOG_TAG, "onCreate PaulineActivity");
         setContentView(R.layout.main);
+        startAskSellerPasswordActivity("trecouvr");
     }
     
     @Override
@@ -34,15 +36,18 @@ public class PaulineActivity extends Activity {
     	
     }
 
-    private void startAskSellerPasswordActivity() {
+    private void startAskSellerPasswordActivity(String id) {
     	Log.d(LOG_TAG,"startAskSellerPassword");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.AskSellerPasswordActivity.class);
+    	Bundle b = new Bundle();
+    	b.putString("id", id); //Your id
+    	intent.putExtras(b); //Put your id to your next Intent
     	startActivityForResult(intent, 0);
     }
     
     public void startHomeActivity() {
     	Log.d(LOG_TAG,"startHomeActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
-    	
+    	startActivity(intent);
     }
 }
