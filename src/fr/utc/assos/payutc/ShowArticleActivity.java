@@ -34,7 +34,7 @@ public class ShowArticleActivity extends Activity {
     
     private void startConfirmPaymentActivity(int prix) {
     	Log.d(LOG_TAG,"startAskSellerPassword");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.ConfirmPayment.class);
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.ConfirmPaymentActivity.class);
     	Bundle b = new Bundle();
     	b.putInt("prix", prix);
     	intent.putExtras(b);
