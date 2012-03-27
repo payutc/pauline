@@ -53,7 +53,7 @@ public class Nfc {
         return id;
     }
     
-    protected void onResume(Context ctx, Activity act, Class<? extends PaulineActivity> class1) {
+    protected void onResume(Context ctx, Activity act, Class<? extends Activity> class1) {
 	    Log.d(LOG_TAG,"onResume "+NFC_HERE);
 		if(NFC_HERE == 1)
 		{
