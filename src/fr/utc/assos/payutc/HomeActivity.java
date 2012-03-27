@@ -9,6 +9,9 @@ import android.view.View;
 public class HomeActivity extends Activity {
 	public final static String LOG_TAG		= "HomeActivity";
 	
+	public final static int VENTE_LIBRE		= 0;
+	public final static int VENTE_PRODUIT		= 1;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +25,11 @@ public class HomeActivity extends Activity {
     }
     
     public void onClickVenteLibre(View view) {
-    	startShowArticleActivity(ShowArticleActivity.VENTE_LIBRE);
+    	startShowArticleActivity(VENTE_LIBRE);
     }
     
     public void onClickVenteProduit(View view) {
-    	startShowArticleActivity(ShowArticleActivity.VENTE_PRODUIT);
+    	startShowArticleActivity(VENTE_PRODUIT);
     }
     
     public void onClickCancelTransaction(View view) {
