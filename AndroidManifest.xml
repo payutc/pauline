@@ -22,5 +22,6 @@
         <activity android:name="HomeActivity"></activity>
         <activity android:name="ShowArticleActivity"></activity>
     </application>
+	<uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
