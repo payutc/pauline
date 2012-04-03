@@ -8,27 +8,31 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.os.Bundle;
 import android.util.Log;
 
-public class Nfc {
-	public static final String LOG_TAG		= "NFC";
-	private NfcAdapter	mNfcAdapter;
-	public int NFC_HERE     = 1; 
+public class NfcActivity extends Activity {
+	private static final String	LOG_TAG		= "NfcActivity"; 
 	
-	public void onCreate(Context ctx) {
+	private NfcAdapter	mNfcAdapter;
+	protected Boolean nfcAvailable     	= true; 
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate NFC");
-	    mNfcAdapter = NfcAdapter.getDefaultAdapter(ctx);
+	    mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
 		if(mNfcAdapter == null) {
 			// TODO Make a popup information . NFC is not available
-			NFC_HERE = 0;
+			nfcAvailable = false;
 		}
 		else if(!mNfcAdapter.isEnabled()) {
 			// TODO Make a popup information . NFC is disabled
-			NFC_HERE = 0;
+			nfcAvailable = false;
 		}
 	}
 	
-    String ByteArrayToHexString(byte [] inarray) 
+    private String ByteArrayToHexString(byte [] inarray) 
     {
     	int i, j, in;
     	String [] hex = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
@@ -45,7 +49,7 @@ public class Nfc {
     	return out;
     }
     
-    protected String onNewIntent(Intent intent) {
+    public String getNfcResult(Intent intent) {
     	Log.d(LOG_TAG, "Lecture d'un ID NFC");
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         String id = ByteArrayToHexString(tag.getId());
@@ -53,10 +57,16 @@ public class Nfc {
         return id;
     }
     
-    protected void onResume(Context ctx, Activity act, Class<? extends Activity> class1) {
-	    Log.d(LOG_TAG,"onResume "+NFC_HERE);
-		if(NFC_HERE == 1)
+    @Override
+    protected void onResume() {
+    	super.onResume();
+	    Log.d(LOG_TAG,"onResume "+nfcAvailable);
+		if(nfcAvailable)
 		{
+			Context ctx = getBaseContext();
+			Activity act = this;
+			Class<? extends Activity> class1 = getClass();
+			
 			PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0,
 				new Intent(ctx, class1).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 	 
@@ -70,9 +80,12 @@ public class Nfc {
 		}
     }
     
-	protected void onPause(Activity act) {
+    @Override
+	protected void onPause() {
+    	super.onPause();
     	Log.d(LOG_TAG,"onPause");
-		if(NFC_HERE == 1)
-			mNfcAdapter.disableForegroundDispatch(act);
+		if(nfcAvailable)
+			mNfcAdapter.disableForegroundDispatch(this);
 	}
+    
 }

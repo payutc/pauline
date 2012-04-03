@@ -16,7 +16,7 @@ import android.widget.Toast;
 public class HomeActivity extends ListActivity {
 	public final static String LOG_TAG		= "HomeActivity";
 	
-	public final static int VENTE_LIBRE		= 0;
+	public final static int VENTE_LIBRE			= 0;
 	public final static int VENTE_PRODUIT		= 1;
 	
     @Override
