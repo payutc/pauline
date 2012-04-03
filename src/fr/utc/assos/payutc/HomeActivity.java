@@ -1,12 +1,19 @@
 package fr.utc.assos.payutc;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class HomeActivity extends Activity {
+
+public class HomeActivity extends ListActivity {
 	public final static String LOG_TAG		= "HomeActivity";
 	
 	public final static int VENTE_LIBRE		= 0;
@@ -16,6 +23,20 @@ public class HomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate HomeActivity");
+
+        final String[] items = new String[] {"Vente libre", "Vente produit", "Annuler une vente"};
+        setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
+
+        ListView lv = getListView();
+
+        lv.setOnItemClickListener(new OnItemClickListener() {
+          public void onItemClick(AdapterView<?> parent, View view,
+              int position, long id) {
+            // When clicked, show a toast with the TextView text
+            Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+                Toast.LENGTH_SHORT).show();
+          }
+        });
     }
 
     protected void stop() {
