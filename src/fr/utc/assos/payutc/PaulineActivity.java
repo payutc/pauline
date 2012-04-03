@@ -1,26 +1,20 @@
 package fr.utc.assos.payutc;
 
-import fr.utc.assos.payutc.soap.PBuy;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 
-public class PaulineActivity extends Activity {
-	public static final String LOG_TAG		= "PaulineActivity";
+public class PaulineActivity extends NfcActivity {
+	public static final String LOG_TAG			= "PaulineActivity";
 	
-	public static final int STATE_BADGE_SELLER 	= 0;
-	public static final int STATE_PASS_SELLER 	= 1;
-	public static final int STATE_HOME			= 2;
-	public static final int STATE_SHOW_ARTICLE	= 3;
+	public static final int ASKSELLERPASSWORD	= 0;
 	
 	public final static int ID_POI				= 2;
 	public final static int ID_FUNDATIOn		= 2;
 	
 	private final String ID_TRECOUVR			= "5B1BF88B";
 	
-	private Nfc myNfc = new Nfc();
 	
 	
     /** Called when the activity is first created. */
@@ -28,39 +22,29 @@ public class PaulineActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate PaulineActivity");
-        myNfc.onCreate(getApplicationContext());
-        if(myNfc.NFC_HERE == 0) {
+        setContentView(R.layout.main);
+        if (!nfcAvailable) {
         	startAskSellerPasswordActivity(ID_TRECOUVR);
         }
-        setContentView(R.layout.main);
-        
     }
 
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (resultCode == RESULT_OK) {
-    		startHomeActivity();
-    	}
+		switch (requestCode) {
+		case ASKSELLERPASSWORD:
+	    	if (resultCode == RESULT_OK) {
+	    		startHomeActivity();
+	    	}
+		}
     }
     
     @Override
     protected void onNewIntent(Intent intent) {
     	Log.d(LOG_TAG, "new Intent");
-    	String id = myNfc.onNewIntent(intent);
+    	String id = getNfcResult(intent);
         startAskSellerPasswordActivity(id);
     }
 
-    @Override
-	protected void onResume() {
-		super.onResume();
-    	myNfc.onResume(getBaseContext(), this, getClass());
-	}
-    
-	@Override
-	protected void onPause() {
-		super.onPause();
-    	myNfc.onPause(this);
-	}
     
     private void startAskSellerPasswordActivity(String id) {
     	Log.d(LOG_TAG,"startAskSellerPassword");
@@ -68,7 +52,7 @@ public class PaulineActivity extends Activity {
     	Bundle b = new Bundle();
     	b.putString("id", id); //Your id
     	intent.putExtras(b); //Put your id to your next Intent
-    	startActivityForResult(intent, 0);
+    	startActivityForResult(intent, ASKSELLERPASSWORD);
     }
     
     public void startHomeActivity() {
