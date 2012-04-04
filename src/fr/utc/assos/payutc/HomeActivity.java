@@ -1,6 +1,5 @@
 package fr.utc.assos.payutc;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class HomeActivity extends ListActivity {
+public class HomeActivity extends NfcActivity {
 	public final static String LOG_TAG		= "HomeActivity";
 	
 	public final static int VENTE_LIBRE			= 0;
@@ -23,20 +22,33 @@ public class HomeActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate HomeActivity");
+        setContentView(R.layout.home);
+        
+        ListView lv = (ListView)findViewById(R.id.home_list_view);
 
         final String[] items = new String[] {"Vente libre", "Vente produit", "Annuler une vente"};
-        setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
+        lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
 
-        ListView lv = getListView();
 
-        lv.setOnItemClickListener(new OnItemClickListener() {
-          public void onItemClick(AdapterView<?> parent, View view,
-              int position, long id) {
-            // When clicked, show a toast with the TextView text
-            Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-                Toast.LENGTH_SHORT).show();
-          }
-        });
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				switch (position) {
+				case 0:
+			    	startShowArticleActivity(VENTE_LIBRE);
+			    	break;
+			    	
+				case 1:
+			    	startShowArticleActivity(VENTE_PRODUIT);
+			    	break;
+			    	
+				case 2:
+					startCancelTransactionActivity();
+					break;
+				
+				default: break;
+				}
+			}
+		});
     }
 
     protected void stop() {
@@ -45,21 +57,9 @@ public class HomeActivity extends ListActivity {
 		finish();
     }
     
-    public void onClickVenteLibre(View view) {
-    	startShowArticleActivity(VENTE_LIBRE);
-    }
-    
-    public void onClickVenteProduit(View view) {
-    	startShowArticleActivity(VENTE_PRODUIT);
-    }
-    
-    public void onClickCancelTransaction(View view) {
-    	startCancelTransactionActivity();
-    }
-    
     private void startShowArticleActivity(int type) {
     	Log.d(LOG_TAG,"startShowArticleActivity");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
     	Bundle b = new Bundle();
     	b.putInt("type", type); //Your id
     	intent.putExtras(b); //Put your id to your next Intent

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-public class CancelTransactionActivity extends Activity {
+public class CancelTransactionActivity extends NfcActivity {
 	public final static String LOG_TAG = "CancelTransactionActivity";
 
     @Override

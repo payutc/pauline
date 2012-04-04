@@ -1,5 +1,6 @@
 package fr.utc.assos.payutc;
 
+import fr.utc.assos.payutc.soap.PBuy;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -17,8 +18,11 @@ public class NfcActivity extends Activity {
 	private NfcAdapter	mNfcAdapter;
 	protected Boolean nfcAvailable     	= true; 
 	
+
+	protected static final PBuy pbuy = new PBuy();
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate NFC");
 	    mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());

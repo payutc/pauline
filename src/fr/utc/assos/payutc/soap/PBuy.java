@@ -91,15 +91,29 @@ public class PBuy {
 	    }
 	}
 	
-	public ArrayList<Proposition> getProposition() {
+	public GetPropositionResult getProposition() {
 		// Création de la requête SOAP
 		SoapObject request = new SoapObject (namespace, "getProposition");
 		try {
 			SoapSerializationEnvelope soapObject = soap(request);
 			Log.d("getBuyerIdentity", soapObject.getResponse().toString());
-			return Proposition.parse_response(soapObject.getResponse().toString());
+			return new GetPropositionResult(soapObject.getResponse().toString());
 		} catch (Exception e) {
 			Log.e("getBuyerIdentity", "", e);
+			return null;
+	    }
+	}
+	
+	public GetImageResult getImage(int id) {
+		// Création de la requête SOAP
+		SoapObject request = new SoapObject (namespace, "getImage");
+		request.addProperty("img_id", id);
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("getImage", soapObject.getResponse().toString());
+			return new GetImageResult(soapObject.getResponse().toString());
+		} catch (Exception e) {
+			Log.e("getImage", "", e);
 			return null;
 	    }
 	}

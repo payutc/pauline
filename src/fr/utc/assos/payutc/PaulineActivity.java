@@ -11,7 +11,7 @@ public class PaulineActivity extends NfcActivity {
 	public static final int ASKSELLERPASSWORD	= 0;
 	
 	public final static int ID_POI				= 2;
-	public final static int ID_FUNDATIOn		= 2;
+	public final static int ID_FUNDATION		= 2;
 	
 	private final String ID_TRECOUVR			= "5B1BF88B";
 	
@@ -19,17 +19,25 @@ public class PaulineActivity extends NfcActivity {
 	
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate PaulineActivity");
         setContentView(R.layout.main);
         if (!nfcAvailable) {
-        	startAskSellerPasswordActivity(ID_TRECOUVR);
+        	//startAskSellerPasswordActivity(ID_TRECOUVR);
+        	//startHomeActivity();
+        	pbuy.loadSeller("trecouvr", 1, "", PaulineActivity.ID_POI);
+        	pbuy.loadBuyer("trecouvr", 1, "");
+        	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
+        	Bundle b = new Bundle();
+        	intent.putExtras(b);
+        	startActivity(intent);
         }
     }
 
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
 		switch (requestCode) {
 		case ASKSELLERPASSWORD:
 	    	if (resultCode == RESULT_OK) {

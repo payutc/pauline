@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class ResultTransaction extends Activity {
+public class ResultTransactionActivity extends NfcActivity {
 	
 	public final static int TRANSACTION_OK		= 0;
 

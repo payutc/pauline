@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-public class ConfirmPaymentActivity extends Activity {
+public class ConfirmPaymentActivity extends NfcActivity {
 	public final static String LOG_TAG = "ConfirmPayment";
 	
 	public int type;
@@ -37,7 +37,7 @@ public class ConfirmPaymentActivity extends Activity {
     
     private void startResultTransaction() {
     	Log.d(LOG_TAG,"startResultTransaction");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.ResultTransaction.class);
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.ResultTransactionActivity.class);
     	Bundle b = new Bundle();
     	startActivityForResult(intent, 0);
     }

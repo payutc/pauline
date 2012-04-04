@@ -21,6 +21,9 @@
         <activity android:name="AskSellerPasswordActivity"></activity>
         <activity android:name="HomeActivity"></activity>
         <activity android:name="ShowArticleActivity"></activity>
+        <activity android:name="CancelTransactionActivity"></activity>
+        <activity android:name="ConfirmPaymentActivity"></activity>
+        <activity android:name="ResultTransactionActivity"></activity>
     </application>
 	<uses-permission android:name="android.permission.INTERNET" />
 
