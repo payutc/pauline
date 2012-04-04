@@ -51,7 +51,7 @@ public class ShowArticleActivity extends NfcActivity {
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             	Item i = adapter.getItem(position);
-                Toast.makeText(ShowArticleActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ShowArticleActivity.this, "" + i.getCost(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -1,7 +1,5 @@
 package fr.utc.assos.payutc;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 public class ResultTransactionActivity extends NfcActivity {

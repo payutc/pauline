@@ -59,7 +59,6 @@ public class ImageAdapter extends BaseAdapter {
         	imageView.setImageResource(R.drawable.ic_launcher);
         }
         else {
-        	//imageView.setImageResource(R.drawable.ic_launcher);
         	imageView.setImageBitmap(img);
         }
         

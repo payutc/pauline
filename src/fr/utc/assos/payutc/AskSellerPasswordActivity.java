@@ -12,7 +12,7 @@ public class AskSellerPasswordActivity extends NfcActivity {
 	
 
 	
-	String id_seller;
+	private String id_seller;
 	
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +29,7 @@ public class AskSellerPasswordActivity extends NfcActivity {
     public void onOk(View view) {
     	String pass = (String) ((TextView) findViewById(R.id.input_login)).getText();
     	int r = pbuy.loadSeller(id_seller, MEAN_OF_LOGIN, pass, PaulineActivity.ID_POI);
+    	pbuy.loadBuyer("trecouvr", 1, "");
     	if (r==1) {
     		stop(true);
     	}

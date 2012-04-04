@@ -24,9 +24,9 @@ public class PaulineActivity extends NfcActivity {
         Log.d(LOG_TAG, "onCreate PaulineActivity");
         setContentView(R.layout.main);
         if (!nfcAvailable) {
-        	//startAskSellerPasswordActivity(ID_TRECOUVR);
+        	startAskSellerPasswordActivity(ID_TRECOUVR);
         	//startHomeActivity();
-        	pbuy.loadSeller("trecouvr", 1, "", PaulineActivity.ID_POI);
+        	/*pbuy.loadSeller("trecouvr", 1, "", PaulineActivity.ID_POI);
         	pbuy.loadBuyer("trecouvr", 1, "");
         	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
         	Bundle b = new Bundle();
