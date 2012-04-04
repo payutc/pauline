@@ -31,7 +31,7 @@ public class PaulineActivity extends NfcActivity {
         	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
         	Bundle b = new Bundle();
         	intent.putExtras(b);
-        	startActivity(intent);
+        	startActivity(intent);//*/
         }
     }
 

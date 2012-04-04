@@ -34,6 +34,10 @@ public class Item {
 		return mId;
 	}
 	
+	public String getName() {
+		return mName;
+	}
+	
 	synchronized public Bitmap getImg() {
 		return mImage;
 	}

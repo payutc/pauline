@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
 	private static final String LOG_TAG		= "ImageAdapter";
@@ -41,22 +42,27 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
     	//Log.d(LOG_TAG, "getView #"+position+" "+convertView);
     	Item item = getItem(position);
-        ImageView imageView;
+        View v;
         if (convertView == null) {  // if it's not recycled, initialize some attributes
-            imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
+        	
+        	LayoutInflater li = (LayoutInflater)mContext.getSystemService
+        		      (Context.LAYOUT_INFLATER_SERVICE);
+			v = li.inflate(R.layout.icon, null);
         } else {
-            imageView = (ImageView) convertView;
+        	v = convertView;
         }
+        TextView textView = (TextView)v.findViewById(R.id.icon_text);
+		ImageView imageView = (ImageView)v.findViewById(R.id.icon_image);
+		textView.setText(item.getName());
         Bitmap img = item.getImg();
         if (img == null) {
         	imageView.setImageResource(R.drawable.ic_launcher);
         }
         else {
+        	//imageView.setImageResource(R.drawable.ic_launcher);
         	imageView.setImageBitmap(img);
         }
-        return imageView;
+        
+        return v;
     }
 }
