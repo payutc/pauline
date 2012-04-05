@@ -15,6 +15,7 @@ public class HomeActivity extends NfcActivity {
 	
 	public final static int VENTE_LIBRE			= 0;
 	public final static int VENTE_PRODUIT		= 1;
+	public final static int ANNULER_VENTE		= 2;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +23,7 @@ public class HomeActivity extends NfcActivity {
         Log.d(LOG_TAG, "onCreate HomeActivity");
         setContentView(R.layout.home);
         
-        ListView lv = (ListView)findViewById(R.id.home_list_view);
+        ListView lv = (ListView)findViewById(R.id.list_view);
 
         final String[] items = new String[] {"Vente libre", "Vente produit", "Annuler une vente"};
         lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));

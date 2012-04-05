@@ -1,8 +1,12 @@
 package fr.utc.assos.payutc;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Base64;
 
-public class Item {
+public class Item implements Parcelable {
 	
 	private static final String LOG_TAG		= "Item";
 	
@@ -11,10 +15,12 @@ public class Item {
 	private String mType;
 	private int mIdImg;
 	private int mCost;
+	private String mEncodedImg;
 	private Bitmap mImage;
 	
 	public Item(int id, String name, String type, int idImg, int cost) {
 		mImage = null;
+		mEncodedImg = "";
 		mId = id;
 		mName = name;
 		mType = type;
@@ -38,8 +44,11 @@ public class Item {
 		return mImage;
 	}
 	
-	synchronized public void setmImage(Bitmap bitmap) {
-		mImage = bitmap;
+	synchronized public void setmImage(String encodedImg) {
+		mEncodedImg = encodedImg;
+		byte[] decodedString = Base64.decode(encodedImg, Base64.DEFAULT);
+		Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+		mImage = decodedByte;
 	}
 	
 	public int getCost() {
@@ -49,5 +58,43 @@ public class Item {
 	public String getType() {
 		return mType;
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(mId);
+		dest.writeString(mName);
+		dest.writeString(mType);
+		dest.writeInt(mIdImg);
+		dest.writeInt(mCost);
+		dest.writeString(mEncodedImg);
+	}
 	
+	private Item(Parcel in) {
+		mId	= in.readInt();
+		mName = in.readString();
+		mType = in.readString();
+		mIdImg = in.readInt();
+		mCost = in.readInt();
+		mEncodedImg = in.readString();
+		if (!mEncodedImg.isEmpty()) {
+			setmImage(mEncodedImg);
+		}
+    }
+	
+	public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
+		@Override
+		public Item createFromParcel(Parcel in) {
+			return new Item(in);
+		}
+		
+		@Override
+		public Item[] newArray(int size) {
+			return new Item[size];
+		}
+	};
 }

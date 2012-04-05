@@ -11,13 +11,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ImageAdapter extends BaseAdapter {
-	private static final String LOG_TAG		= "ImageAdapter";
+public class IconAdapter extends BaseAdapter {
+	private static final String LOG_TAG		= "IconAdapter";
 	
 	private Context mContext;
     private ArrayList<Item> mItems;
 
-    public ImageAdapter(Context c, ArrayList<Item> items) {
+    public IconAdapter(Context c, ArrayList<Item> items) {
         mContext = c;
         mItems = items;
     }

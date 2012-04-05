@@ -24,6 +24,7 @@
         <activity android:name="CancelTransactionActivity"></activity>
         <activity android:name="ConfirmPaymentActivity"></activity>
         <activity android:name="ResultTransactionActivity"></activity>
+        <activity android:name="PanierActivity"></activity>
     </application>
 	<uses-permission android:name="android.permission.INTERNET" />
 
