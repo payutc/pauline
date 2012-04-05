@@ -19,7 +19,6 @@ public class NfcActivity extends Activity {
 	protected Boolean nfcAvailable     	= true; 
 	
 
-	protected static final PBuy pbuy = new PBuy();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

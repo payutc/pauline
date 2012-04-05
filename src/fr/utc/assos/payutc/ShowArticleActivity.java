@@ -1,5 +1,7 @@
 package fr.utc.assos.payutc;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +16,6 @@ import android.widget.GridView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.soap.GetImageResult;
 import fr.utc.assos.payutc.soap.GetPropositionResult;
-import fr.utc.assos.payutc.soap.PBuy;
 
 public class ShowArticleActivity extends NfcActivity {
 	private static final String LOG_TAG = "ShowArticleActivity";
@@ -23,25 +24,20 @@ public class ShowArticleActivity extends NfcActivity {
 	
 	private ImageAdapter adapter;
 	
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate ShowArticleActivity");
         setContentView(R.layout.showarticles);
         Bundle b = getIntent().getExtras();
-        type = b.getInt("type", HomeActivity.VENTE_LIBRE);		// récupération du type de vente
+        type = b.getInt("type", HomeActivity.VENTE_LIBRE);
 
-        
-        GetPropositionResult propositionResult = pbuy.getProposition();
-        if (propositionResult.getErrorCode() != 0) {
-        	Log.e(LOG_TAG, "Error:"+propositionResult.getErrorCode());
-            Toast.makeText(ShowArticleActivity.this, "Error:"+propositionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
-        }
-        
-        adapter = new ImageAdapter(this, propositionResult.getItems());
+        ArrayList<Item> items = getItems();
+        adapter = new ImageAdapter(this, items);
 
-        for (Item item : propositionResult.getItems()) {
-        	new DownloadImgTask(pbuy, adapter).execute(item);
+        for (Item item : items) {
+        	new DownloadImgTask(adapter).execute(item);
         }
         
         GridView gridview = (GridView) findViewById(R.id.show_articles_view);
@@ -54,6 +50,23 @@ public class ShowArticleActivity extends NfcActivity {
                 Toast.makeText(ShowArticleActivity.this, "" + i.getCost(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private ArrayList<Item> getItems() {
+    	GetPropositionResult propositionResult = PaulineActivity.PBUY.getProposition();
+        ArrayList<Item> items = new ArrayList<Item>();
+        if (propositionResult == null) {
+        	Log.e(LOG_TAG, "Error:soap return null");
+        }
+        else if (propositionResult.getErrorCode() != 0) {
+        	Log.e(LOG_TAG, "Error:"+propositionResult.getErrorCode());
+            Toast.makeText(ShowArticleActivity.this, "Error:"+propositionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+        }
+        else {
+        	items = propositionResult.getItems();
+        }
+        
+        return items;
     }
     
     protected void stop() {
@@ -82,19 +95,20 @@ public class ShowArticleActivity extends NfcActivity {
 
 	private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {
 		private final static String LOG_TAG		= "DownloadImg";
-		PBuy mPbuy;
 		ImageAdapter mAdapter;
 		
-		public DownloadImgTask(PBuy pbuy, ImageAdapter adapter) {
-			mPbuy = pbuy;
+		public DownloadImgTask(ImageAdapter adapter) {
 			mAdapter = adapter;
 		}
 
 		@Override
 		protected Integer doInBackground(Item... items) {
 			Item item = items[0];
-			GetImageResult result = mPbuy.getImage(item.getIdImg());
-			if (result.getErrorCode() != 0) {
+			GetImageResult result = PaulineActivity.PBUY.getImage(item.getIdImg());
+			if (result == null) {
+				Log.e(LOG_TAG, "Error (img#"+item.getIdImg()+"): soap return null");
+			}
+			else if (result.getErrorCode() != 0) {
 				Log.e(LOG_TAG, "Error (img#"+item.getIdImg()+"):"+result.getErrorCode());
 			}
 			else {

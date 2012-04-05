@@ -3,6 +3,7 @@ package fr.utc.assos.payutc;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import fr.utc.assos.payutc.soap.PBuy;
 
 
 public class PaulineActivity extends NfcActivity {
@@ -15,7 +16,7 @@ public class PaulineActivity extends NfcActivity {
 	
 	private final String ID_TRECOUVR			= "5B1BF88B";
 	
-	
+	public static final PBuy PBUY = new PBuy();
 	
     /** Called when the activity is first created. */
     @Override
