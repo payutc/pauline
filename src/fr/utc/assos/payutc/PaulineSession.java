@@ -8,15 +8,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class PaulineSession implements Parcelable {
-	
+
+	public final static int VENTE_LIBRE			= 0;
+	public final static int VENTE_PRODUIT		= 1;
+	public final static int ANNULER_VENTE		= 2;
 	
 	private ArrayList<Item> mPanier;
 	
 	private int mHomeChoice;
 	
+	private String mIdBuyer;
+	
 	public PaulineSession() {
 		mPanier	= new ArrayList<Item>();
 		mHomeChoice = -1;
+		mIdBuyer = "";
 	}
 	
 	public void save(Intent intent) {
@@ -46,6 +52,22 @@ public class PaulineSession implements Parcelable {
 		mPanier.remove(i);
 	}
 	
+	public void clearItems() {
+		mPanier.clear();
+	}
+	
+	public void setBuyerId(String id) {
+		mIdBuyer = id;
+	}
+	
+	public int getHomeChoice() {
+		return mHomeChoice;
+	}
+	
+	public void setHomeChoice(int c) {
+		mHomeChoice = c;
+	}
+	
 	@Override
 	public int describeContents() {
 		return 0;
@@ -55,6 +77,8 @@ public class PaulineSession implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		Item[] items = mPanier.toArray(new Item[mPanier.size()]);
 		dest.writeParcelableArray(items, flags);
+		dest.writeInt(mHomeChoice);
+		dest.writeString(mIdBuyer);
 	}
 
 	private PaulineSession(Parcel in) {
@@ -64,6 +88,8 @@ public class PaulineSession implements Parcelable {
 			Item item = (Item) parcelable;
 			mPanier.add(item);
 		}
+		mHomeChoice = in.readInt();
+		mIdBuyer = in.readString();
     }
 	
 	public static final Parcelable.Creator<PaulineSession> CREATOR = new Parcelable.Creator<PaulineSession>() {

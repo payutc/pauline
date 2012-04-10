@@ -3,12 +3,26 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/show_articles_prix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0€" 
+    />
     
     <Button
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:onClick="onClickPanier"
 	android:text="Panier"
+    />
+    
+    <Button
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:onClick="onClickOk"
+	android:text="Ok !"
     />
     
     <GridView xmlns:android="http://schemas.android.com/apk/res/android" 
@@ -24,5 +38,7 @@
     android:gravity="center"
     android:scaleType="fitXY"
 	/>
+    
+    
     
 </LinearLayout>

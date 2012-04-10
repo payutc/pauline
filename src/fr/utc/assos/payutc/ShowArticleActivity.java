@@ -3,11 +3,8 @@ package fr.utc.assos.payutc;
 import java.util.ArrayList;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,10 +15,21 @@ import android.widget.Toast;
 import fr.utc.assos.payutc.soap.GetImageResult;
 import fr.utc.assos.payutc.soap.GetPropositionResult;
 
+
+
+
+
+/**
+ * Afficher les articles que l'on peut acheter
+ * 
+ * @author thomas
+ *
+ */
 public class ShowArticleActivity extends NfcActivity {
 	private static final String LOG_TAG = "ShowArticleActivity";
 	
-	private static final int PANIER		= 0;
+	private static final int PANIER				= 0;
+	private static final int CONFIRM_PAYMENT 	= 1;
 	
 	private IconAdapter adapter;
 	
@@ -33,9 +41,12 @@ public class ShowArticleActivity extends NfcActivity {
         Log.d(LOG_TAG, "onCreate ShowArticleActivity");
         setContentView(R.layout.showarticles);
         mSession = PaulineSession.get(getIntent());
-
-        ArrayList<Item> items = getItems();
-        adapter = new IconAdapter(this, items);
+        
+        new GetItemsTask().execute();
+    }
+    
+    protected void initGridView(ArrayList<Item> items) {
+    	adapter = new IconAdapter(this, items);
 
         for (Item item : items) {
         	new DownloadImgTask(adapter).execute(item);
@@ -48,27 +59,56 @@ public class ShowArticleActivity extends NfcActivity {
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             	Item i = adapter.getItem(position);
-                Toast.makeText(ShowArticleActivity.this, "" + i.getCost(), Toast.LENGTH_SHORT).show();
+            	
+            	// récupération du prix courant
+            	TextView tv = (TextView) findViewById(R.id.show_articles_prix);
+            	String sCurrentPrix = (String) tv.getText();
+            	Float fCurrentPrix = Float.parseFloat(sCurrentPrix.substring(0, sCurrentPrix.length()-1));
+            	
+            	// affichage du nouveaux prix
+            	tv.setText(""+(Math.round(fCurrentPrix*100.0)+i.getCost())/100.0+"€");
+            	
+            	// ajouter l'item dans le panier
                 mSession.addItem(i);
+
+                Toast.makeText(ShowArticleActivity.this, "" + i.getCost(), Toast.LENGTH_SHORT).show();
             }
         });
     }
     
-    private ArrayList<Item> getItems() {
-    	GetPropositionResult propositionResult = PaulineActivity.PBUY.getProposition();
-        ArrayList<Item> items = new ArrayList<Item>();
-        if (propositionResult == null) {
-        	Log.e(LOG_TAG, "Error:soap return null");
-        }
-        else if (propositionResult.getErrorCode() != 0) {
-        	Log.e(LOG_TAG, "Error:"+propositionResult.getErrorCode());
-            Toast.makeText(ShowArticleActivity.this, "Error:"+propositionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
-        }
-        else {
-        	items = propositionResult.getItems();
-        }
-        
-        return items;
+    protected void setProgressPercent(int p) {
+    	
+    }
+    
+    private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionResult> {
+    	
+		@Override
+		protected GetPropositionResult doInBackground(Integer... params) {
+			return PaulineActivity.PBUY.getProposition();
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+			setProgressPercent(progress[0]);
+	    }
+		
+		@Override
+		protected void onPostExecute(GetPropositionResult result) {
+			ArrayList<Item> items = new ArrayList<Item>();
+	        if (result == null) {
+	        	Log.e(LOG_TAG, "Error:soap return null");
+	        }
+	        else if (result.getErrorCode() != 0) {
+	        	Log.e(LOG_TAG, "Error:"+result.getErrorCode());
+	            Toast.makeText(ShowArticleActivity.this, "Error:"+result.getErrorCode(), Toast.LENGTH_SHORT).show();
+	        }
+	        else {
+	        	items = result.getItems();
+	        }
+	        
+	        initGridView(items);
+		}
+    	
     }
     
     protected void stop() {
@@ -82,16 +122,14 @@ public class ShowArticleActivity extends NfcActivity {
     }
     
     public void onClickOk(View view) {
-    	startConfirmPaymentActivity(42);
+    	startConfirmPaymentActivity();
     }
     
-    private void startConfirmPaymentActivity(int prix) {
+    private void startConfirmPaymentActivity() {
     	Log.d(LOG_TAG,"startAskSellerPassword");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ConfirmPaymentActivity.class);
-    	Bundle b = new Bundle();
-    	b.putInt("prix", prix);
-    	intent.putExtras(b);
-    	startActivityForResult(intent, 0);
+    	mSession.save(intent);
+    	startActivityForResult(intent, CONFIRM_PAYMENT);
     }
     
     public void onClickPanier(View view) {
@@ -101,6 +139,16 @@ public class ShowArticleActivity extends NfcActivity {
     	startActivityForResult(intent, PANIER);
     }
     
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
+		switch (requestCode) {
+		case CONFIRM_PAYMENT:
+	    	if (resultCode == RESULT_OK) {
+	    		mSession.clearItems();
+	    	}
+		}
+    }
 
 	private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {
 		private final static String LOG_TAG		= "DownloadImg";

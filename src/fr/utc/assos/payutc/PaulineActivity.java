@@ -5,7 +5,11 @@ import android.os.Bundle;
 import android.util.Log;
 import fr.utc.assos.payutc.soap.PBuy;
 
-
+/**
+ * Demande au seller de badger
+ * @author thomas
+ *
+ */
 public class PaulineActivity extends NfcActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
@@ -24,10 +28,13 @@ public class PaulineActivity extends NfcActivity {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate PaulineActivity");
         setContentView(R.layout.main);
+        // @todo virer ce vieux hack
+    	startAskSellerPasswordActivity(ID_TRECOUVR);
+    	
         if (!nfcAvailable) {
-        	//startAskSellerPasswordActivity(ID_TRECOUVR);
+        	startAskSellerPasswordActivity(ID_TRECOUVR);
         	//startHomeActivity();
-        	//*
+        	/*
         	PBUY.loadSeller("trecouvr", 1, "", PaulineActivity.ID_POI);
         	PBUY.loadBuyer("trecouvr", 1, "");
         	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
@@ -70,4 +77,6 @@ public class PaulineActivity extends NfcActivity {
     	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
     	startActivity(intent);
     }
+    
+
 }

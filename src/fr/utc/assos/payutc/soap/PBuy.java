@@ -73,7 +73,7 @@ public class PBuy {
 			int r_code = Integer.parseInt(soapObject.getResponse().toString());
 			return r_code;
 		} catch (Exception e) {
-			Log.d("loadBuyer", "", e);
+			Log.e("loadBuyer", "", e);
 			return -1;
 	    }
 	}
@@ -101,6 +101,37 @@ public class PBuy {
 		} catch (Exception e) {
 			Log.e("getBuyerIdentity", "", e);
 			return null;
+	    }
+	}
+	
+	public int select(int id, int cost, String trace) {
+		// Création de la requête SOAP
+		SoapObject request = new SoapObject (namespace, "select");
+		request.addProperty("obj_id", id);
+		request.addProperty("obj_credit", cost);
+		request.addProperty("trace", trace);
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("select", soapObject.getResponse().toString());
+			int r_code = Integer.parseInt(soapObject.getResponse().toString());
+			return r_code;
+		} catch (Exception e) {
+			Log.e("select", "", e);
+			return -1;
+	    }
+	}
+	
+	public int endTransaction() {
+		// Création de la requête SOAP
+		SoapObject request = new SoapObject (namespace, "endTransaction");
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("endTransaction", soapObject.getResponse().toString());
+			int r_code = Integer.parseInt(soapObject.getResponse().toString());
+			return r_code;
+		} catch (Exception e) {
+			Log.e("endTransaction", "", e);
+			return -1;
 	    }
 	}
 	

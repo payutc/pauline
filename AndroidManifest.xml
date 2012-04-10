@@ -11,20 +11,21 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name=".PaulineActivity" >
+            android:name=".PaulineActivity"
+        	android:screenOrientation="portrait" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="AskSellerPasswordActivity"></activity>
-        <activity android:name="HomeActivity"></activity>
-        <activity android:name="ShowArticleActivity"></activity>
-        <activity android:name="CancelTransactionActivity"></activity>
-        <activity android:name="ConfirmPaymentActivity"></activity>
-        <activity android:name="ResultTransactionActivity"></activity>
-        <activity android:name="PanierActivity"></activity>
+        <activity android:name="AskSellerPasswordActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="HomeActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="ShowArticleActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="CancelTransactionActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="ConfirmPaymentActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="ResultTransactionActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="PanierActivity" android:screenOrientation="portrait"></activity>
     </application>
 	<uses-permission android:name="android.permission.INTERNET" />
 

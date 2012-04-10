@@ -1,6 +1,6 @@
 package fr.utc.assos.payutc;
 
-import fr.utc.assos.payutc.soap.PBuy;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;

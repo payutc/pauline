@@ -10,18 +10,28 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
+
+/**
+ * Affiche les 3 actiones possiblent de cette application
+ * - vente libre : caisse normale
+ * - vente produit : après avoir choisit une selection de produits, on peut enchainer les payements
+ * sans reselectionner les articles à chaque fois.
+ * - annuler transaction : pour les boulets
+ * 
+ * @author thomas
+ *
+ */
 public class HomeActivity extends NfcActivity {
 	public final static String LOG_TAG		= "HomeActivity";
 	
-	public final static int VENTE_LIBRE			= 0;
-	public final static int VENTE_PRODUIT		= 1;
-	public final static int ANNULER_VENTE		= 2;
+	private PaulineSession mSession;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate HomeActivity");
         setContentView(R.layout.home);
+        mSession = new PaulineSession();
         
         ListView lv = (ListView)findViewById(R.id.list_view);
 
@@ -33,11 +43,11 @@ public class HomeActivity extends NfcActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				switch (position) {
 				case 0:
-			    	startShowArticleActivity(VENTE_LIBRE);
+			    	startShowArticleActivity(PaulineSession.VENTE_LIBRE);
 			    	break;
 			    	
 				case 1:
-			    	startShowArticleActivity(VENTE_PRODUIT);
+			    	startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
 			    	break;
 			    	
 				case 2:
@@ -59,15 +69,15 @@ public class HomeActivity extends NfcActivity {
     private void startShowArticleActivity(int type) {
     	Log.d(LOG_TAG,"startShowArticleActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
-    	Bundle b = new Bundle();
-    	b.putInt("type", type); //Your id
-    	intent.putExtras(b); //Put your id to your next Intent
+    	mSession.setHomeChoice(type);
+    	mSession.save(intent);
     	startActivity(intent);
     }
     
     private void startCancelTransactionActivity() {
     	Log.d(LOG_TAG,"startCancelTransactionActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CancelTransactionActivity.class);
+    	mSession.save(intent);
     	startActivity(intent);
     }
     
