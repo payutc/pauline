@@ -133,7 +133,6 @@ public class ShowArticleActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
-		mPanierSummary.set(mSession);
 		
 		switch (requestCode) {
 		case CONFIRM_PAYMENT:
@@ -141,6 +140,8 @@ public class ShowArticleActivity extends BaseActivity {
 	    		mSession.clearItems();
 	    	}
 		}
+		
+		mPanierSummary.set(mSession);
     }
 
 	private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {

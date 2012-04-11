@@ -1,6 +1,7 @@
 package fr.utc.assos.payutc;
 
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
+import fr.utc.assos.payutc.views.PanierSummary;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,12 +14,17 @@ public class ConfirmPaymentActivity extends BaseActivity {
 	
 	ArrayAdapter<Item> mAdapter;
 	
+	private PanierSummary mPanierSummary;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate ConfirmPayment");
         setContentView(R.layout.confirm);
-        
+
+        mPanierSummary = (PanierSummary) findViewById(R.id.confirm_panier_summary);
+        mPanierSummary.set(mSession);
+        		
         ListView lv = (ListView)findViewById(R.id.confirm_list);
 
         mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
