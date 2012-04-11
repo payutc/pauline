@@ -139,6 +139,7 @@ public class ShowArticleActivity extends BaseActivity {
     
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
 		switch (requestCode) {
 		case CONFIRM_PAYMENT:

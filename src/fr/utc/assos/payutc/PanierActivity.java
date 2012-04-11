@@ -34,4 +34,12 @@ public class PanierActivity extends BaseActivity {
 			}
 		});
     }
+    
+    /**
+     * Override le bouton back pour qu'il sauvegarde l'état actuel du panier
+     */
+    @Override
+    public void onBackPressed() {
+    	stop(RESULT_OK);
+    }
 }
