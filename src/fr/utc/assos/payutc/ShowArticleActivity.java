@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
+import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.soap.GetImageResult;
 import fr.utc.assos.payutc.soap.GetPropositionResult;
 
@@ -32,7 +33,7 @@ public class ShowArticleActivity extends NfcActivity {
 	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
 	
-	private IconAdapter adapter;
+	private IconAdapter mAdapter;
 	
 	private PaulineSession mSession;
 	
@@ -47,19 +48,19 @@ public class ShowArticleActivity extends NfcActivity {
     }
     
     protected void initGridView(ArrayList<Item> items) {
-    	adapter = new IconAdapter(this, items);
+    	mAdapter = new IconAdapter(this, R.layout.icon, items);
 
         for (Item item : items) {
-        	new DownloadImgTask(adapter).execute(item);
+        	new DownloadImgTask(mAdapter).execute(item);
         }
         
         GridView gridview = (GridView) findViewById(R.id.show_articles_view);
-        gridview.setAdapter(adapter);
+        gridview.setAdapter(mAdapter);
         
         
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            	Item i = adapter.getItem(position);
+            	Item i = mAdapter.getItem(position);
             	
             	// récupération du prix courant
             	TextView tv = (TextView) findViewById(R.id.show_articles_prix);
@@ -75,10 +76,6 @@ public class ShowArticleActivity extends NfcActivity {
                 Toast.makeText(ShowArticleActivity.this, "" + i.getCost(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-    
-    protected void setProgressPercent(int p) {
-    	
     }
     
     private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionResult> {
@@ -98,11 +95,6 @@ public class ShowArticleActivity extends NfcActivity {
 	    			"Veuillez patienter"
 	    	);
 		}
-		
-		@Override
-		protected void onProgressUpdate(Integer... progress) {
-			setProgressPercent(progress[0]);
-	    }
 		
 		@Override
 		protected void onPostExecute(GetPropositionResult result) {
