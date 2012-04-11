@@ -3,20 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/show_articles_prix"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0€" 
-    />
-    
-    <TextView
-        android:id="@+id/show_articles_nb"
+	<fr.utc.assos.payutc.views.PanierSummary
+        android:id="@+id/show_articles_panier_summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0 article" 
-    />
+	/>
     
     <Button
 	android:layout_width="wrap_content"

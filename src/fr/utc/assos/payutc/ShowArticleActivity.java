@@ -11,11 +11,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.soap.GetImageResult;
 import fr.utc.assos.payutc.soap.GetPropositionResult;
+import fr.utc.assos.payutc.views.PanierSummary;
 
 
 
@@ -33,6 +33,7 @@ public class ShowArticleActivity extends BaseActivity {
 	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
 	
+	private PanierSummary mPanierSummary;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +65,9 @@ public class ShowArticleActivity extends BaseActivity {
         	// ajouter l'item dans le panier
             mSession.addItem(i);
             
-        	// affichage du nouveaux prix
-        	TextView tv_prix = (TextView) findViewById(R.id.show_articles_prix);
-        	tv_prix.setText(""+mSession.getTotal()/100.0+"€");
-        	
-        	// affichage du nouveau nombre d'articles
-        	TextView tv_articles = (TextView) findViewById(R.id.show_articles_nb);
-        	if (mSession.getNbItems() > 1) {
-        		tv_articles.setText(""+mSession.getNbItems()+" articles");
-        	}
-        	else {
-        		tv_articles.setText(""+mSession.getNbItems()+" article");
-        	}
+        	// affichage du nouveaux résumé
+        	mPanierSummary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
+        	mPanierSummary.set(mSession);
         }
     };
     
@@ -141,6 +133,8 @@ public class ShowArticleActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
+		mPanierSummary.set(mSession);
+		
 		switch (requestCode) {
 		case CONFIRM_PAYMENT:
 	    	if (resultCode == RESULT_OK) {
