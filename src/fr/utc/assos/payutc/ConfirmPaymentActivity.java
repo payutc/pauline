@@ -29,9 +29,9 @@ public class ConfirmPaymentActivity extends NfcActivity {
         setContentView(R.layout.confirm);
         mSession = PaulineSession.get(getIntent());
         
-        ListView lv = (ListView)findViewById(R.id.list_view);
+        ListView lv = (ListView)findViewById(R.id.confirm_list);
         
-        mAdapter = new ArrayAdapter<Item>(this, R.layout.list_item, mSession.getItems()) {
+        mAdapter = new ArrayAdapter<Item>(this, R.layout.panier_list_item, mSession.getItems()) {
 	        @Override
 	        public View getView(int position, View convertView, ViewGroup parent) {
 	        	//Log.d(LOG_TAG, "getView #"+position+" "+convertView);
@@ -95,5 +95,9 @@ public class ConfirmPaymentActivity extends NfcActivity {
     	Log.d(LOG_TAG, "new Intent");
     	String id = getNfcResult(intent);
     	startResultTransaction(id);
+    }
+    
+    public void onClickDebug(View view) {
+    	startResultTransaction(PaulineActivity.ID_TRECOUVR);
     }
 }

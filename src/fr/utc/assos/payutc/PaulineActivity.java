@@ -18,7 +18,7 @@ public class PaulineActivity extends NfcActivity {
 	public final static int ID_POI				= 2;
 	public final static int ID_FUNDATION		= 2;
 	
-	private final String ID_TRECOUVR			= "5B1BF88B";
+	public static final String ID_TRECOUVR			= "5B1BF88B";
 	
 	public static final PBuy PBUY = new PBuy();
 	
@@ -29,7 +29,7 @@ public class PaulineActivity extends NfcActivity {
         Log.d(LOG_TAG, "onCreate PaulineActivity");
         setContentView(R.layout.main);
         // @todo virer ce vieux hack
-    	startAskSellerPasswordActivity(ID_TRECOUVR);
+    	//startAskSellerPasswordActivity(ID_TRECOUVR);
     	
         if (!nfcAvailable) {
         	startAskSellerPasswordActivity(ID_TRECOUVR);

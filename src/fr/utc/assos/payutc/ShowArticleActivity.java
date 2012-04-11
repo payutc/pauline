@@ -2,6 +2,7 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,9 +83,20 @@ public class ShowArticleActivity extends NfcActivity {
     
     private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionResult> {
     	
+    	private ProgressDialog mProgressDialog;
+    	
 		@Override
 		protected GetPropositionResult doInBackground(Integer... params) {
 			return PaulineActivity.PBUY.getProposition();
+		}
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+	    	mProgressDialog = ProgressDialog.show(ShowArticleActivity.this, 
+	    			"Chargement",
+	    			"Veuillez patienter"
+	    	);
 		}
 		
 		@Override
@@ -107,6 +119,7 @@ public class ShowArticleActivity extends NfcActivity {
 	        }
 	        
 	        initGridView(items);
+	        mProgressDialog.dismiss();
 		}
     	
     }

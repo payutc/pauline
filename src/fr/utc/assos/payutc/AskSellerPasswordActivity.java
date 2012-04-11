@@ -1,5 +1,6 @@
 package fr.utc.assos.payutc;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +36,7 @@ public class AskSellerPasswordActivity extends NfcActivity {
         setContentView(R.layout.asksellerpassword);
         
         // @todo virer ce hack
-        new LoadSellerTask("trecouvr", 1, "");
+        //new LoadSellerTask(this, "trecouvr", 1, "");
     }
     
     public void onOk(View view) {
@@ -61,13 +62,26 @@ public class AskSellerPasswordActivity extends NfcActivity {
     private class LoadSellerTask extends AsyncTask<Integer, Integer, Integer> {
     	private String mIdSeller, mPass;
     	private int mMeanOfLogin;
+    	private ProgressDialog mProgressDialog;
     	
     	public LoadSellerTask(String idSeller, int meanOfLogin, String pass) {
     		mIdSeller = idSeller;
     		mMeanOfLogin = meanOfLogin;
     		mPass = pass;
     	}
-    	
+
+        @Override
+        protected void onPreExecute() {
+        	super.onPreExecute();
+        	mProgressDialog = ProgressDialog.show(AskSellerPasswordActivity.this, 
+        			"Vérification", 
+        			"Demande d'autorisation en cour...",
+        			true,
+        			false
+        	);
+        }
+        
+        @Override
         protected Integer doInBackground(Integer... args) {
         	int r = PaulineActivity.PBUY.loadSeller(mIdSeller, mMeanOfLogin, mPass, PaulineActivity.ID_POI);
         	// @todo enlever ce vieux hack 
@@ -75,7 +89,9 @@ public class AskSellerPasswordActivity extends NfcActivity {
         	return r;
         }
 
+        @Override
         protected void onPostExecute(Integer r) {
+        	mProgressDialog.dismiss();
         	stop(r==1);
         }
     }

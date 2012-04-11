@@ -2,10 +2,11 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ProgressBar;
+import android.view.View;
 
 public class ResultTransactionActivity extends NfcActivity {
 	private static final String LOG_TAG		= "ResultTransactionActivity";
@@ -14,15 +15,13 @@ public class ResultTransactionActivity extends NfcActivity {
 	
 	private PaulineSession mSession;
 	
-	private ProgressBar mProgressBar;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.result);
+        Log.d(LOG_TAG, "onCreate ResultTransactionActivity");
         mSession = PaulineSession.get(getIntent());
         
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         
         new TransactionTask(mSession.getItems()).execute();
     }
@@ -30,28 +29,47 @@ public class ResultTransactionActivity extends NfcActivity {
     protected void stop(Boolean success) {
 		int r_code = RESULT_OK;
 		if (!success) {
-			r_code = -1;
+			r_code = RESULT_CANCELED;
 		}
 	    setResult(r_code);
 		finish();
     }
     
-    protected void setProgressPercent(int p) {
-    	mProgressBar.setProgress(p);
+    protected void setResultView(Boolean success) {
+    	if (success) {
+            setContentView(R.layout.result_ok);
+    	}
     }
     
-    private class TransactionTask extends AsyncTask<Integer, Integer, Integer> {
+    public void onClickOk(View view) {
+    	stop(true);
+    }
+    
+    protected class TransactionTask extends AsyncTask<Integer, Integer, Integer> {
     	
     	private ArrayList<Item> mItems;
     	
+    	private ProgressDialog mProgressDialog;
+    	
     	public TransactionTask(ArrayList<Item> items) {
     		mItems = items;
+    	}
+    	
+    	@Override
+    	protected void onPreExecute() {
+    		super.onPreExecute();
+	    	mProgressDialog = new ProgressDialog(ResultTransactionActivity.this, ProgressDialog.STYLE_HORIZONTAL);
+	    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	    	mProgressDialog.setTitle("Commande");
+	    	mProgressDialog.setMessage("Envoie des articles au serveur");
+	    	mProgressDialog.show();
     	}
     	
 		@Override
 		protected Integer doInBackground(Integer... _args) {
 			for (int i=0; i<mItems.size(); ++i) {
 				Item item = mItems.get(i);
+				@SuppressWarnings("unused")
 				int r = PaulineActivity.PBUY.select(item.getId(), item.getCost(), item.getName());
 				publishProgress((int) (((i+1) / (float) mItems.size()) * 100));
 			}
@@ -61,12 +79,13 @@ public class ResultTransactionActivity extends NfcActivity {
     	
 		@Override
 		protected void onProgressUpdate(Integer... progress) {
-			setProgressPercent(progress[0]);
+			mProgressDialog.setProgress(progress[0]);
 		}
 		
 		@Override
 		protected void onPostExecute(Integer r) {
-			stop(true);
+			mProgressDialog.dismiss();
+			setResultView(true);
 		}
     }
     
