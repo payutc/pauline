@@ -8,19 +8,25 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
+import fr.utc.assos.payutc.views.PanierSummary;
 
 public class PanierActivity extends BaseActivity {
 	private static final String LOG_TAG		= "PanierActivity";
 	
 	ArrayAdapter<Item> mAdapter;
 	
+	private PanierSummary mPanierSummary;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate PanierActivity");
-        setContentView(R.layout.home);
+        setContentView(R.layout.panier);
+
+        mPanierSummary = (PanierSummary) findViewById(R.id.panier_panier_summary);
+        mPanierSummary.set(mSession);
         
-        ListView lv = (ListView)findViewById(R.id.list_view);
+        ListView lv = (ListView)findViewById(R.id.panier_list);
         
         mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
         
@@ -31,6 +37,7 @@ public class PanierActivity extends BaseActivity {
 				Item i = mAdapter.getItem(position);
 				mAdapter.remove(i);
 				mSession.removeItem(i);
+				mPanierSummary.set(mSession);
 			}
 		});
     }

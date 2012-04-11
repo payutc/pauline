@@ -39,7 +39,11 @@ public class BaseActivity extends NfcActivity {
 			mSession = PaulineSession.load(data);
 		}
 	}
-
+	
+	/**
+	 * Méthode à Override si l'on veut utiliser l'event onIdentification
+	 * @param {String} id
+	 */
 	@Override
 	protected void onIdentification(String id) {
 		Log.d(LOG_TAG, "Identified : "+id);
@@ -48,7 +52,7 @@ public class BaseActivity extends NfcActivity {
 	/**
 	 * Finir l'activité courante, si l'activité ne s'est pas finie avec succès,
 	 * on ne sauvegarde pas l'état courant de la session.
-	 * @param success
+	 * @param {Boolean} success
 	 */
 	final protected void stop(Boolean success) {
 		if (success) {
