@@ -27,17 +27,27 @@ public class PaulineSession implements Parcelable {
 	
 	public void save(Intent intent) {
 		Bundle b = new Bundle();
-		b.putParcelable("pauline_session", this);
+		save(b);
 		intent.putExtras(b);
 	}
 	
-	public static PaulineSession get(Intent intent) {
+	public void save(Bundle b) {
+		b.putParcelable("pauline_session", this);
+	}
+	
+	public static PaulineSession load(Intent intent) {
+		PaulineSession session;
         Bundle b = intent.getExtras();
-        PaulineSession s = b.getParcelable("pauline_session");
-        if (s==null) {
-        	s = new PaulineSession();
+        if (b==null) {
+        	session = new PaulineSession();
         }
-        return s;
+        else {
+	        session = b.getParcelable("pauline_session");
+	        if (session==null) {
+	        	session = new PaulineSession();
+	        }
+        }
+        return session;
 	}
 	
 	public ArrayList<Item> getItems() {
@@ -54,6 +64,18 @@ public class PaulineSession implements Parcelable {
 	
 	public void clearItems() {
 		mPanier.clear();
+	}
+	
+	public int getTotal() {
+		int total = 0;
+		for (Item i : mPanier) {
+			total += i.getCost();
+		}
+		return total;
+	}
+	
+	public int getNbItems() {
+		return mPanier.size();
 	}
 	
 	public void setBuyerId(String id) {

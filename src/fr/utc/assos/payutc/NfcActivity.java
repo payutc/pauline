@@ -3,7 +3,6 @@ package fr.utc.assos.payutc;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
@@ -11,28 +10,29 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
-public class NfcActivity extends Activity {
+abstract public class NfcActivity extends Activity {
 	private static final String	LOG_TAG		= "NfcActivity"; 
 	
 	private NfcAdapter	mNfcAdapter;
-	protected Boolean nfcAvailable     	= true; 
 	
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate NFC");
 	    mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
 		if(mNfcAdapter == null) {
-			// TODO Make a popup information . NFC is not available
-			nfcAvailable = false;
+            Toast.makeText(this, "Nfc not available", Toast.LENGTH_SHORT).show();
 		}
 		else if(!mNfcAdapter.isEnabled()) {
-			// TODO Make a popup information . NFC is disabled
-			nfcAvailable = false;
+            Toast.makeText(this, "Nfc not disabled", Toast.LENGTH_SHORT).show();
 		}
+	}
+	
+	final protected Boolean identifierIsAvailable() {
+		return mNfcAdapter != null;
 	}
 	
     private String ByteArrayToHexString(byte [] inarray) 
@@ -52,26 +52,24 @@ public class NfcActivity extends Activity {
     	return out;
     }
     
-    public String getNfcResult(Intent intent) {
+    abstract protected void onIdentification(String id);
+    
+    @Override
+    protected void onNewIntent(Intent intent) {
     	Log.d(LOG_TAG, "Lecture d'un ID NFC");
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         String id = ByteArrayToHexString(tag.getId());
         Log.d(LOG_TAG, id);
-        return id;
+        onIdentification(id);
     }
     
     @Override
     protected void onResume() {
     	super.onResume();
-	    Log.d(LOG_TAG,"onResume "+nfcAvailable);
-		if(nfcAvailable)
-		{
-			Context ctx = getBaseContext();
-			Activity act = this;
-			Class<? extends Activity> class1 = getClass();
-			
-			PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0,
-				new Intent(ctx, class1).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+	    Log.d(LOG_TAG,"onResume");
+		if(identifierIsAvailable()) {
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 	 
 			IntentFilter ndefFilter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
 	 
@@ -79,7 +77,7 @@ public class NfcActivity extends Activity {
 	 
 			String[][] techs = {{Ndef.class.getName()}};
 	 
-			mNfcAdapter.enableForegroundDispatch(act, pendingIntent, filters, techs);
+			mNfcAdapter.enableForegroundDispatch(this, pendingIntent, filters, techs);
 		}
     }
     
@@ -87,7 +85,7 @@ public class NfcActivity extends Activity {
 	protected void onPause() {
     	super.onPause();
     	Log.d(LOG_TAG,"onPause");
-		if(nfcAvailable)
+		if(identifierIsAvailable())
 			mNfcAdapter.disableForegroundDispatch(this);
 	}
     

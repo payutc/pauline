@@ -4,6 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/confirm_articles_prix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0€" 
+    />
+    
+    <TextView
+        android:id="@+id/confirm_articles_nb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 article" 
+    />
 
     <Button
         android:layout_width="wrap_content"

@@ -8,31 +8,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-public class ResultTransactionActivity extends NfcActivity {
+public class ResultTransactionActivity extends BaseActivity {
 	private static final String LOG_TAG		= "ResultTransactionActivity";
 	
 	public final static int TRANSACTION_OK		= 0;
-	
-	private PaulineSession mSession;
 	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate ResultTransactionActivity");
-        mSession = PaulineSession.get(getIntent());
-        
         
         new TransactionTask(mSession.getItems()).execute();
-    }
-    
-    protected void stop(Boolean success) {
-		int r_code = RESULT_OK;
-		if (!success) {
-			r_code = RESULT_CANCELED;
-		}
-	    setResult(r_code);
-		finish();
     }
     
     protected void setResultView(Boolean success) {

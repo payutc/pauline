@@ -11,6 +11,13 @@
         android:text="0€" 
     />
     
+    <TextView
+        android:id="@+id/show_articles_nb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 article" 
+    />
+    
     <Button
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"

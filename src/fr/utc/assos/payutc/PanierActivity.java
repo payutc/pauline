@@ -1,7 +1,5 @@
 package fr.utc.assos.payutc;
 
-import fr.utc.assos.payutc.adapters.ListItemAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,12 +7,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import fr.utc.assos.payutc.adapters.ListItemAdapter;
 
-public class PanierActivity extends NfcActivity {
+public class PanierActivity extends BaseActivity {
 	private static final String LOG_TAG		= "PanierActivity";
 	
-	private PaulineSession mSession;
 	ArrayAdapter<Item> mAdapter;
 	
     @Override
@@ -22,7 +19,6 @@ public class PanierActivity extends NfcActivity {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate PanierActivity");
         setContentView(R.layout.home);
-        mSession = PaulineSession.get(getIntent());
         
         ListView lv = (ListView)findViewById(R.id.list_view);
         
@@ -33,15 +29,9 @@ public class PanierActivity extends NfcActivity {
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Item i = mAdapter.getItem(position);
-                Toast.makeText(PanierActivity.this, "" + i.getId(), Toast.LENGTH_SHORT).show();
+				mAdapter.remove(i);
+				mSession.removeItem(i);
 			}
 		});
-    }
-    
-    protected void stop() {
-		Intent intent = new Intent();
-		mSession.save(intent);
-        setResult(RESULT_OK, intent);
-        finish();
     }
 }

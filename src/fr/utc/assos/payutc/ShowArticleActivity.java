@@ -27,56 +27,57 @@ import fr.utc.assos.payutc.soap.GetPropositionResult;
  * @author thomas
  *
  */
-public class ShowArticleActivity extends NfcActivity {
+public class ShowArticleActivity extends BaseActivity {
 	private static final String LOG_TAG = "ShowArticleActivity";
 	
 	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
 	
-	private IconAdapter mAdapter;
-	
-	private PaulineSession mSession;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate ShowArticleActivity");
         setContentView(R.layout.showarticles);
-        mSession = PaulineSession.get(getIntent());
         
         new GetItemsTask().execute();
     }
     
     protected void initGridView(ArrayList<Item> items) {
-    	mAdapter = new IconAdapter(this, R.layout.icon, items);
+    	IconAdapter adapter = new IconAdapter(this, R.layout.icon, items);
 
         for (Item item : items) {
-        	new DownloadImgTask(mAdapter).execute(item);
+        	new DownloadImgTask(adapter).execute(item);
         }
         
         GridView gridview = (GridView) findViewById(R.id.show_articles_view);
-        gridview.setAdapter(mAdapter);
+        gridview.setAdapter(adapter);
         
         
-        gridview.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            	Item i = mAdapter.getItem(position);
-            	
-            	// récupération du prix courant
-            	TextView tv = (TextView) findViewById(R.id.show_articles_prix);
-            	String sCurrentPrix = (String) tv.getText();
-            	Float fCurrentPrix = Float.parseFloat(sCurrentPrix.substring(0, sCurrentPrix.length()-1));
-            	
-            	// affichage du nouveaux prix
-            	tv.setText(""+(Math.round(fCurrentPrix*100.0)+i.getCost())/100.0+"€");
-            	
-            	// ajouter l'item dans le panier
-                mSession.addItem(i);
-
-                Toast.makeText(ShowArticleActivity.this, "" + i.getCost(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        gridview.setOnItemClickListener(mOnItemClickListener);
     }
+    
+    protected OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
+    	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        	Item i = (Item) parent.getAdapter().getItem(position);
+
+        	// ajouter l'item dans le panier
+            mSession.addItem(i);
+            
+        	// affichage du nouveaux prix
+        	TextView tv_prix = (TextView) findViewById(R.id.show_articles_prix);
+        	tv_prix.setText(""+mSession.getTotal()/100.0+"€");
+        	
+        	// affichage du nouveau nombre d'articles
+        	TextView tv_articles = (TextView) findViewById(R.id.show_articles_nb);
+        	if (mSession.getNbItems() > 1) {
+        		tv_articles.setText(""+mSession.getNbItems()+" articles");
+        	}
+        	else {
+        		tv_articles.setText(""+mSession.getNbItems()+" article");
+        	}
+        }
+    };
     
     private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionResult> {
     	
@@ -116,12 +117,6 @@ public class ShowArticleActivity extends NfcActivity {
     	
     }
     
-    protected void stop() {
-		Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
-		finish();
-    }
-    
     public void onClickCancel(View view) {
     	stop();
     }
@@ -133,14 +128,12 @@ public class ShowArticleActivity extends NfcActivity {
     private void startConfirmPaymentActivity() {
     	Log.d(LOG_TAG,"startAskSellerPassword");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ConfirmPaymentActivity.class);
-    	mSession.save(intent);
     	startActivityForResult(intent, CONFIRM_PAYMENT);
     }
     
     public void onClickPanier(View view) {
     	Log.d(LOG_TAG,"startAskSellerPassword");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.PanierActivity.class);
-    	mSession.save(intent);
     	startActivityForResult(intent, PANIER);
     }
     

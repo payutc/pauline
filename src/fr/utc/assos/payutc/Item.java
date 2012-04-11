@@ -8,8 +8,6 @@ import android.util.Base64;
 
 public class Item implements Parcelable {
 	
-	private static final String LOG_TAG		= "Item";
-	
 	private int mId;
 	private String mName;
 	private String mType;

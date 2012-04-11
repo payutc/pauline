@@ -15,7 +15,7 @@ import android.widget.TextView;
  * @author thomas
  *
  */
-public class AskSellerPasswordActivity extends NfcActivity {
+public class AskSellerPasswordActivity extends BaseActivity {
 	public final static String LOG_TAG = "AskSellerPasswordActivity";
 	private final int MEAN_OF_LOGIN		= 5; 
 	
@@ -47,17 +47,6 @@ public class AskSellerPasswordActivity extends NfcActivity {
     public void onCancel(View view) {
     	stop(false);
     }
-
-    protected void stop(Boolean success) {
-		if (success) {
-			setResult(RESULT_OK);
-		}
-		else {
-			setResult(RESULT_CANCELED);
-		}
-		finish();
-    }
-    
     
     private class LoadSellerTask extends AsyncTask<Integer, Integer, Integer> {
     	private String mIdSeller, mPass;

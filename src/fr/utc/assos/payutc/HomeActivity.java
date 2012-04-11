@@ -21,17 +21,15 @@ import android.widget.ListView;
  * @author thomas
  *
  */
-public class HomeActivity extends NfcActivity {
+public class HomeActivity extends BaseActivity {
 	public final static String LOG_TAG		= "HomeActivity";
 	
-	private PaulineSession mSession;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate HomeActivity");
         setContentView(R.layout.home);
-        mSession = new PaulineSession();
         
         ListView lv = (ListView)findViewById(R.id.list_view);
 
@@ -59,25 +57,17 @@ public class HomeActivity extends NfcActivity {
 			}
 		});
     }
-
-    protected void stop() {
-		Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
-		finish();
-    }
     
     private void startShowArticleActivity(int type) {
     	Log.d(LOG_TAG,"startShowArticleActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
     	mSession.setHomeChoice(type);
-    	mSession.save(intent);
     	startActivity(intent);
     }
     
     private void startCancelTransactionActivity() {
     	Log.d(LOG_TAG,"startCancelTransactionActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CancelTransactionActivity.class);
-    	mSession.save(intent);
     	startActivity(intent);
     }
     

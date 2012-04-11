@@ -10,7 +10,7 @@ import fr.utc.assos.payutc.soap.PBuy;
  * @author thomas
  *
  */
-public class PaulineActivity extends NfcActivity {
+public class PaulineActivity extends BaseActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
 	public static final int ASKSELLERPASSWORD	= 0;
@@ -31,7 +31,7 @@ public class PaulineActivity extends NfcActivity {
         // @todo virer ce vieux hack
     	//startAskSellerPasswordActivity(ID_TRECOUVR);
     	
-        if (!nfcAvailable) {
+        if (!identifierIsAvailable()) {
         	startAskSellerPasswordActivity(ID_TRECOUVR);
         	//startHomeActivity();
         	/*
@@ -56,9 +56,8 @@ public class PaulineActivity extends NfcActivity {
     }
     
     @Override
-    protected void onNewIntent(Intent intent) {
-    	Log.d(LOG_TAG, "new Intent");
-    	String id = getNfcResult(intent);
+    protected void onIdentification(String id) {
+    	Log.d(LOG_TAG, "onIdentification");
         startAskSellerPasswordActivity(id);
     }
 

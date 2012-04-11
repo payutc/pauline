@@ -14,7 +14,6 @@ import fr.utc.assos.payutc.Item;
 import fr.utc.assos.payutc.R;
 
 public class IconAdapter extends ArrayAdapter<Item> {
-	private static final String LOG_TAG		= "IconAdapter";
 	
 	private static class ViewHolder {
 		TextView text;
