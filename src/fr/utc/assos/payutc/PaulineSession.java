@@ -14,9 +14,7 @@ public class PaulineSession implements Parcelable {
 	public final static int ANNULER_VENTE		= 2;
 	
 	private ArrayList<Item> mPanier;
-	
 	private int mHomeChoice;
-	
 	private String mIdBuyer;
 	
 	public PaulineSession() {
@@ -80,6 +78,10 @@ public class PaulineSession implements Parcelable {
 	
 	public void setBuyerId(String id) {
 		mIdBuyer = id;
+	}
+	
+	public String getBuyerId() {
+		return mIdBuyer;
 	}
 	
 	public int getHomeChoice() {

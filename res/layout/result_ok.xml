@@ -6,7 +6,6 @@
     android:orientation="horizontal" >
 
     <TextView
-        android:id="@+id/result_ok_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tout s'est bien passé" />

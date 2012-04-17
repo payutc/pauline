@@ -1,5 +1,6 @@
 package fr.utc.assos.payutc;
 
+import java.security.KeyStore.LoadStoreParameter;
 import java.util.ArrayList;
 
 import android.app.ProgressDialog;
@@ -19,12 +20,15 @@ public class ResultTransactionActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate ResultTransactionActivity");
         
-        new TransactionTask(mSession.getItems()).execute();
+        new TransactionTask(mSession.getBuyerId() ,mSession.getItems()).execute();
     }
     
     protected void setResultView(Boolean success) {
     	if (success) {
             setContentView(R.layout.result_ok);
+    	}
+    	else {
+    		setContentView(R.layout.result_echec);
     	}
     }
     
@@ -32,14 +36,20 @@ public class ResultTransactionActivity extends BaseActivity {
     	stop(true);
     }
     
+    public void onClickOkFromEchec(View view) {
+    	stop(RESULT_CANCELED);
+    }
+    
     protected class TransactionTask extends AsyncTask<Integer, Integer, Integer> {
     	
     	private ArrayList<Item> mItems;
+    	private String mIdBuyer;
     	
     	private ProgressDialog mProgressDialog;
     	
-    	public TransactionTask(ArrayList<Item> items) {
+    	public TransactionTask(String id, ArrayList<Item> items) {
     		mItems = items;
+    		mIdBuyer = id;
     	}
     	
     	@Override
@@ -54,14 +64,23 @@ public class ResultTransactionActivity extends BaseActivity {
     	
 		@Override
 		protected Integer doInBackground(Integer... _args) {
+			Log.d(LOG_TAG, ""+mIdBuyer);
+			PaulineActivity.PBUY.endTransaction();
+			int resultLoad = PaulineActivity.PBUY.loadBuyer(mIdBuyer, PaulineActivity.MEAN_OF_LOGIN, "");
+			if (resultLoad != 1) {
+				return resultLoad;
+			}
+			
 			for (int i=0; i<mItems.size(); ++i) {
 				Item item = mItems.get(i);
 				@SuppressWarnings("unused")
 				int r = PaulineActivity.PBUY.select(item.getId(), item.getCost(), item.getName());
 				publishProgress((int) (((i+1) / (float) mItems.size()) * 100));
 			}
+			
 			PaulineActivity.PBUY.endTransaction();
-			return null;
+			PaulineActivity.PBUY.loadBuyer("trecouvr", 1, "");
+			return 1;
 		}
     	
 		@Override
@@ -72,7 +91,12 @@ public class ResultTransactionActivity extends BaseActivity {
 		@Override
 		protected void onPostExecute(Integer r) {
 			mProgressDialog.dismiss();
-			setResultView(true);
+			if (r==1) {
+				setResultView(true);
+			}
+			else {
+				setResultView(false);
+			}
 		}
     }
     

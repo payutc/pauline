@@ -30,7 +30,6 @@ public class ConfirmPaymentActivity extends BaseActivity {
         mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
         
         lv.setAdapter(mAdapter);
-        
     }
 
     @Override

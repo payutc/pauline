@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
 
 
 /**
@@ -17,7 +17,6 @@ import android.widget.TextView;
  */
 public class AskSellerPasswordActivity extends BaseActivity {
 	public final static String LOG_TAG = "AskSellerPasswordActivity";
-	private final int MEAN_OF_LOGIN		= 5; 
 	
 	
 
@@ -40,8 +39,8 @@ public class AskSellerPasswordActivity extends BaseActivity {
     }
     
     public void onOk(View view) {
-    	String pass = (String) ((TextView) findViewById(R.id.input_login)).getText();
-    	new LoadSellerTask(mIdSeller, MEAN_OF_LOGIN, pass).execute();
+    	String pass = (String) ((EditText) findViewById(R.id.input_login)).getText().toString();
+    	new LoadSellerTask(mIdSeller, PaulineActivity.MEAN_OF_LOGIN, pass).execute();
     }
     
     public void onCancel(View view) {
@@ -81,7 +80,7 @@ public class AskSellerPasswordActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Integer r) {
         	mProgressDialog.dismiss();
-        	stop(r==1);
+        	stop(r);
         }
     }
     

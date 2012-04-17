@@ -72,7 +72,7 @@ public class BaseActivity extends NfcActivity {
 		if (returnCode != RESULT_CANCELED) {
 			mSession.save(intent);
 		}
-        setResult(RESULT_OK, intent);
+        setResult(returnCode, intent);
 		finish();
 	}
 	
