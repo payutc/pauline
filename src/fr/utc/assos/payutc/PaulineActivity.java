@@ -3,7 +3,6 @@ package fr.utc.assos.payutc;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 import fr.utc.assos.payutc.soap.PBuy;
 
 /**
@@ -48,15 +47,12 @@ public class PaulineActivity extends BaseActivity {
 
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
+		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode);
 		switch (requestCode) {
 		case ASKSELLERPASSWORD:
-			if (resultCode != RESULT_CANCELED) {
+			if (resultCode == RESULT_OK) {
 				if (resultCode == 1) {
 					startHomeActivity();
-				}
-				else {
-		            Toast.makeText(this, "Autorisation refusée", Toast.LENGTH_SHORT).show();
 				}
 			}
 		}

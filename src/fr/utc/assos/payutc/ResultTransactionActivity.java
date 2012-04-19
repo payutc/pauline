@@ -1,6 +1,5 @@
 package fr.utc.assos.payutc;
 
-import java.security.KeyStore.LoadStoreParameter;
 import java.util.ArrayList;
 
 import android.app.ProgressDialog;

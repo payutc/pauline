@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 /**
@@ -62,8 +63,8 @@ public class AskSellerPasswordActivity extends BaseActivity {
         protected void onPreExecute() {
         	super.onPreExecute();
         	mProgressDialog = ProgressDialog.show(AskSellerPasswordActivity.this, 
-        			"Vérification", 
-        			"Demande d'autorisation en cour...",
+        			"Identification", 
+        			"Connection au serveur en cour...",
         			true,
         			false
         	);
@@ -80,7 +81,12 @@ public class AskSellerPasswordActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Integer r) {
         	mProgressDialog.dismiss();
-        	stop(r);
+        	if (r==1) {
+            	stop(true);
+        	}
+        	else {
+        		Toast.makeText(AskSellerPasswordActivity.this, "Echec de l'identification", Toast.LENGTH_SHORT).show();
+        	}
         }
     }
     
