@@ -16,12 +16,19 @@ public class GetPropositionResult extends SoapResult {
 	protected void processValues(String[][] values) {
 		mItems = new ArrayList<Item>();
 		for (String[] line : values) {
+			int imgId = 0;
+			try {
+				imgId = Integer.parseInt(line[3]);
+			}
+			catch (NumberFormatException ex) {
+				continue;
+			}
 			mItems.add(
 				new Item(
 					Integer.parseInt(line[0]),
 					line[1],
 					line[2],
-					Integer.parseInt(line[3]),
+					imgId,
 					Integer.parseInt(line[4])
 				)
 			);
