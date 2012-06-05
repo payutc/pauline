@@ -10,23 +10,25 @@ import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
+import org.ksoap2.transport.HttpsTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Log;
 
 
 public class PBuy {
-	private String url;
+	
+	
+	private String host;
 	private String namespace;
 	HashMap<String, String> cookies = new HashMap<String, String>();
 	
 	public PBuy() {
-		this("http://assos.utc.fr/buckutt/PBUY.class.php", "http://assos.utc.fr/buckutt/PBUY.class.php");
+		this("assos.utc.fr", "https://assos.utc.fr:443/buckutt/PBUY.class.php");
 	}
 	
-	public PBuy(String _url, String _namespace) {
-		url = _url;
+	public PBuy(String _host, String _namespace) {
+		host = _host;
 		namespace = _namespace;
 	}
 	
@@ -160,7 +162,7 @@ public class PBuy {
 				SoapEnvelope.VER11);
 		envelope.setOutputSoapObject (request);
 		
-		HttpTransportSE androidHttpTransport = new HttpTransportSE (url);
+		HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, "/buckutt/PBUY.class.php", 5000);
 		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
 		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
 		androidHttpTransport.debug = true; 
