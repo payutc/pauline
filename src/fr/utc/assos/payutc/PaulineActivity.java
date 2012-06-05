@@ -51,9 +51,7 @@ public class PaulineActivity extends BaseActivity {
 		switch (requestCode) {
 		case ASKSELLERPASSWORD:
 			if (resultCode == RESULT_OK) {
-				if (resultCode == 1) {
-					startHomeActivity();
-				}
+				startHomeActivity();
 			}
 		}
     }
