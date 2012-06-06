@@ -73,8 +73,6 @@ public class AskSellerPasswordActivity extends BaseActivity {
         @Override
         protected Integer doInBackground(Integer... args) {
         	int r = PaulineActivity.PBUY.loadSeller(mIdSeller, mMeanOfLogin, mPass, PaulineActivity.ID_POI);
-        	// @todo enlever ce vieux hack 
-			PaulineActivity.PBUY.loadBuyer("trecouvr", 1, "");
         	return r;
         }
 

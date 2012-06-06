@@ -123,6 +123,30 @@ public class PBuy {
 	    }
 	}
 	
+	public int transaction(ArrayList<Integer> ids, String trace) {
+		String s_ids = "";
+		for (int id : ids) {
+			s_ids += id;
+			s_ids += ",";
+		}
+		if (s_ids.length()>0) {
+			s_ids = s_ids.substring(0, s_ids.length()-1);
+		}
+		Log.d("coucou", s_ids);
+		SoapObject request = new SoapObject (namespace, "transaction");
+		request.addProperty("obj_ids", s_ids);
+		request.addProperty("trace", trace);
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("transaction", soapObject.getResponse().toString());
+			int r_code = Integer.parseInt(soapObject.getResponse().toString());
+			return r_code;
+		} catch (Exception e) {
+			Log.e("transaction", "", e);
+			return -1;
+	    }
+	}
+	
 	public int endTransaction() {
 		// Création de la requête SOAP
 		SoapObject request = new SoapObject (namespace, "endTransaction");
