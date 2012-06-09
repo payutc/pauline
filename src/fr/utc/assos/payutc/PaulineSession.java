@@ -92,12 +92,10 @@ public class PaulineSession implements Parcelable {
 		mHomeChoice = c;
 	}
 	
-	@Override
 	public int describeContents() {
 		return 0;
 	}
 
-	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		Item[] items = mPanier.toArray(new Item[mPanier.size()]);
 		dest.writeParcelableArray(items, flags);
@@ -117,12 +115,10 @@ public class PaulineSession implements Parcelable {
     }
 	
 	public static final Parcelable.Creator<PaulineSession> CREATOR = new Parcelable.Creator<PaulineSession>() {
-		@Override
 		public PaulineSession createFromParcel(Parcel in) {
 			return new PaulineSession(in);
 		}
 		
-		@Override
 		public PaulineSession[] newArray(int size) {
 			return new PaulineSession[size];
 		}

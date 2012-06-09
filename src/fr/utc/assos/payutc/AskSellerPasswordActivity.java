@@ -34,9 +34,6 @@ public class AskSellerPasswordActivity extends BaseActivity {
         Log.d(LOG_TAG, "badge #"+mIdSeller);
 
         setContentView(R.layout.asksellerpassword);
-        
-        // @todo virer ce hack
-        //new LoadSellerTask(this, "trecouvr", 1, "");
     }
     
     public void onOk(View view) {
@@ -73,8 +70,6 @@ public class AskSellerPasswordActivity extends BaseActivity {
         @Override
         protected Integer doInBackground(Integer... args) {
         	int r = PaulineActivity.PBUY.loadSeller(mIdSeller, mMeanOfLogin, mPass, PaulineActivity.ID_POI);
-        	// @todo enlever ce vieux hack 
-			PaulineActivity.PBUY.loadBuyer("trecouvr", 1, "");
         	return r;
         }
 

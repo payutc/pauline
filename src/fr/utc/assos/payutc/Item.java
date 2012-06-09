@@ -57,12 +57,10 @@ public class Item implements Parcelable {
 		return mType;
 	}
 
-	@Override
 	public int describeContents() {
 		return 0;
 	}
 
-	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mId);
 		dest.writeString(mName);
@@ -85,12 +83,10 @@ public class Item implements Parcelable {
     }
 	
 	public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
-		@Override
 		public Item createFromParcel(Parcel in) {
 			return new Item(in);
 		}
 		
-		@Override
 		public Item[] newArray(int size) {
 			return new Item[size];
 		}

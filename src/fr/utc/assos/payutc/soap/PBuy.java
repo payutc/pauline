@@ -10,24 +10,28 @@ import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
+import org.ksoap2.transport.KeepAliveHttpsTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Log;
 
 
 public class PBuy {
-	private String url;
+	
+	
+	private String host;
 	private String namespace;
 	HashMap<String, String> cookies = new HashMap<String, String>();
+	KeepAliveHttpsTransportSE androidHttpTransport;
 	
 	public PBuy() {
-		this("http://assos.utc.fr/buckutt/PBUY.class.php", "http://assos.utc.fr/buckutt/PBUY.class.php");
+		this("assos.utc.fr", "https://assos.utc.fr:443/buckutt/PBUY.class.php");
 	}
 	
-	public PBuy(String _url, String _namespace) {
-		url = _url;
+	public PBuy(String _host, String _namespace) {
+		host = _host;
 		namespace = _namespace;
+		androidHttpTransport = new KeepAliveHttpsTransportSE (host, 443, "/buckutt/PBUY.class.php", 10000);
 	}
 	
     public int loadSeller(String data, int meanOfLogin, String ip, int poi_id) {
@@ -121,6 +125,30 @@ public class PBuy {
 	    }
 	}
 	
+	public int transaction(ArrayList<Integer> ids, String trace) {
+		String s_ids = "";
+		for (int id : ids) {
+			s_ids += id;
+			s_ids += ",";
+		}
+		if (s_ids.length()>0) {
+			s_ids = s_ids.substring(0, s_ids.length()-1);
+		}
+		Log.d("coucou", s_ids);
+		SoapObject request = new SoapObject (namespace, "transaction");
+		request.addProperty("obj_ids", s_ids);
+		request.addProperty("trace", trace);
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("transaction", soapObject.getResponse().toString());
+			int r_code = Integer.parseInt(soapObject.getResponse().toString());
+			return r_code;
+		} catch (Exception e) {
+			Log.e("transaction", "", e);
+			return -1;
+	    }
+	}
+	
 	public int endTransaction() {
 		// Création de la requête SOAP
 		SoapObject request = new SoapObject (namespace, "endTransaction");
@@ -160,7 +188,6 @@ public class PBuy {
 				SoapEnvelope.VER11);
 		envelope.setOutputSoapObject (request);
 		
-		HttpTransportSE androidHttpTransport = new HttpTransportSE (url);
 		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
 		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
 		androidHttpTransport.debug = true; 

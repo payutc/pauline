@@ -2,5 +2,6 @@
 <resources>
     <string name="app_name">Pauline</string>
     <string name="badgez">Badgez !</string>
+    <string name="mystore_password">pauline</string>
 
 </resources>
