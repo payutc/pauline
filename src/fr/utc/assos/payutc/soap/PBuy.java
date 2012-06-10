@@ -10,7 +10,6 @@ import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.KeepAliveHttpsTransportSE;
 import org.ksoap2.transport.HttpsTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -18,12 +17,11 @@ import android.util.Log;
 
 
 public class PBuy {
-	
+	private final String TAG = "PBuy";
 	
 	private String host;
 	private String namespace;
 	HashMap<String, String> cookies = new HashMap<String, String>();
-	KeepAliveHttpsTransportSE androidHttpTransport;
 	
 	public PBuy() {
 		this("assos.utc.fr", "https://assos.utc.fr:443/buckutt/PBUY.class.php");
@@ -32,7 +30,6 @@ public class PBuy {
 	public PBuy(String _host, String _namespace) {
 		host = _host;
 		namespace = _namespace;
-		androidHttpTransport = new KeepAliveHttpsTransportSE (host, 443, "/buckutt/PBUY.class.php", 10000);
 	}
 	
     public int loadSeller(String data, int meanOfLogin, String ip, int poi_id) {
@@ -181,22 +178,30 @@ public class PBuy {
 	private SoapSerializationEnvelope soap (SoapObject request) 
 			throws IOException, XmlPullParserException
 	{
+		Log.d(TAG, "soap");
 		String soap_action = namespace + "#" + request.getName();
-		Log.d("soap", soap_action);
+		Log.d(TAG, "action : "+soap_action);
 		
 		//Toutes les données demandées sont mises dans une enveloppe.
 		SoapSerializationEnvelope envelope = new SoapSerializationEnvelope (
 				SoapEnvelope.VER11);
 		envelope.setOutputSoapObject (request);
 		
+		Log.d(TAG, "fin envelope");
+
+		HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, "/buckutt/PBUY.class.php", 10000);
 		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
 		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
 		androidHttpTransport.debug = true; 
 
 		//Envoi de la requête
 		List respHeaders = androidHttpTransport.call(soap_action, envelope, get_headers());
+
+		Log.d(TAG, "fin call");
 		
 		update_cookies(respHeaders);
+
+		Log.d(TAG, "fin cookie");
 		
 		
 		return envelope;
