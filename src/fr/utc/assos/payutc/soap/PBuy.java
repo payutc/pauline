@@ -21,14 +21,16 @@ public class PBuy {
 	
 	private String host;
 	private String namespace;
+	private String path;
 	HashMap<String, String> cookies = new HashMap<String, String>();
 	
 	public PBuy() {
-		this("assos.utc.fr", "https://assos.utc.fr:443/buckutt/PBUY.class.php");
+		this("assos.utc.fr", "payutc/PBUY.class.php", "https://assos.utc.fr:443/buckutt/PBUY.class.php");
 	}
 	
-	public PBuy(String _host, String _namespace) {
+	public PBuy(String _host, String _path, String _namespace) {
 		host = _host;
+		path = _path;
 		namespace = _namespace;
 	}
 	
@@ -63,67 +65,20 @@ public class PBuy {
 	    }
     }
 	
-	public int loadBuyer(String data, int meanOfLogin, String ip) {
+	public GetPropositionsResult getPropositions() {
 		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "loadBuyer");
-		request.addProperty("data", data);
-		request.addProperty("meanOfLogin", meanOfLogin);
-		request.addProperty("ip", ip);
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("loadBuyer", soapObject.getResponse().toString());
-			int r_code = Integer.parseInt(soapObject.getResponse().toString());
-			return r_code;
-		} catch (Exception e) {
-			Log.e("loadBuyer", "", e);
-			return -1;
-	    }
-	}
-	
-	public IdentityResult getBuyerIdentity() {
-		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "getBuyerIdentity");
+		SoapObject request = new SoapObject (namespace, "getPropositions");
 		try {
 			SoapSerializationEnvelope soapObject = soap(request);
 			Log.d("getBuyerIdentity", soapObject.getResponse().toString());
-			return new IdentityResult(soapObject.getResponse().toString());
+			return new GetPropositionsResult(soapObject.getResponse().toString());
 		} catch (Exception e) {
 			Log.e("getBuyerIdentity", "", e);
 			return null;
 	    }
 	}
 	
-	public GetPropositionResult getProposition() {
-		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "getProposition");
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("getBuyerIdentity", soapObject.getResponse().toString());
-			return new GetPropositionResult(soapObject.getResponse().toString());
-		} catch (Exception e) {
-			Log.e("getBuyerIdentity", "", e);
-			return null;
-	    }
-	}
-	
-	public int select(int id, int cost, String trace) {
-		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "select");
-		request.addProperty("obj_id", id);
-		request.addProperty("obj_credit", cost);
-		request.addProperty("trace", trace);
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("select", soapObject.getResponse().toString());
-			int r_code = Integer.parseInt(soapObject.getResponse().toString());
-			return r_code;
-		} catch (Exception e) {
-			Log.e("select", "", e);
-			return -1;
-	    }
-	}
-	
-	public int transaction(ArrayList<Integer> ids, String trace) {
+	public int transaction(String badge_id, ArrayList<Integer> ids, String trace) {
 		String s_ids = "";
 		for (int id : ids) {
 			s_ids += id;
@@ -132,8 +87,8 @@ public class PBuy {
 		if (s_ids.length()>0) {
 			s_ids = s_ids.substring(0, s_ids.length()-1);
 		}
-		Log.d("coucou", s_ids);
 		SoapObject request = new SoapObject (namespace, "transaction");
+		request.addProperty("badge_id", badge_id);
 		request.addProperty("obj_ids", s_ids);
 		request.addProperty("trace", trace);
 		try {
@@ -143,20 +98,6 @@ public class PBuy {
 			return r_code;
 		} catch (Exception e) {
 			Log.e("transaction", "", e);
-			return -1;
-	    }
-	}
-	
-	public int endTransaction() {
-		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "endTransaction");
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("endTransaction", soapObject.getResponse().toString());
-			int r_code = Integer.parseInt(soapObject.getResponse().toString());
-			return r_code;
-		} catch (Exception e) {
-			Log.e("endTransaction", "", e);
 			return -1;
 	    }
 	}
@@ -189,7 +130,7 @@ public class PBuy {
 		
 		Log.d(TAG, "fin envelope");
 
-		HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, "/buckutt/PBUY.class.php", 10000);
+		HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, path, 10000);
 		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
 		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
 		androidHttpTransport.debug = true; 

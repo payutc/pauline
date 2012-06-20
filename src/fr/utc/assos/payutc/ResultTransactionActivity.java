@@ -64,24 +64,13 @@ public class ResultTransactionActivity extends BaseActivity {
 		@Override
 		protected Integer doInBackground(Integer... _args) {
 			Log.d(LOG_TAG, ""+mIdBuyer);
-			int r = PaulineActivity.PBUY.loadBuyer(mIdBuyer, PaulineActivity.MEAN_OF_LOGIN, "");
-			if (r != 1) {
-				return r;
-			}
-			
 			ArrayList<Integer> ids = new ArrayList<Integer>();
 			for (int i=0; i<mItems.size(); ++i) {
 				Item item = mItems.get(i);
 				ids.add(item.getId());
-				/*@SuppressWarnings("unused")
-				int r = PaulineActivity.PBUY.select(item.getId(), item.getCost(), item.getName());
-				publishProgress((int) (((i+1) / (float) mItems.size()) * 100));*/
 			}
-			r = PaulineActivity.PBUY.transaction(ids, "via Pauline");
+			int r = PaulineActivity.PBUY.transaction(mIdBuyer, ids, "via Pauline");
 			publishProgress(100);
-			if (r!=1) {
-				PaulineActivity.PBUY.endTransaction();
-			}
 			return r;
 		}
     	

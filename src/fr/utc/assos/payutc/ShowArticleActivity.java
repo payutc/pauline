@@ -14,7 +14,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.soap.GetImageResult;
-import fr.utc.assos.payutc.soap.GetPropositionResult;
+import fr.utc.assos.payutc.soap.GetPropositionsResult;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 
@@ -71,13 +71,13 @@ public class ShowArticleActivity extends BaseActivity {
         }
     };
     
-    private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionResult> {
+    private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionsResult> {
     	
     	private ProgressDialog mProgressDialog;
     	
 		@Override
-		protected GetPropositionResult doInBackground(Integer... params) {
-			return PaulineActivity.PBUY.getProposition();
+		protected GetPropositionsResult doInBackground(Integer... params) {
+			return PaulineActivity.PBUY.getPropositions();
 		}
 		
 		@Override
@@ -90,7 +90,7 @@ public class ShowArticleActivity extends BaseActivity {
 		}
 		
 		@Override
-		protected void onPostExecute(GetPropositionResult result) {
+		protected void onPostExecute(GetPropositionsResult result) {
 			ArrayList<Item> items = new ArrayList<Item>();
 	        if (result == null) {
 	        	Log.e(LOG_TAG, "Error:soap return null");
