@@ -25,7 +25,7 @@ public class PBuy {
 	HashMap<String, String> cookies = new HashMap<String, String>();
 	
 	public PBuy() {
-		this("assos.utc.fr", "payutc/PBUY.class.php", "https://assos.utc.fr:443/buckutt/PBUY.class.php");
+		this("assos.utc.fr", "buckutt/POSS.class.php", "https://assos.utc.fr:443/buckutt/POSS.class.php");
 	}
 	
 	public PBuy(String _host, String _path, String _namespace) {

@@ -71,24 +71,26 @@ public class PaulineActivity extends BaseActivity {
 			if (resultCode == RESULT_OK) {
 				String ticket = data.getStringExtra("ticket");
 				Log.i(LOG_TAG, "ticket : "+ticket);
+				new LoadPosTask(ticket).execute();
 			}
 		}
     }
-	
 
     public void onLogin(View view) {
     	Log.d(LOG_TAG,"startCasWebView");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
+    	Bundle b = new Bundle();
+    	b.putString("casurl", _CAS_URL);
+    	intent.putExtras(b);
     	startActivityForResult(intent, CASWEBVIEW);
     }
-    
-    
     
     public void startHomeActivity() {
     	Log.d(LOG_TAG,"startHomeActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
     	startActivity(intent);
     }
+    
     protected SSLSocketFactory createAdditionalCertsSSLSocketFactory() {
         try {
             final KeyStore ks = KeyStore.getInstance("BKS");
@@ -128,13 +130,15 @@ public class PaulineActivity extends BaseActivity {
         	String url = PBUY.getCasUrl();
         	for (int i=1; i<=5; ++i) {
         		if (url!=null) break;
-        		publishProgress(i);
-        		try {
-					Thread.sleep(1000L);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-        		url = PBUY.getCasUrl();
+        		else {
+	        		publishProgress(i);
+	        		try {
+						Thread.sleep(1000L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+	        		url = PBUY.getCasUrl();
+        		}
         	}
         	return url;
         }
@@ -160,14 +164,13 @@ public class PaulineActivity extends BaseActivity {
         }
     }
 
-    private class LoadSellerTask extends AsyncTask<Integer, Integer, Integer> {
-    	private String mTicket, mService;
+    private class LoadPosTask extends AsyncTask<Integer, Integer, Integer> {
+    	private String mTicket;
     	private ProgressDialog mProgressDialog;
     	private static final String MESSAGE	= "Connection au serveur en cour...";
     	
-    	public LoadSellerTask(String ticket, String service) {
+    	public LoadPosTask(String ticket) {
     		mTicket = ticket;
-    		mService = service;
     	}
 
         @Override
@@ -183,16 +186,18 @@ public class PaulineActivity extends BaseActivity {
         
         @Override
         protected Integer doInBackground(Integer... args) {
-        	int r = PBUY.loadPos(mTicket, mService, PaulineActivity.ID_POI);
+        	int r = PBUY.loadPos(mTicket, CAS_SERVICE, ID_POI);
         	for (int i=1; i<=5; ++i) {
-        		if (r != 1) break;
-        		publishProgress(i);
-        		try {
-					Thread.sleep(1000L);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-        		r = PBUY.loadPos(mTicket, mService, PaulineActivity.ID_POI);
+        		if (r == 1) break;
+        		else {
+	        		publishProgress(i);
+	        		try {
+						Thread.sleep(1000L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+	        		r = PBUY.loadPos(mTicket, CAS_SERVICE, ID_POI);
+        		}
         	}
         	return r;
         }
@@ -206,7 +211,7 @@ public class PaulineActivity extends BaseActivity {
         protected void onPostExecute(Integer r) {
         	mProgressDialog.dismiss();
         	if (r==1) {
-            	stop(true);
+        		startHomeActivity();
         	}
         	else {
         		Toast.makeText(PaulineActivity.this, "Echec de l'identification", Toast.LENGTH_SHORT).show();
