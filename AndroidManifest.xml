@@ -26,6 +26,7 @@
         <activity android:name="ConfirmPaymentActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="ResultTransactionActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="PanierActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="CasWebView"></activity>
     </application>
 	<uses-permission android:name="android.permission.INTERNET" />
 

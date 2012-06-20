@@ -9,8 +9,12 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebView;
 import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.soap.PBuy;
 
@@ -31,7 +35,6 @@ public class PaulineActivity extends BaseActivity {
 	public static final String ID_TRECOUVR			= "5B1BF88B";
 	
 	public static final PBuy PBUY = new PBuy();
-	
    
     /** Called when the activity is first created. */
     @Override
@@ -54,7 +57,8 @@ public class PaulineActivity extends BaseActivity {
         MonThread2 t2 = new MonThread2();
         Thread t = new Thread(t2);
         t.start();*/
-    	
+        
+        
         if (!identifierIsAvailable()) {
         	startAskSellerPasswordActivity(ID_TRECOUVR);
         	//startHomeActivity();
@@ -67,7 +71,7 @@ public class PaulineActivity extends BaseActivity {
         	startActivity(intent);//*/
         }
     }
-
+    
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode);

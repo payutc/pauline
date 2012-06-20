@@ -1,6 +1,7 @@
 package fr.utc.assos.payutc;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +20,7 @@ import android.widget.Toast;
 public class AskSellerPasswordActivity extends BaseActivity {
 	public final static String LOG_TAG = "AskSellerPasswordActivity";
 	
-	
+	public static final int CASWEBVIEW	= 0;
 
 	
 	private String mIdSeller;
@@ -36,13 +37,26 @@ public class AskSellerPasswordActivity extends BaseActivity {
         setContentView(R.layout.asksellerpassword);
     }
     
-    public void onOk(View view) {
-    	String pass = (String) ((EditText) findViewById(R.id.input_login)).getText().toString();
-    	new LoadSellerTask(mIdSeller, PaulineActivity.MEAN_OF_LOGIN, pass).execute();
-    }
-    
     public void onCancel(View view) {
     	stop(false);
+    }
+    
+    public void onLogin(View view) {
+    	Log.d(LOG_TAG,"startCasWebView");
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
+    	startActivityForResult(intent, CASWEBVIEW);
+    }
+    
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode);
+		switch (requestCode) {
+		case CASWEBVIEW:
+			if (resultCode == RESULT_OK) {
+				String ticket = data.getStringExtra("ticket");
+				Log.i(LOG_TAG, "ticket : "+ticket);
+			}
+		}
     }
     
     private class LoadSellerTask extends AsyncTask<Integer, Integer, Integer> {
