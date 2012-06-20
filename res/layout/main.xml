@@ -2,22 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center"
     android:orientation="vertical" >
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="400dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/badgez" />
-
         <TextView
-            android:id="@+id/textView1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="@string/badgez"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log toi via le CAS !"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onLogin"
+            android:text="Login !" />
+        
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onCancel"
+            android:text="Logout" />
 
 
 </LinearLayout>

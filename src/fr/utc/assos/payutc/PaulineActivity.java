@@ -8,6 +8,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
+import android.widget.Toast;
 import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.soap.PBuy;
 
@@ -35,7 +37,9 @@ public class PaulineActivity extends BaseActivity {
 	public static final String ID_TRECOUVR			= "5B1BF88B";
 	
 	public static final PBuy PBUY = new PBuy();
-   
+
+	public static final int CASWEBVIEW	= 0;
+	
     /** Called when the activity is first created. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,50 +58,31 @@ public class PaulineActivity extends BaseActivity {
         /*SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
-        MonThread2 t2 = new MonThread2();
-        Thread t = new Thread(t2);
-        t.start();*/
+        */
         
         
-        if (!identifierIsAvailable()) {
-        	startAskSellerPasswordActivity(ID_TRECOUVR);
-        	//startHomeActivity();
-        	/*
-        	PBUY.loadSeller("trecouvr", 1, "", PaulineActivity.ID_POI);
-        	PBUY.loadBuyer("trecouvr", 1, "");
-        	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
-        	Bundle b = new Bundle();
-        	intent.putExtras(b);
-        	startActivity(intent);//*/
-        }
     }
     
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode);
 		switch (requestCode) {
-		case ASKSELLERPASSWORD:
+		case CASWEBVIEW:
 			if (resultCode == RESULT_OK) {
-				startHomeActivity();
+				String ticket = data.getStringExtra("ticket");
+				Log.i(LOG_TAG, "ticket : "+ticket);
 			}
 		}
     }
-    
-    @Override
-    protected void onIdentification(String id) {
-    	Log.d(LOG_TAG, "onIdentification");
-        startAskSellerPasswordActivity(id);
-    }
+	
 
-    
-    private void startAskSellerPasswordActivity(String id) {
-    	Log.d(LOG_TAG,"startAskSellerPassword");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.AskSellerPasswordActivity.class);
-    	Bundle b = new Bundle();
-    	b.putString("id", id); //Your id
-    	intent.putExtras(b); //Put your id to your next Intent
-    	startActivityForResult(intent, ASKSELLERPASSWORD);
+    public void onLogin(View view) {
+    	Log.d(LOG_TAG,"startCasWebView");
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
+    	startActivityForResult(intent, CASWEBVIEW);
     }
+    
+    
     
     public void startHomeActivity() {
     	Log.d(LOG_TAG,"startHomeActivity");
@@ -121,6 +106,47 @@ public class PaulineActivity extends BaseActivity {
 
         } catch( Exception e ) {
             throw new RuntimeException(e);
+        }
+    }
+    
+
+    private class LoadSellerTask extends AsyncTask<Integer, Integer, Integer> {
+    	private String mIdSeller, mPass;
+    	private int mMeanOfLogin;
+    	private ProgressDialog mProgressDialog;
+    	
+    	public LoadSellerTask(String idSeller, int meanOfLogin, String pass) {
+    		mIdSeller = idSeller;
+    		mMeanOfLogin = meanOfLogin;
+    		mPass = pass;
+    	}
+
+        @Override
+        protected void onPreExecute() {
+        	super.onPreExecute();
+        	mProgressDialog = ProgressDialog.show(PaulineActivity.this, 
+        			"Identification", 
+        			"Connection au serveur en cour...",
+        			true,
+        			false
+        	);
+        }
+        
+        @Override
+        protected Integer doInBackground(Integer... args) {
+        	int r = PaulineActivity.PBUY.loadSeller(mIdSeller, mMeanOfLogin, mPass, PaulineActivity.ID_POI);
+        	return r;
+        }
+
+        @Override
+        protected void onPostExecute(Integer r) {
+        	mProgressDialog.dismiss();
+        	if (r==1) {
+            	stop(true);
+        	}
+        	else {
+        		Toast.makeText(PaulineActivity.this, "Echec de l'identification", Toast.LENGTH_SHORT).show();
+        	}
         }
     }
 

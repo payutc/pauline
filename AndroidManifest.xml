@@ -19,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="AskSellerPasswordActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="HomeActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="ShowArticleActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="CancelTransactionActivity" android:screenOrientation="portrait"></activity>
