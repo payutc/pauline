@@ -34,20 +34,33 @@ public class PBuy {
 		namespace = _namespace;
 	}
 	
-    public int loadSeller(String data, int meanOfLogin, String ip, int poi_id) {
+	public String getCasUrl() {
 		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "loadSeller");
-		request.addProperty("data", data);
-		request.addProperty("meanOfLogin", meanOfLogin);
-		request.addProperty("ip", ip);
+		SoapObject request = new SoapObject (namespace, "getCasUrl");
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("getCasUrl", soapObject.getResponse().toString());
+			String url = soapObject.getResponse().toString();
+			return url;
+		} catch (Exception e) {
+			Log.e("getCasUrl", "", e);
+			return null;
+	    }
+	}
+	
+    public int loadPos(String ticket, String service, int poi_id) {
+		// Création de la requête SOAP
+		SoapObject request = new SoapObject (namespace, "loadPos");
+		request.addProperty("ticket", ticket);
+		request.addProperty("service", service);
 		request.addProperty("poi_id", poi_id);
 		try {
 			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("loadSeller", soapObject.getResponse().toString());
+			Log.d("loadPos", soapObject.getResponse().toString());
 			int r_code = Integer.parseInt(soapObject.getResponse().toString());
 			return r_code;
 		} catch (Exception e) {
-			Log.e("loadSeller", "", e);
+			Log.e("loadPos", "", e);
 			return -1;
 	    }
     }

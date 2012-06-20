@@ -14,8 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.soap.PBuy;
@@ -32,13 +30,15 @@ public class PaulineActivity extends BaseActivity {
 	
 	public final static int ID_POI				= 2;
 	public final static int ID_FUNDATION		= 2;
-	public static final int MEAN_OF_LOGIN		= 5; 
 	
 	public static final String ID_TRECOUVR			= "5B1BF88B";
 	
 	public static final PBuy PBUY = new PBuy();
 
 	public static final int CASWEBVIEW	= 0;
+	
+	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
+	private static String _CAS_URL		= null;
 	
     /** Called when the activity is first created. */
     @Override
@@ -60,7 +60,7 @@ public class PaulineActivity extends BaseActivity {
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
         */
         
-        
+        new GetCasUrlTask().execute();
     }
     
 	@Override
@@ -109,16 +109,65 @@ public class PaulineActivity extends BaseActivity {
         }
     }
     
+    private class GetCasUrlTask extends AsyncTask<Integer, Integer, String> {
+    	private ProgressDialog mProgressDialog;
+    	private static final String MESSAGE		= "Synchronization avec le serveur en cour...";
+        @Override
+        protected void onPreExecute() {
+        	super.onPreExecute();
+        	mProgressDialog = ProgressDialog.show(PaulineActivity.this, 
+        			"Synchronization", 
+        			MESSAGE,
+        			true,
+        			false
+        	);
+        }
+        
+        @Override
+        protected String doInBackground(Integer... args) {
+        	String url = PBUY.getCasUrl();
+        	for (int i=1; i<=5; ++i) {
+        		if (url!=null) break;
+        		publishProgress(i);
+        		try {
+					Thread.sleep(1000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        		url = PBUY.getCasUrl();
+        	}
+        	return url;
+        }
+
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+    		mProgressDialog.setMessage(MESSAGE + " (nb. echec : "+progress[0]+")");
+		}
+
+        @Override
+        protected void onPostExecute(String url) {
+        	mProgressDialog.dismiss();
+        	if (url==null) {
+        		Toast.makeText(PaulineActivity.this, "Echec", Toast.LENGTH_SHORT).show();
+        		try {
+					Thread.sleep(2000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        		finish();
+        	}
+        	PaulineActivity._CAS_URL = url;
+        }
+    }
 
     private class LoadSellerTask extends AsyncTask<Integer, Integer, Integer> {
-    	private String mIdSeller, mPass;
-    	private int mMeanOfLogin;
+    	private String mTicket, mService;
     	private ProgressDialog mProgressDialog;
+    	private static final String MESSAGE	= "Connection au serveur en cour...";
     	
-    	public LoadSellerTask(String idSeller, int meanOfLogin, String pass) {
-    		mIdSeller = idSeller;
-    		mMeanOfLogin = meanOfLogin;
-    		mPass = pass;
+    	public LoadSellerTask(String ticket, String service) {
+    		mTicket = ticket;
+    		mService = service;
     	}
 
         @Override
@@ -126,7 +175,7 @@ public class PaulineActivity extends BaseActivity {
         	super.onPreExecute();
         	mProgressDialog = ProgressDialog.show(PaulineActivity.this, 
         			"Identification", 
-        			"Connection au serveur en cour...",
+        			MESSAGE,
         			true,
         			false
         	);
@@ -134,9 +183,24 @@ public class PaulineActivity extends BaseActivity {
         
         @Override
         protected Integer doInBackground(Integer... args) {
-        	int r = PaulineActivity.PBUY.loadSeller(mIdSeller, mMeanOfLogin, mPass, PaulineActivity.ID_POI);
+        	int r = PBUY.loadPos(mTicket, mService, PaulineActivity.ID_POI);
+        	for (int i=1; i<=5; ++i) {
+        		if (r != 1) break;
+        		publishProgress(i);
+        		try {
+					Thread.sleep(1000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        		r = PBUY.loadPos(mTicket, mService, PaulineActivity.ID_POI);
+        	}
         	return r;
         }
+
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+    		mProgressDialog.setMessage(MESSAGE + " (nb. echec : "+progress[0]+")");
+		}
 
         @Override
         protected void onPostExecute(Integer r) {
