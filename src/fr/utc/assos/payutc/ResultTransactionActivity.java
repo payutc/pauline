@@ -54,11 +54,12 @@ public class ResultTransactionActivity extends BaseActivity {
     	@Override
     	protected void onPreExecute() {
     		super.onPreExecute();
-	    	mProgressDialog = new ProgressDialog(ResultTransactionActivity.this, ProgressDialog.STYLE_HORIZONTAL);
-	    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	    	mProgressDialog.setTitle("Commande");
-	    	mProgressDialog.setMessage("Envoie des articles au serveur");
-	    	mProgressDialog.show();
+        	mProgressDialog = ProgressDialog.show(ResultTransactionActivity.this, 
+        			"Transaction", 
+        			"Transaction en cours...",
+        			true,
+        			false
+        	);
     	}
     	
 		@Override
@@ -70,13 +71,7 @@ public class ResultTransactionActivity extends BaseActivity {
 				ids.add(item.getId());
 			}
 			int r = PaulineActivity.PBUY.transaction(mIdBuyer, ids, "via Pauline");
-			publishProgress(100);
 			return r;
-		}
-    	
-		@Override
-		protected void onProgressUpdate(Integer... progress) {
-			mProgressDialog.setProgress(progress[0]);
 		}
 		
 		@Override
