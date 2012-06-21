@@ -77,6 +77,19 @@ public class PBuy {
 			return null;
 	    }
     }
+    
+    public String getErrorDetail(int id_err) {
+		// Création de la requête SOAP
+		SoapObject request = new SoapObject (namespace, "getErrorDetail");
+		try {
+			SoapSerializationEnvelope soapObject = soap(request);
+			Log.d("getErrorDetail", soapObject.getResponse().toString());
+			return soapObject.getResponse().toString();
+		} catch (Exception e) {
+			Log.e("getErrorDetail", "", e);
+			return "Inconnu";
+	    }
+    }
 	
 	public GetPropositionsResult getPropositions() {
 		// Création de la requête SOAP
