@@ -2,6 +2,7 @@ package fr.utc.assos.payutc.soap;
 
 
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -14,6 +15,7 @@ import org.ksoap2.serialization.MarshalHashtable;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+import org.ksoap2.transport.HttpsTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Log;
@@ -26,17 +28,16 @@ public class PBuy {
 	private String host;
 	private String namespace;
 	private String path;
+	private boolean ssl;
+	KeyStore keystore;
 	HashMap<String, String> cookies = new HashMap<String, String>();
 	
-	public PBuy() {
-		//this("assos.utc.fr", "buckutt/POSS.class.php", "https://assos.utc.fr:443/buckutt/POSS.class.php");
-		this("http://89.88.36.152", "/server/POSS2.class.php", "http://89.88.36.152/server/POSS2.class.php");
-	}
-	
-	public PBuy(String _host, String _path, String _namespace) {
+	public PBuy(String _host, String _path, String _namespace, boolean _ssl, KeyStore _keystore) {
 		host = _host;
 		path = _path;
 		namespace = _namespace;
+		ssl = _ssl;
+		keystore = _keystore;
 	}
 	
 	public String getCasUrl() throws IOException, XmlPullParserException, ApiException {
@@ -103,9 +104,15 @@ public class PBuy {
 		new MarshalHashtable().register(envelope);
 		
 		Log.d(TAG, "fin envelope");
-
-		//HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, path, 10000);
-		HttpTransportSE androidHttpTransport = new HttpTransportSE(host+path, 10000);
+		
+		HttpTransportSE androidHttpTransport;
+		if (ssl) {
+			androidHttpTransport = new HttpsTransportSE (host, 443, path, 10000);
+		}
+		else {
+			androidHttpTransport = new HttpTransportSE(host+path, 10000);
+		}
+			
 		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
 		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
 		androidHttpTransport.debug = true; 
@@ -168,5 +175,4 @@ public class PBuy {
             }
         }
 	}
-	
 }

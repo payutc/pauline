@@ -2,11 +2,14 @@ package fr.utc.assos.payutc;
 
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +35,7 @@ public class PaulineActivity extends BaseActivity {
 	
 	public static final String ID_TRECOUVR			= "5B1BF88B";
 	
-	public static final PBuy PBUY = new PBuy();
+	public static PBuy PBUY;
 
 	public static final int CASWEBVIEW	= 0;
 	
@@ -56,6 +59,14 @@ public class PaulineActivity extends BaseActivity {
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
         */
+        KeyStore ks = null;
+        try {
+			ks = KeyStore.getInstance("BKS");
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		}
+        //PBUY = new PBuy("assos.utc.fr", "buckutt/POSS.class.php", "https://assos.utc.fr:443/buckutt/POSS.class.php", true, ks);
+        PBUY = new PBuy("http://89.88.36.152", "/server/POSS2.class.php", "http://89.88.36.152/server/POSS2.class.php", false, null);
         
         new GetCasUrlTask().execute();
     }
@@ -103,10 +114,18 @@ public class PaulineActivity extends BaseActivity {
             }
 
             return new AdditionalKeyStoresSSLSocketFactory(ks);
+            
+            /*TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(ks);
+            SSLContext context = SSLContext.getInstance("SSL");
+            context.init(null, tmf.getTrustManagers(), null);
+            return context.getSocketFactory();*/
 
         } catch( Exception e ) {
             throw new RuntimeException(e);
         }
+        
+        
     }
     
     private class GetCasUrlTask extends SoapTask {
