@@ -54,7 +54,6 @@ public class PBuy {
 		request.addProperty("ticket", ticket);
 		request.addProperty("service", service);
 		request.addProperty("poi_id", poi_id);
-		request.addProperty("fun_id", 2);
 		Object result = soap(request);
 		Log.d("getArticles", result.toString());
 		return true;

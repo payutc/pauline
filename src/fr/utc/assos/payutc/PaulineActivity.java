@@ -74,15 +74,13 @@ public class PaulineActivity extends BaseActivity {
     }
 
     public void onLogin(View view) {
-    	/*Log.d(LOG_TAG,"startCasWebView");
+    	Log.d(LOG_TAG,"startCasWebView");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
     	Bundle b = new Bundle();
     	b.putString("casurl", _CAS_URL);
     	intent.putExtras(b);
     	startActivityForResult(intent, CASWEBVIEW);
-    	*/
-        // @todo virer ce vieux hack
-    	new LoadPosTask("42","24").execute(); 
+    	//new LoadPosTask("42","24").execute(); 
     }
     
     public void startHomeActivity() {
