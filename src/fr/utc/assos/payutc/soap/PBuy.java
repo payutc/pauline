@@ -2,12 +2,11 @@ package fr.utc.assos.payutc.soap;
 
 
 import java.io.IOException;
-import java.security.KeyStore;
+import java.io.ObjectInput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
@@ -29,15 +28,13 @@ public class PBuy {
 	private String namespace;
 	private String path;
 	private boolean ssl;
-	KeyStore keystore;
 	HashMap<String, String> cookies = new HashMap<String, String>();
 	
-	public PBuy(String _host, String _path, String _namespace, boolean _ssl, KeyStore _keystore) {
+	public PBuy(String _host, String _path, String _namespace, boolean _ssl) {
 		host = _host;
 		path = _path;
 		namespace = _namespace;
 		ssl = _ssl;
-		keystore = _keystore;
 	}
 	
 	public String getCasUrl() throws IOException, XmlPullParserException, ApiException {
@@ -75,18 +72,34 @@ public class PBuy {
 		return articles;
 	}
 	
-	public boolean transaction(String badge_id, ArrayList<Integer> ids, String trace) throws IOException, XmlPullParserException, ApiException {
-		Vector<Integer> v_ids = new Vector<Integer>();
+	public class TransactionResult {
+		public String firstName;
+		public String lastName;
+		public int solde;
+		public TransactionResult(String first_name, String last_name, int _solde) {
+			firstName = first_name;
+			lastName = last_name;
+			solde = _solde;
+		}
+	}
+	
+	public TransactionResult transaction(String badge_id, ArrayList<Integer> ids, String trace) throws IOException, XmlPullParserException, ApiException {
+		String s_ids = "";
 		for (int id : ids) {
-			v_ids.add(id);
+			s_ids += " "+id;
 		}
 		SoapObject request = new SoapObject (namespace, "transaction");
 		request.addProperty("badge_id", badge_id);
-		request.addProperty("obj_ids", v_ids);
+		request.addProperty("obj_ids", s_ids);
 		request.addProperty("trace", trace);
-		Object result = soap(request);
+		Object result = (Object)soap(request);
 		Log.d("transaction", result.toString());
-		return true;
+		Hashtable ht = (Hashtable)result;
+		String first_name = (String) ht.get("firstname");
+		String last_name = (String) ht.get("lastname");
+		int solde = Integer.parseInt((String)ht.get("solde"));
+		TransactionResult retour = new TransactionResult(first_name, last_name, solde); 
+		return retour;
 	}
     
 	private Object soap (SoapObject request) 

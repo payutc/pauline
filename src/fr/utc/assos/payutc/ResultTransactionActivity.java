@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import fr.utc.assos.payutc.soap.SoapTask;
+import fr.utc.assos.payutc.soap.PBuy.TransactionResult;
 
 public class ResultTransactionActivity extends BaseActivity {
 	private static final String LOG_TAG		= "ResultTransactionActivity";
@@ -21,13 +23,16 @@ public class ResultTransactionActivity extends BaseActivity {
         new TransactionTask(mSession.getBuyerId() ,mSession.getItems()).execute();
     }
     
-    protected void setResultView(Boolean success) {
-    	if (success) {
-            setContentView(R.layout.result_ok);
-    	}
-    	else {
-    		setContentView(R.layout.result_echec);
-    	}
+    protected void setResultOkView(TransactionResult r) {
+        setContentView(R.layout.result_ok);
+        TextView tv = (TextView)findViewById(R.id.result_ok_username);
+        tv.setText(r.firstName+" "+r.lastName);
+        tv = (TextView)findViewById(R.id.result_ok_solde);
+        tv.setText(("solde : "+r.solde/100.0)+"€");
+    }
+    
+    protected void setResultFailView() {
+    	setContentView(R.layout.result_echec);
     }
     
     public void onClickOk(View view) {
@@ -41,11 +46,11 @@ public class ResultTransactionActivity extends BaseActivity {
     protected class TransactionTask extends SoapTask {
     	private ArrayList<Integer> mIds;
     	private String mIdBuyer;
-    	private boolean r=false;
+    	private TransactionResult r=null;
     	
     	public TransactionTask(String id, ArrayList<Item> items) {
     		super("Transaction", ResultTransactionActivity.this,
-    				"Transaction en cours...", 2);
+    				"Transaction en cours...", 0);
 			mIds = new ArrayList<Integer>();
 			for (int i=0; i<items.size(); ++i) {
 				Item item = items.get(i);
@@ -64,11 +69,11 @@ public class ResultTransactionActivity extends BaseActivity {
 		@Override
 		protected void onPostExecute(Integer osef) {
 			super.onPostExecute(osef);
-			if (r) {
-				setResultView(true);
+			if (r!=null) {
+				setResultOkView(r);
 			}
 			else {
-				setResultView(false);
+				setResultFailView();
 			}
 		}
     }
