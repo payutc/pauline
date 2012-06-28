@@ -74,4 +74,22 @@ public class HomeActivity extends BaseActivity {
     public void onClickCancel(View view) {
     	stop();
     }
+    
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	new Thread(new Runnable() {
+    		public void run() {
+    			for (int i=0; i<3; ++i) {
+	    			try {
+	    				Log.d(LOG_TAG,"onDestroy : unload");
+						PaulineActivity.PBUY.unload();
+						break;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+    			}
+    		}
+    		}).start();
+    }
 }

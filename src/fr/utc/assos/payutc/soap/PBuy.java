@@ -2,7 +2,6 @@ package fr.utc.assos.payutc.soap;
 
 
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -53,8 +52,15 @@ public class PBuy {
 		request.addProperty("service", service);
 		request.addProperty("poi_id", poi_id);
 		Object result = soap(request);
-		Log.d("getArticles", result.toString());
+		Log.d("loadPos", result.toString());
 		return true;
+    }
+    
+    public boolean unload() throws IOException, XmlPullParserException, ApiException {
+		SoapObject request = new SoapObject (namespace, "logout");
+		Object result = soap(request);
+		Log.d("unload", result.toString());
+    	return true;
     }
 	
 	@SuppressWarnings("rawtypes")
@@ -94,6 +100,7 @@ public class PBuy {
 		request.addProperty("trace", trace);
 		Object result = (Object)soap(request);
 		Log.d("transaction", result.toString());
+		@SuppressWarnings("rawtypes")
 		Hashtable ht = (Hashtable)result;
 		String first_name = (String) ht.get("firstname");
 		String last_name = (String) ht.get("lastname");
