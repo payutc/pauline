@@ -1,5 +1,7 @@
 package fr.utc.assos.payutc;
 
+import java.util.Hashtable;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
@@ -24,6 +26,20 @@ public class Item implements Parcelable {
 		mType = type;
 		mIdImg = idImg;
 		mCost = cost;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public Item(Hashtable ht) {
+		mImage = null;
+		mEncodedImg = "";
+		mId = Integer.parseInt((String)ht.get("id"));
+		mName = (String)ht.get("name"); 
+		mType = (String)ht.get("type");
+		if (ht.get("idImg") != null) 
+			mIdImg = Integer.parseInt((String)ht.get("idImg"));
+		else
+			mIdImg = 0;
+		mCost = Integer.parseInt((String)ht.get("price"));
 	}
 	
 	public int getIdImg() {

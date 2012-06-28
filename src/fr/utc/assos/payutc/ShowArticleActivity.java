@@ -2,19 +2,15 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
-import fr.utc.assos.payutc.soap.GetImageResult;
-import fr.utc.assos.payutc.soap.GetPropositionsResult;
+import fr.utc.assos.payutc.soap.SoapTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 
@@ -47,9 +43,9 @@ public class ShowArticleActivity extends BaseActivity {
     protected void initGridView(ArrayList<Item> items) {
     	IconAdapter adapter = new IconAdapter(this, R.layout.icon, items);
 
-        for (Item item : items) {
+        /*for (Item item : items) {
         	new DownloadImgTask(adapter).execute(item);
-        }
+        }*/
         
         GridView gridview = (GridView) findViewById(R.id.show_articles_view);
         gridview.setAdapter(adapter);
@@ -71,40 +67,29 @@ public class ShowArticleActivity extends BaseActivity {
         }
     };
     
-    private class GetItemsTask extends AsyncTask<Integer, Integer, GetPropositionsResult> {
+    private class GetItemsTask extends SoapTask {
+    	private ArrayList<Item> mItems=null;
     	
-    	private ProgressDialog mProgressDialog;
+    	public GetItemsTask() {
+    		super("Chargement", ShowArticleActivity.this, 
+    				"Veuillez patienter", 2);
+    	}
     	
 		@Override
-		protected GetPropositionsResult doInBackground(Integer... params) {
-			return PaulineActivity.PBUY.getPropositions();
+		protected boolean callSoap() throws Exception {
+			mItems = PaulineActivity.PBUY.getArticles();
+			return mItems != null;
 		}
 		
 		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-	    	mProgressDialog = ProgressDialog.show(ShowArticleActivity.this, 
-	    			"Chargement",
-	    			"Veuillez patienter"
-	    	);
-		}
-		
-		@Override
-		protected void onPostExecute(GetPropositionsResult result) {
-			ArrayList<Item> items = new ArrayList<Item>();
-	        if (result == null) {
+		protected void onPostExecute(Integer osef) {
+			super.onPostExecute(osef);
+	        if (mItems == null) {
 	        	Log.e(LOG_TAG, "Error:soap return null");
 	        }
-	        else if (result.getErrorCode() != 0) {
-	        	Log.e(LOG_TAG, "Error:"+result.getErrorCode());
-	            Toast.makeText(ShowArticleActivity.this, "Error:"+result.getErrorCode(), Toast.LENGTH_SHORT).show();
-	        }
 	        else {
-	        	items = result.getItems();
+	        	initGridView(mItems);
 	        }
-	        
-	        initGridView(items);
-	        mProgressDialog.dismiss();
 		}
     	
     }
@@ -144,7 +129,7 @@ public class ShowArticleActivity extends BaseActivity {
 		mPanierSummary.set(mSession);
     }
 
-	private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {
+	/*private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {
 		private final static String LOG_TAG		= "DownloadImg";
 		IconAdapter mAdapter;
 		
@@ -172,5 +157,5 @@ public class ShowArticleActivity extends BaseActivity {
 		protected void onPostExecute(Integer result) {
 			mAdapter.notifyDataSetChanged();
 		}
-	 }
+	 }*/
 }

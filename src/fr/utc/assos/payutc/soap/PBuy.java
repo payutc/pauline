@@ -4,16 +4,20 @@ package fr.utc.assos.payutc.soap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.MarshalHashtable;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpsTransportSE;
+import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Log;
+import fr.utc.assos.payutc.Item;
 
 
 public class PBuy {
@@ -25,7 +29,8 @@ public class PBuy {
 	HashMap<String, String> cookies = new HashMap<String, String>();
 	
 	public PBuy() {
-		this("assos.utc.fr", "buckutt/POSS.class.php", "https://assos.utc.fr:443/buckutt/POSS.class.php");
+		//this("assos.utc.fr", "buckutt/POSS.class.php", "https://assos.utc.fr:443/buckutt/POSS.class.php");
+		this("http://89.88.36.152", "/server/POSS2.class.php", "http://89.88.36.152/server/POSS2.class.php");
 	}
 	
 	public PBuy(String _host, String _path, String _namespace) {
@@ -34,135 +39,81 @@ public class PBuy {
 		namespace = _namespace;
 	}
 	
-	public String getCasUrl() {
+	public String getCasUrl() throws IOException, XmlPullParserException, ApiException {
 		// Création de la requête SOAP
 		SoapObject request = new SoapObject (namespace, "getCasUrl");
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("getCasUrl", soapObject.getResponse().toString());
-			String url = soapObject.getResponse().toString();
-			return url;
-		} catch (Exception e) {
-			Log.e("getCasUrl", "", e);
-			return null;
-	    }
+		Object result = soap(request);
+		Log.d("getCasUrl", result.toString());
+		String url = result.toString();
+		return url;
 	}
 	
-    public int loadPos(String ticket, String service, int poi_id) {
+    public boolean loadPos(String ticket, String service, int poi_id) throws IOException, XmlPullParserException, ApiException {
 		// Création de la requête SOAP
 		SoapObject request = new SoapObject (namespace, "loadPos");
 		request.addProperty("ticket", ticket);
 		request.addProperty("service", service);
 		request.addProperty("poi_id", poi_id);
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("loadPos", soapObject.getResponse().toString());
-			int r_code = Integer.parseInt(soapObject.getResponse().toString());
-			return r_code;
-		} catch (Exception e) {
-			Log.e("loadPos", "", e);
-			return -1;
-	    }
-    }
-    
-    public IdentityResult getSellerIdentity() {
-		// Création de la requête SOAP
-    	SoapObject request = new SoapObject (namespace, "getSellerIdentity");
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("getSellerIdentity", soapObject.getResponse().toString());
-			return new IdentityResult(soapObject.getResponse().toString());
-		} catch (Exception e) {
-			Log.e("getSellerIdentity", "", e);
-			return null;
-	    }
-    }
-    
-    public String getErrorDetail(int id_err) {
-		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "getErrorDetail");
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("getErrorDetail", soapObject.getResponse().toString());
-			return soapObject.getResponse().toString();
-		} catch (Exception e) {
-			Log.e("getErrorDetail", "", e);
-			return "Inconnu";
-	    }
+		request.addProperty("fun_id", 2);
+		Object result = soap(request);
+		Log.d("getArticles", result.toString());
+		return true;
     }
 	
-	public GetPropositionsResult getPropositions() {
+	@SuppressWarnings("rawtypes")
+	public ArrayList<Item> getArticles() throws IOException, XmlPullParserException, ApiException {
 		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "getPropositions");
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("getBuyerIdentity", soapObject.getResponse().toString());
-			return new GetPropositionsResult(soapObject.getResponse().toString());
-		} catch (Exception e) {
-			Log.e("getBuyerIdentity", "", e);
-			return null;
-	    }
+		SoapObject request = new SoapObject (namespace, "getArticles");
+		Object result = soap(request);
+		Log.d("getArticles", result.toString());
+		@SuppressWarnings("unchecked")
+		Hashtable<String,Hashtable<Integer,Hashtable> > cat_n_art = (Hashtable)result;
+		ArrayList<Item> articles = new ArrayList<Item>();
+		for (Hashtable ht : cat_n_art.get("articles").values()) {
+			articles.add(new Item(ht));
+		}
+		return articles;
 	}
 	
-	public int transaction(String badge_id, ArrayList<Integer> ids, String trace) {
-		String s_ids = "";
+	public boolean transaction(String badge_id, ArrayList<Integer> ids, String trace) throws IOException, XmlPullParserException, ApiException {
+		Vector<Integer> v_ids = new Vector<Integer>();
 		for (int id : ids) {
-			s_ids += id;
-			s_ids += ",";
-		}
-		if (s_ids.length()>0) {
-			s_ids = s_ids.substring(0, s_ids.length()-1);
+			v_ids.add(id);
 		}
 		SoapObject request = new SoapObject (namespace, "transaction");
 		request.addProperty("badge_id", badge_id);
-		request.addProperty("obj_ids", s_ids);
+		request.addProperty("obj_ids", v_ids);
 		request.addProperty("trace", trace);
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("transaction", soapObject.getResponse().toString());
-			int r_code = Integer.parseInt(soapObject.getResponse().toString());
-			return r_code;
-		} catch (Exception e) {
-			Log.e("transaction", "", e);
-			return -1;
-	    }
-	}
-	
-	public GetImageResult getImage(int id) {
-		// Création de la requête SOAP
-		SoapObject request = new SoapObject (namespace, "getImage");
-		request.addProperty("img_id", id);
-		try {
-			SoapSerializationEnvelope soapObject = soap(request);
-			Log.d("getImage", soapObject.getResponse().toString());
-			return new GetImageResult(soapObject.getResponse().toString());
-		} catch (Exception e) {
-			Log.e("getImage", "", e);
-			return null;
-	    }
+		Object result = soap(request);
+		Log.d("transaction", result.toString());
+		return true;
 	}
     
-	private SoapSerializationEnvelope soap (SoapObject request) 
-			throws IOException, XmlPullParserException
+	private Object soap (SoapObject request) 
+			throws IOException, XmlPullParserException, ApiException
 	{
 		Log.d(TAG, "soap");
 		String soap_action = namespace + "#" + request.getName();
 		Log.d(TAG, "action : "+soap_action);
 		
-		//Toutes les données demandées sont mises dans une enveloppe.
+		// Toutes les données demandées sont mises dans une enveloppe.
 		SoapSerializationEnvelope envelope = new SoapSerializationEnvelope (
 				SoapEnvelope.VER11);
 		envelope.setOutputSoapObject (request);
+		// Pour que les map puissent être parsé
+		new MarshalHashtable().register(envelope);
 		
 		Log.d(TAG, "fin envelope");
 
-		HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, path, 10000);
+		//HttpsTransportSE androidHttpTransport = new HttpsTransportSE (host, 443, path, 10000);
+		HttpTransportSE androidHttpTransport = new HttpTransportSE(host+path, 10000);
 		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
 		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
 		androidHttpTransport.debug = true; 
 
 		//Envoi de la requête
-		List respHeaders = androidHttpTransport.call(soap_action, envelope, get_headers());
+		@SuppressWarnings("unchecked")
+		List<HeaderProperty> respHeaders = (List<HeaderProperty>)androidHttpTransport.call(soap_action, envelope, get_headers());
 
 		Log.d(TAG, "fin call");
 		
@@ -170,8 +121,23 @@ public class PBuy {
 
 		Log.d(TAG, "fin cookie");
 		
+		Log.d(TAG, "bodyIn : "+envelope.bodyIn);
+		@SuppressWarnings("rawtypes")
+		Hashtable result = (Hashtable)envelope.getResponse();
 		
-		return envelope;
+		if (result.get("success") == null) {
+			int err_code = 42;
+			String err_msg = null;
+			try {
+				err_code = (Integer) result.get("error");
+				err_msg = (String) result.get("error_msg");
+			} catch (Exception e) {
+				Log.e(TAG, "soap", e);
+			}
+			throw new ApiException(err_code, err_msg);
+		}
+		
+		return result.get("success");
 	}
 	
 	synchronized List<HeaderProperty> get_headers() {
@@ -182,7 +148,7 @@ public class PBuy {
         return headers;
 	}
 	
-	synchronized void update_cookies(List respHeaders) {
+	synchronized void update_cookies(List<HeaderProperty> respHeaders) {
 		if (respHeaders != null) {
             for (int i = 0; i < respHeaders.size(); ++i) {
                 HeaderProperty hp = (HeaderProperty)respHeaders.get(i);
@@ -203,4 +169,5 @@ public class PBuy {
             }
         }
 	}
+	
 }

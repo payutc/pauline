@@ -8,15 +8,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.soap.PBuy;
+import fr.utc.assos.payutc.soap.SoapTask;
 
 /**
  * Demande au seller de badger
@@ -28,7 +27,7 @@ public class PaulineActivity extends BaseActivity {
 	
 	public static final int ASKSELLERPASSWORD	= 0;
 	
-	public final static int ID_POI				= 2;
+	public final static int ID_POI				= 46;
 	public final static int ID_FUNDATION		= 2;
 	
 	public static final String ID_TRECOUVR			= "5B1BF88B";
@@ -53,8 +52,6 @@ public class PaulineActivity extends BaseActivity {
         	}
         };
         HttpsURLConnection.setDefaultHostnameVerifier(v);
-        // @todo virer ce vieux hack
-    	//startAskSellerPasswordActivity(ID_TRECOUVR); 
         /*SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
@@ -71,18 +68,21 @@ public class PaulineActivity extends BaseActivity {
 			if (resultCode == RESULT_OK) {
 				String ticket = data.getStringExtra("ticket");
 				Log.i(LOG_TAG, "ticket : "+ticket);
-				new LoadPosTask(ticket).execute();
+				new LoadPosTask(ticket, CAS_SERVICE).execute();
 			}
 		}
     }
 
     public void onLogin(View view) {
-    	Log.d(LOG_TAG,"startCasWebView");
+    	/*Log.d(LOG_TAG,"startCasWebView");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
     	Bundle b = new Bundle();
     	b.putString("casurl", _CAS_URL);
     	intent.putExtras(b);
     	startActivityForResult(intent, CASWEBVIEW);
+    	*/
+        // @todo virer ce vieux hack
+    	new LoadPosTask("42","24").execute(); 
     }
     
     public void startHomeActivity() {
@@ -111,47 +111,25 @@ public class PaulineActivity extends BaseActivity {
         }
     }
     
-    private class GetCasUrlTask extends AsyncTask<Integer, Integer, String> {
-    	private ProgressDialog mProgressDialog;
-    	private static final String MESSAGE		= "Synchronization avec le serveur en cour...";
-        @Override
-        protected void onPreExecute() {
-        	super.onPreExecute();
-        	mProgressDialog = ProgressDialog.show(PaulineActivity.this, 
-        			"Synchronization", 
-        			MESSAGE,
-        			true,
-        			false
-        	);
-        }
-        
-        @Override
-        protected String doInBackground(Integer... args) {
-        	String url = PBUY.getCasUrl();
-        	for (int i=1; i<=5; ++i) {
-        		if (url!=null) break;
-        		else {
-	        		publishProgress(i);
-	        		try {
-						Thread.sleep(1000L);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-	        		url = PBUY.getCasUrl();
-        		}
-        	}
-        	return url;
-        }
+    private class GetCasUrlTask extends SoapTask {
+    	private String mUrl;
 
-		@Override
-		protected void onProgressUpdate(Integer... progress) {
-    		mProgressDialog.setMessage(MESSAGE + " (nb. echec : "+progress[0]+")");
+    	public GetCasUrlTask() {
+			super("Synchronization", PaulineActivity.this, 
+					"Synchronization avec le serveur en cour...", 5);
 		}
+    	
+    	@Override
+    	protected boolean callSoap() throws Exception {
+    		mUrl = PBUY.getCasUrl();
+    		return mUrl!=null;
+    	}
+        
 
         @Override
-        protected void onPostExecute(String url) {
-        	mProgressDialog.dismiss();
-        	if (url==null) {
+        protected void onPostExecute(Integer osef) {
+    		super.onPostExecute(osef);
+        	if (mUrl==null) {
         		Toast.makeText(PaulineActivity.this, "Echec", Toast.LENGTH_SHORT).show();
         		try {
 					Thread.sleep(2000L);
@@ -160,57 +138,32 @@ public class PaulineActivity extends BaseActivity {
 				}
         		finish();
         	}
-        	PaulineActivity._CAS_URL = url;
+        	_CAS_URL = mUrl;
         }
     }
 
-    private class LoadPosTask extends AsyncTask<Integer, Integer, Integer> {
-    	private String mTicket;
-    	private ProgressDialog mProgressDialog;
-    	private static final String MESSAGE	= "Connection au serveur en cour...";
+    private class LoadPosTask extends SoapTask {
+    	private String mTicket, mService;
+    	private boolean mLoaded;
     	
-    	public LoadPosTask(String ticket) {
+    	public LoadPosTask(String ticket, String service) {
+    		super("Identification", PaulineActivity.this, 
+    				"Connection au serveur en cour...", 0);
     		mTicket = ticket;
+    		mService = service;
+    		mLoaded = false;
+    	}
+    	
+    	@Override
+    	protected boolean callSoap() throws Exception {
+    		mLoaded = PBUY.loadPos(mTicket, mService, ID_POI);
+    		return true;
     	}
 
         @Override
-        protected void onPreExecute() {
-        	super.onPreExecute();
-        	mProgressDialog = ProgressDialog.show(PaulineActivity.this, 
-        			"Identification", 
-        			MESSAGE,
-        			true,
-        			false
-        	);
-        }
-        
-        @Override
-        protected Integer doInBackground(Integer... args) {
-        	int r = PBUY.loadPos(mTicket, CAS_SERVICE, ID_POI);
-        	for (int i=1; i<=5; ++i) {
-        		if (r == 1) break;
-        		else {
-	        		publishProgress(i);
-	        		try {
-						Thread.sleep(1000L);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-	        		r = PBUY.loadPos(mTicket, CAS_SERVICE, ID_POI);
-        		}
-        	}
-        	return r;
-        }
-
-		@Override
-		protected void onProgressUpdate(Integer... progress) {
-    		mProgressDialog.setMessage(MESSAGE + " (nb. echec : "+progress[0]+")");
-		}
-
-        @Override
-        protected void onPostExecute(Integer r) {
-        	mProgressDialog.dismiss();
-        	if (r==1) {
+        protected void onPostExecute(Integer osef) {
+        	super.onPostExecute(osef);
+        	if (mLoaded) {
         		startHomeActivity();
         	}
         	else {

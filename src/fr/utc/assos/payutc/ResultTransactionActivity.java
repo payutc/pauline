@@ -2,11 +2,10 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import fr.utc.assos.payutc.soap.SoapTask;
 
 public class ResultTransactionActivity extends BaseActivity {
 	private static final String LOG_TAG		= "ResultTransactionActivity";
@@ -39,45 +38,33 @@ public class ResultTransactionActivity extends BaseActivity {
     	stop(RESULT_CANCELED);
     }
     
-    protected class TransactionTask extends AsyncTask<Integer, Integer, Integer> {
-    	
-    	private ArrayList<Item> mItems;
+    protected class TransactionTask extends SoapTask {
+    	private ArrayList<Integer> mIds;
     	private String mIdBuyer;
-    	
-    	private ProgressDialog mProgressDialog;
+    	private boolean r=false;
     	
     	public TransactionTask(String id, ArrayList<Item> items) {
-    		mItems = items;
+    		super("Transaction", ResultTransactionActivity.this,
+    				"Transaction en cours...", 2);
+			mIds = new ArrayList<Integer>();
+			for (int i=0; i<items.size(); ++i) {
+				Item item = items.get(i);
+				mIds.add(item.getId());
+			}
     		mIdBuyer = id;
     	}
     	
-    	@Override
-    	protected void onPreExecute() {
-    		super.onPreExecute();
-        	mProgressDialog = ProgressDialog.show(ResultTransactionActivity.this, 
-        			"Transaction", 
-        			"Transaction en cours...",
-        			true,
-        			false
-        	);
-    	}
     	
 		@Override
-		protected Integer doInBackground(Integer... _args) {
-			Log.d(LOG_TAG, ""+mIdBuyer);
-			ArrayList<Integer> ids = new ArrayList<Integer>();
-			for (int i=0; i<mItems.size(); ++i) {
-				Item item = mItems.get(i);
-				ids.add(item.getId());
-			}
-			int r = PaulineActivity.PBUY.transaction(mIdBuyer, ids, "via Pauline");
-			return r;
+		protected boolean callSoap() throws Exception {
+			r = PaulineActivity.PBUY.transaction(mIdBuyer, mIds, "via Pauline");
+			return true;
 		}
 		
 		@Override
-		protected void onPostExecute(Integer r) {
-			mProgressDialog.dismiss();
-			if (r==1) {
+		protected void onPostExecute(Integer osef) {
+			super.onPostExecute(osef);
+			if (r) {
 				setResultView(true);
 			}
 			else {
