@@ -29,7 +29,6 @@ public class ShowArticleActivity extends BaseActivity {
 	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
 	
-	private PanierSummary mPanierSummary;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +61,8 @@ public class ShowArticleActivity extends BaseActivity {
             mSession.addItem(i);
             
         	// affichage du nouveaux résumé
-        	mPanierSummary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
-        	mPanierSummary.set(mSession);
+            PanierSummary summary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
+            summary.set(mSession);
         }
     };
     
@@ -125,8 +124,9 @@ public class ShowArticleActivity extends BaseActivity {
 	    		mSession.clearItems();
 	    	}
 		}
-		
-		mPanierSummary.set(mSession);
+
+        PanierSummary summary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
+		summary.set(mSession);
     }
 
 	/*private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {
