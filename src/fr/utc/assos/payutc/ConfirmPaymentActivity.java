@@ -1,13 +1,12 @@
 package fr.utc.assos.payutc;
 
-import fr.utc.assos.payutc.adapters.ListItemAdapter;
-import fr.utc.assos.payutc.views.PanierSummary;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import fr.utc.assos.payutc.adapters.ListItemAdapter;
+import fr.utc.assos.payutc.views.PanierSummary;
 
 public class ConfirmPaymentActivity extends BaseActivity {
 	public final static String LOG_TAG = "ConfirmPayment";
@@ -50,9 +49,5 @@ public class ConfirmPaymentActivity extends BaseActivity {
     protected void onIdentification(String id) {
     	Log.d(LOG_TAG, "onIdentification");
     	startResultTransaction(id);
-    }
-    
-    public void onClickDebug(View view) {
-    	startResultTransaction(PaulineActivity.ID_TRECOUVR);
     }
 }
