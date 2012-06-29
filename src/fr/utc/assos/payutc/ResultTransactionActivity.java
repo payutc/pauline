@@ -31,8 +31,10 @@ public class ResultTransactionActivity extends BaseActivity {
         tv.setText(("solde : "+r.solde/100.0)+"€");
     }
     
-    protected void setResultFailView() {
+    protected void setResultFailView(Exception ex) {
     	setContentView(R.layout.result_echec);
+        TextView tv = (TextView)findViewById(R.id.result_echec_msg);
+        tv.setText(ex.getMessage());
     }
     
     public void onClickOk(View view) {
@@ -73,7 +75,7 @@ public class ResultTransactionActivity extends BaseActivity {
 				setResultOkView(r);
 			}
 			else {
-				setResultFailView();
+				setResultFailView(lastException);
 			}
 		}
     }

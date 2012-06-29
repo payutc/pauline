@@ -56,8 +56,8 @@ public class PaulineActivity extends BaseActivity {
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
         */
-        //PBUY = new PBuy("assos.utc.fr", "buckutt/POSS.class.php", "https://assos.utc.fr:443/buckutt/POSS.class.php", true);
-        PBUY = new PBuy("89.88.36.152", "/server/POSS2.class.php", "https://89.88.36.152:443/server/POSS2.class.php", true);
+        PBUY = new PBuy("assos.utc.fr", "/buckutt/POSS2.class.php", "https://assos.utc.fr:443/buckutt/POSS2.class.php", true);
+        //PBUY = new PBuy("89.88.36.152", "/server/POSS2.class.php", "https://89.88.36.152:443/server/POSS2.class.php", true);
         //PBUY = new PBuy("http://89.88.36.152", "/server/POSS2.class.php", "http://89.88.36.152/server/POSS2.class.php", false);
         
         new GetCasUrlTask().execute();

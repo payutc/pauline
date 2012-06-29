@@ -6,8 +6,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class SoapTask extends AsyncTask<Integer, Integer, Integer> {
-	private ProgressDialog mProgressDialog;
-	private Exception lastException = null;
+	protected ProgressDialog mProgressDialog;
+	protected Exception lastException = null;
 	protected Context mContext;
 	protected String mTitle;
 	protected String mMessage;
