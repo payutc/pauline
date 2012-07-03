@@ -28,9 +28,6 @@ public class PaulineActivity extends BaseActivity {
 	public static final int ASKSELLERPASSWORD	= 0;
 	
 	public final static int ID_POI				= 46;
-	public final static int ID_FUNDATION		= 2;
-	
-	public static final String ID_TRECOUVR			= "5B1BF88B";
 	
 	public static PBuy PBUY;
 
