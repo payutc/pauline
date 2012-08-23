@@ -4,26 +4,38 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-	<fr.utc.assos.payutc.views.PanierSummary
-        android:id="@+id/show_articles_panier_summary"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="0 article" 
-	/>
-    
-    <Button
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:onClick="onClickPanier"
-	android:text="Panier"
-    />
-    
-    <Button
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:onClick="onClickOk"
-	android:text="Ok !"
-    />
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:onClick="onClickPanier"
+            android:src="@drawable/panier" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:onClick="onClickOk"
+            android:text="Ok !" />
+
+        <fr.utc.assos.payutc.views.PanierSummary
+            android:id="@+id/show_articles_panier_summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/button1"
+            android:layout_alignBottom="@+id/button1"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="0 article" />
+    </RelativeLayout>
     
     <GridView xmlns:android="http://schemas.android.com/apk/res/android" 
     android:id="@+id/show_articles_view"
