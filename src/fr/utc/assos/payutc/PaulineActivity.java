@@ -11,7 +11,6 @@ import javax.net.ssl.SSLSocketFactory;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.soap.PBuy;
@@ -60,7 +59,8 @@ public class PaulineActivity extends BaseActivity {
         //PBUY = new PBuy("89.88.36.152", "/server/POSS2.class.php", "https://89.88.36.152:443/server/POSS2.class.php", true);
         //PBUY = new PBuy("http://89.88.36.152", "/server/POSS2.class.php", "http://89.88.36.152/server/POSS2.class.php", false);
         
-        new GetCasUrlTask().execute();
+        GetCasUrlTask task = new GetCasUrlTask();
+        task.execute();
     }
     
 	@Override
@@ -76,7 +76,7 @@ public class PaulineActivity extends BaseActivity {
 		}
     }
 
-    public void onLogin(View view) {
+    public void LogByCas() {
     	Log.d(LOG_TAG,"startCasWebView");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
     	Bundle b = new Bundle();
@@ -125,7 +125,7 @@ public class PaulineActivity extends BaseActivity {
 
     	public GetCasUrlTask() {
 			super("Synchronization", PaulineActivity.this, 
-					"Synchronization avec le serveur en cour...", 5);
+					"Synchronization avec le serveur en cour...", 1);
 		}
     	
     	@Override
@@ -148,6 +148,7 @@ public class PaulineActivity extends BaseActivity {
         		finish();
         	}
         	_CAS_URL = mUrl;
+        	LogByCas();
         }
     }
 
@@ -157,7 +158,7 @@ public class PaulineActivity extends BaseActivity {
     	
     	public LoadPosTask(String ticket, String service) {
     		super("Identification", PaulineActivity.this, 
-    				"Connection au serveur en cour...", 0);
+    				"Connection au serveur en cour...", 1);
     		mTicket = ticket;
     		mService = service;
     		mLoaded = false;

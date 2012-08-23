@@ -5,23 +5,4 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Log toi via le CAS !"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:onClick="onLogin"
-            android:text="Login !" />
-        
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:onClick="onCancel"
-            android:text="Logout" />
-
-
 </LinearLayout>

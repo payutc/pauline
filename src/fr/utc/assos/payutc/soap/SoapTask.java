@@ -44,25 +44,19 @@ public class SoapTask extends AsyncTask<Integer, Integer, Integer> {
     @Override
     protected Integer doInBackground(Integer... args) {
     	boolean ok = false;
-		try {
-			ok = callSoap();
-		} catch (Exception e) {
-			Log.e(mTag, "doInBackground", e);
-			lastException = e;
-		}
-    	for (int i=1; i<=mMaxTries; ++i) {
-    		if (ok) break;
-    		else {
-        		publishProgress(i);
-        		try {
-					Thread.sleep(2000L);
-	        		ok = callSoap();
-				} catch (Exception e) {
-					Log.e(mTag, "doInBackground", e);
-					lastException = e;
-				}
-    		}
+    	int i=1;
+    	
+    	do {
+			try {
+				ok = callSoap();
+			} catch (Exception e) {
+				Log.e(mTag, "doInBackground", e);
+				lastException = e;
+			}
+			++i;
     	}
+		while (i <= mMaxTries && !ok);
+    	
     	return 0;
     }
 
