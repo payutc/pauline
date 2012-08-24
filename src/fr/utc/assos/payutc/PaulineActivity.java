@@ -31,6 +31,7 @@ public class PaulineActivity extends BaseActivity {
 	public static PBuy PBUY;
 
 	public static final int CASWEBVIEW	= 0;
+	public static final int HOMEACTIVITY = 1;
 	
 	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
 	private static String _CAS_URL		= null;
@@ -64,12 +65,17 @@ public class PaulineActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode);
 		switch (requestCode) {
-		case CASWEBVIEW:
-			if (resultCode == RESULT_OK) {
-				String ticket = data.getStringExtra("ticket");
-				Log.i(LOG_TAG, "ticket : "+ticket);
-				new LoadPosTask(ticket, CAS_SERVICE).execute();
-			}
+			case CASWEBVIEW:
+				if (resultCode == RESULT_OK) {
+					String ticket = data.getStringExtra("ticket");
+					Log.i(LOG_TAG, "ticket : "+ticket);
+					new LoadPosTask(ticket, CAS_SERVICE).execute();
+				}
+			break;
+			default:
+				Log.i(LOG_TAG, "heygho ça va");
+				finish();
+			break;
 		}
     }
 
@@ -86,7 +92,7 @@ public class PaulineActivity extends BaseActivity {
     public void startHomeActivity() {
     	Log.d(LOG_TAG,"startHomeActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
-    	startActivity(intent);
+    	startActivityForResult(intent,HOMEACTIVITY);
     }
     
     protected SSLSocketFactory createAdditionalCertsSSLSocketFactory() {
