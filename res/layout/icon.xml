@@ -14,7 +14,7 @@ android:scaleType="fitCenter">
 <TextView
 android:id="@+id/icon_text"
 android:layout_width="fill_parent"
-android:layout_height="fill_parent"
+android:layout_height="28dp"
 android:text="TextView"
 android:gravity="center_horizontal"
 android:textColorHighlight="#656565"

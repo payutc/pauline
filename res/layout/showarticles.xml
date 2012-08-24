@@ -49,7 +49,7 @@
     android:horizontalSpacing="5dp"
     android:clipChildren="true"
     android:stretchMode="columnWidth"
-    android:gravity="top"
+    android:gravity="center"
     android:scaleType="fitXY"
 	/>
     
