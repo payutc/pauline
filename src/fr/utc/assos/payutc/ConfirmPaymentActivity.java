@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
+import fr.utc.assos.payutc.soap.PBuy;
 import fr.utc.assos.payutc.soap.PBuy.TransactionResult;
 import fr.utc.assos.payutc.soap.SoapTask;
 import fr.utc.assos.payutc.views.PanierSummary;
@@ -38,9 +39,9 @@ public class ConfirmPaymentActivity extends BaseActivity {
     }
 
     
-    protected void onResultTransaction(boolean success) {
-    	if (success) {
-    		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE && success) {
+    protected void onResultTransaction(PBuy.TransactionResult r, String lastExceptionMessage) {
+    	if (r!=null) {
+    		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE) {
     			stop(true);
     		}
     		else {
@@ -50,7 +51,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	else {
     		AlertDialog.Builder builder = new AlertDialog.Builder(this);
     		builder.setTitle("Echec de la transaction")
-    			.setMessage("Une erreur est survenue.")
+    			.setMessage("Une erreur est survenue. "+lastExceptionMessage)
     			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
     		           public void onClick(DialogInterface dialog, int id) {
     		                dialog.cancel();
@@ -99,7 +100,12 @@ public class ConfirmPaymentActivity extends BaseActivity {
 		@Override
 		protected void onPostExecute(Integer osef) {
 			super.onPostExecute(osef);
-			onResultTransaction(r!=null);
+			Log.d(ConfirmPaymentActivity.LOG_TAG, "result transaction : "+r);
+			String lastExceptionMessage = "";
+			if (lastException!=null) {
+				lastExceptionMessage = lastException.getMessage();
+			}
+			onResultTransaction(r, lastExceptionMessage);
 		}
     }
 }
