@@ -48,7 +48,9 @@ public class PanierSummary extends TextView {
 		if (mNbArticles > 1) {
 			suffixArticles += "s";
 		}
-		super.setText(""+(mTotalCost/100.0)+"€ ("+mNbArticles+suffixArticles+")");
+		String s = ""+(mTotalCost/100.0)+" € ("+mNbArticles+suffixArticles+")";
+		s.replace(".", ",");
+		super.setText(s);
 	}
 	
 	@Override
