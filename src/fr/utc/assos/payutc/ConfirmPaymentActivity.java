@@ -1,11 +1,17 @@
 package fr.utc.assos.payutc;
 
-import android.content.Intent;
+import java.util.ArrayList;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
+import fr.utc.assos.payutc.soap.PBuy.TransactionResult;
+import fr.utc.assos.payutc.soap.SoapTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 public class ConfirmPaymentActivity extends BaseActivity {
@@ -31,23 +37,69 @@ public class ConfirmPaymentActivity extends BaseActivity {
         lv.setAdapter(mAdapter);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-    	if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE && resultCode == RESULT_OK) {
-    		stop(true);
+    
+    protected void onResultTransaction(boolean success) {
+    	if (success) {
+    		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE && success) {
+    			stop(true);
+    		}
+    		else {
+    			Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
+    		}
+    	}
+    	else {
+    		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    		builder.setTitle("Echec de la transaction")
+    			.setMessage("Une erreur est survenue.")
+    			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
+    		           public void onClick(DialogInterface dialog, int id) {
+    		                dialog.cancel();
+    		           }});
+    		
+    		builder.create().show();
     	}
     }
     
-    private void startResultTransaction(String id) {
-    	Log.d(LOG_TAG,"startResultTransaction");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.ResultTransactionActivity.class);
+    protected void startTransaction(String id) {
+    	Log.d(LOG_TAG,"startTransaction");
     	mSession.setBuyerId(id);
-    	startActivityForResult(intent, 0);
+    	new TransactionTask(mSession.getBuyerId() ,mSession.getItems()).execute();
     }
     
     @Override
     protected void onIdentification(String id) {
     	Log.d(LOG_TAG, "onIdentification");
-    	startResultTransaction(id);
+    	startTransaction(id);
+    }
+    
+
+    protected class TransactionTask extends SoapTask {
+    	private ArrayList<Integer> mIds;
+    	private String mIdBuyer;
+    	private TransactionResult r=null;
+    	
+    	public TransactionTask(String id, ArrayList<Item> items) {
+    		super("Transaction", ConfirmPaymentActivity.this,
+    				"Transaction en cours...", 0);
+			mIds = new ArrayList<Integer>();
+			for (int i=0; i<items.size(); ++i) {
+				Item item = items.get(i);
+				mIds.add(item.getId());
+			}
+    		mIdBuyer = id;
+    	}
+    	
+    	
+		@Override
+		protected boolean callSoap() throws Exception {
+			r = PaulineActivity.PBUY.transaction(mIdBuyer, mIds, "via Pauline");
+			return true;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer osef) {
+			super.onPostExecute(osef);
+			onResultTransaction(r!=null);
+		}
     }
 }
