@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.views.PanierSummary;
 
@@ -40,6 +41,8 @@ public class PanierActivity extends BaseActivity {
 				mPanierSummary.set(mSession);
 			}
 		});
+		
+		Toast.makeText(this, "Appuyer sur un article pour le supprimer.", Toast.LENGTH_LONG).show();
     }
     
     /**
