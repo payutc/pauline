@@ -1,5 +1,6 @@
 package fr.utc.assos.payutc.views;
 
+import fr.utc.assos.payutc.Item;
 import fr.utc.assos.payutc.PaulineSession;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -48,9 +49,7 @@ public class PanierSummary extends TextView {
 		if (mNbArticles > 1) {
 			suffixArticles += "s";
 		}
-		String s = ""+(mTotalCost/100.0)+" € ("+mNbArticles+suffixArticles+")";
-		s.replace(".", ",");
-		super.setText(s);
+		super.setText(Item.costToString(mTotalCost/100.0)+" ("+mNbArticles+suffixArticles+")");
 	}
 	
 	@Override

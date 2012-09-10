@@ -48,7 +48,7 @@ public class ListItemAdapter extends ArrayAdapter<Item> {
         }
 
 		holder.name.setText(item.getName());
-		holder.cost.setText(""+item.getCost());
+		holder.cost.setText(""+item.getStringPrice());
         Bitmap img = item.getImg();
         if (img == null) {
         	holder.icon.setImageResource(R.drawable.ic_launcher);

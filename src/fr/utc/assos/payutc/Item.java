@@ -1,6 +1,8 @@
 package fr.utc.assos.payutc;
 
+import java.util.Formatter;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,6 +42,18 @@ public class Item implements Parcelable {
 		else
 			mIdImg = 0;
 		mCost = Integer.parseInt((String)ht.get("price"));
+	}
+	
+	public String getStringPrice() {
+		return costToString(mCost/100.0);
+	}
+	
+	public static String costToString(double p) {
+		StringBuilder sb = new StringBuilder();
+		// Send all output to the Appendable object sb
+		Formatter formatter = new Formatter(sb, Locale.FRENCH);
+		formatter.format("%,.2f", p);
+		return sb.toString()+" €";
 	}
 	
 	public int getIdImg() {
