@@ -192,7 +192,7 @@ public class PaulineActivity extends BaseActivity {
         	else {
         		AlertDialog.Builder builder = new AlertDialog.Builder(PaulineActivity.this);
         		builder.setTitle("Echec de l'identification")
-        			.setMessage("Une erreur est survenue. "+lastException.getMessage())
+        			.setMessage(lastException.getMessage())
         			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
         		           public void onClick(DialogInterface dialog, int id) {
         		                dialog.cancel();

@@ -33,7 +33,7 @@ public class HomeActivity extends BaseActivity {
         
         ListView lv = (ListView)findViewById(R.id.list_view);
 
-        final String[] items = new String[] {"Vente libre", "Vente produit", "Annuler une vente"};
+        final String[] items = new String[] {"Vente libre", "Vente produit", "Deconnexion"};
         lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
 
 
@@ -48,8 +48,11 @@ public class HomeActivity extends BaseActivity {
 			    	startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
 			    	break;
 			    	
-				case 2:
+				/*case 2:
 					startCancelTransactionActivity();
+					break;*/
+				case 2:
+					finish();
 					break;
 				
 				default: break;

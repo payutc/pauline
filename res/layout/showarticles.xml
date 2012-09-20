@@ -11,16 +11,25 @@
         android:orientation="horizontal" >
 
         <ImageButton
-            android:id="@+id/button2"
+            android:id="@+id/button_panier"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/panier"
             android:gravity="left"
             android:onClick="onClickPanier"
             android:layout_margin="10dp" />
+        
+        <ImageButton
+            android:id="@+id/button_products"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/products"
+            android:gravity="left"
+            android:onClick="onClickProducts"
+            android:visibility="gone"
+            android:layout_margin="10dp" />
 
         <ImageButton
-            android:id="@+id/button1"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
@@ -39,6 +48,15 @@
 
     </RelativeLayout>
     
+    
+    <TextView
+    android:id="@+id/panier_help"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center"
+	android:text="Touche un article pour le supprimer"
+	android:visibility="gone"/>
+    
     <GridView xmlns:android="http://schemas.android.com/apk/res/android" 
     android:id="@+id/show_articles_view"
     android:layout_width="fill_parent" 
@@ -52,6 +70,14 @@
     android:gravity="center"
     android:scaleType="fitXY"
 	/>
+    
+    
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/panier_list" 
+    android:visibility="gone" 
+    />
     
     
     

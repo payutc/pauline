@@ -54,8 +54,8 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	}
     	else {
     		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    		builder.setTitle("Echec de la transaction")
-    			.setMessage("Une erreur est survenue. "+lastExceptionMessage)
+    		builder.setTitle("Échec de la transaction")
+    			.setMessage(lastExceptionMessage)
     			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
     		           public void onClick(DialogInterface dialog, int id) {
     		                dialog.cancel();

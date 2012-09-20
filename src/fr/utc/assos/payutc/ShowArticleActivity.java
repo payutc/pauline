@@ -7,9 +7,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import fr.utc.assos.payutc.adapters.IconAdapter;
+import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.soap.SoapTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
@@ -28,7 +34,10 @@ public class ShowArticleActivity extends BaseActivity {
 	
 	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
+
+	ArrayAdapter<Item> mAdapter;
 	
+	PanierSummary mPanierSummary;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +45,28 @@ public class ShowArticleActivity extends BaseActivity {
         Log.d(LOG_TAG, "onCreate ShowArticleActivity");
         setContentView(R.layout.showarticles);
         
+        mPanierSummary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
+        
         new GetItemsTask().execute();
+        
+		ListView lv = (ListView)findViewById(R.id.panier_list);
+		        
+        mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
+        
+        lv.setAdapter(mAdapter);
+
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Item i = mAdapter.getItem(position);
+				mAdapter.remove(i);
+				mSession.removeItem(i);
+				mPanierSummary.set(mSession);
+			}
+		});
     }
     
     protected void initGridView(ArrayList<Item> items) {
     	IconAdapter adapter = new IconAdapter(this, R.layout.icon, items);
-
-        /*for (Item item : items) {
-        	new DownloadImgTask(adapter).execute(item);
-        }*/
         
         GridView gridview = (GridView) findViewById(R.id.show_articles_view);
         gridview.setAdapter(adapter);
@@ -102,15 +124,44 @@ public class ShowArticleActivity extends BaseActivity {
     }
     
     private void startConfirmPaymentActivity() {
-    	Log.d(LOG_TAG,"startAskSellerPassword");
+    	Log.d(LOG_TAG,"startConfirmPaymentActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ConfirmPaymentActivity.class);
     	startActivityForResult(intent, CONFIRM_PAYMENT);
     }
     
     public void onClickPanier(View view) {
-    	Log.d(LOG_TAG,"startAskSellerPassword");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.PanierActivity.class);
-    	startActivityForResult(intent, PANIER);
+    	Log.d(LOG_TAG,"onClickPanier");
+    	/*Intent intent = new Intent(this, fr.utc.assos.payutc.PanierActivity.class);
+    	startActivityForResult(intent, PANIER);*/
+    	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
+    	ib.setVisibility(View.GONE);
+    	ib = (ImageButton) findViewById(R.id.button_products);
+    	ib.setVisibility(View.VISIBLE);
+
+    	GridView gv = (GridView) findViewById(R.id.show_articles_view);
+    	gv.setVisibility(View.GONE);
+    	ListView lv = (ListView) findViewById(R.id.panier_list);
+    	lv.setVisibility(View.VISIBLE);
+    	
+    	TextView tv = (TextView) findViewById(R.id.panier_help);
+    	tv.setVisibility(View.VISIBLE);
+    }
+    
+    public void onClickProducts(View view) {
+    	Log.d(LOG_TAG,"onClickProducts");
+    	ImageButton ib = (ImageButton) findViewById(R.id.button_products);
+    	ib.setVisibility(View.GONE);
+    	ib = (ImageButton) findViewById(R.id.button_panier);
+    	ib.setVisibility(View.VISIBLE);
+
+    	TextView tv = (TextView) findViewById(R.id.panier_help);
+    	tv.setVisibility(View.GONE);
+    	ListView lv = (ListView) findViewById(R.id.panier_list);
+    	lv.setVisibility(View.GONE);
+    	GridView gv = (GridView) findViewById(R.id.show_articles_view);
+    	gv.setVisibility(View.VISIBLE);
+    	
+
     }
     
 	@Override

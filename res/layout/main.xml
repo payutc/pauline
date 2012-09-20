@@ -14,13 +14,31 @@
     <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:text="Salut jeune ignorant, appuis sur le bouton pour t'identifier avec le CAS." />
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:text="Bonjour !" />
+    
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingleft="20dp"
+        android:paddingright="20dp"
+        android:gravity="center"
+        android:text="Appuie sur le bouton" />
+    
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingleft="20dp"
+        android:paddingright="20dp"
+        android:paddingBottom="20dp"
+        android:gravity="center"
+        android:text="pour t'identifier avec le CAS." />
     
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClickLogin"
-        android:text="Login via CAS" />
+        android:text="Connexion" />
 
 </LinearLayout>
