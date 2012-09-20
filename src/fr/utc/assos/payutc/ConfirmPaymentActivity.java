@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -37,7 +38,10 @@ public class ConfirmPaymentActivity extends BaseActivity {
         
         lv.setAdapter(mAdapter);
     }
-
+    
+    public void onClickCancel(View _view) {
+    	finish();
+    }
     
     protected void onResultTransaction(PBuy.TransactionResult r, String lastExceptionMessage) {
     	if (r!=null) {
