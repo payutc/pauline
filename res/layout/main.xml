@@ -5,4 +5,22 @@
     android:gravity="center"
     android:orientation="vertical" >
 
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:src="@drawable/badgez" />
+	
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="Salut jeune ignorant, appuis sur le bouton pour t'identifier avec le CAS." />
+    
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickLogin"
+        android:text="Login via CAS" />
+
 </LinearLayout>

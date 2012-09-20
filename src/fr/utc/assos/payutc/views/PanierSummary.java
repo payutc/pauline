@@ -5,6 +5,7 @@ import fr.utc.assos.payutc.PaulineSession;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 public class PanierSummary extends TextView {
@@ -32,6 +33,7 @@ public class PanierSummary extends TextView {
 	
 	public void init() {
 		set(0, 0);
+		setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 	}
 	
 	public void set(int nb, int cost) {

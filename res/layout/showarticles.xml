@@ -16,7 +16,8 @@
             android:layout_height="50dp"
             android:src="@drawable/panier"
             android:gravity="left"
-            android:onClick="onClickPanier" />
+            android:onClick="onClickPanier"
+            android:layout_margin="10dp" />
 
         <ImageButton
             android:id="@+id/button1"
@@ -24,8 +25,9 @@
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/panierok"
-            android:onClick="onClickOk" />
+            android:src="@drawable/ok"
+            android:onClick="onClickOk"
+            android:layout_margin="10dp" />
 
         <fr.utc.assos.payutc.views.PanierSummary
             android:id="@+id/show_articles_panier_summary"

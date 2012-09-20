@@ -8,9 +8,12 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.soap.PBuy;
@@ -22,19 +25,26 @@ import fr.utc.assos.payutc.soap.SoapTask;
  *
  */
 public class PaulineActivity extends BaseActivity {
-	public static final String LOG_TAG			= "PaulineActivity";
+
+	/** Urls pour l'api soap */
+	public static final String API_HOST = "assos.utc.fr";
+	public static final String API_PATH = "/payutc_dev/server/POSS2.class.php";
+	public static final String API_NAMESPACE = "https://assos.utc.fr:443/payutc_dev/server/POSS2.class.php";
+	public static final boolean API_SSL = true;
 	
-	public static final int ASKSELLERPASSWORD	= 0;
-	
+	/** Id du point de vente */
 	public final static int ID_POI				= 46;
 	
+	/** Cas service */
+	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
+	
+	public static final String LOG_TAG			= "PaulineActivity";
+	
 	public static PBuy PBUY;
-
 	public static final int CASWEBVIEW	= 0;
 	public static final int HOMEACTIVITY = 1;
 	
-	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
-	private static String _CAS_URL		= null;
+	private static String _CAS_URL		= null; 
 	
     /** Called when the activity is first created. */
     @Override
@@ -53,12 +63,16 @@ public class PaulineActivity extends BaseActivity {
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
         */
-        PBUY = new PBuy("assos.utc.fr", "/buckutt/POSS2.class.php", "https://assos.utc.fr:443/buckutt/POSS2.class.php", true);
-        //PBUY = new PBuy("89.88.36.152", "/server/POSS2.class.php", "https://89.88.36.152:443/server/POSS2.class.php", true);
-        //PBUY = new PBuy("http://89.88.36.152", "/server/POSS2.class.php", "http://89.88.36.152/server/POSS2.class.php", false);
+        PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
         
         GetCasUrlTask task = new GetCasUrlTask();
         task.execute();
+        
+    }
+    
+
+    public void onClickLogin(View _view) {
+    	LogByCas();
     }
     
 	@Override
@@ -72,10 +86,7 @@ public class PaulineActivity extends BaseActivity {
 					new LoadPosTask(ticket, CAS_SERVICE).execute();
 				}
 			break;
-			default:
-				Log.i(LOG_TAG, "heygho ça va");
-				finish();
-			break;
+			default: break;
 		}
     }
 
@@ -151,7 +162,6 @@ public class PaulineActivity extends BaseActivity {
         		finish();
         	}
         	_CAS_URL = mUrl;
-        	LogByCas();
         }
     }
 
@@ -180,7 +190,14 @@ public class PaulineActivity extends BaseActivity {
         		startHomeActivity();
         	}
         	else {
-        		Toast.makeText(PaulineActivity.this, "Echec de l'identification", Toast.LENGTH_SHORT).show();
+        		AlertDialog.Builder builder = new AlertDialog.Builder(PaulineActivity.this);
+        		builder.setTitle("Echec de l'identification")
+        			.setMessage("Une erreur est survenue. "+lastException.getMessage())
+        			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
+        		           public void onClick(DialogInterface dialog, int id) {
+        		                dialog.cancel();
+        		           }});
+        		builder.create().show();
         	}
         }
     }

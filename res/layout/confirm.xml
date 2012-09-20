@@ -4,12 +4,35 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <fr.utc.assos.payutc.views.PanierSummary
-        android:id="@+id/confirm_panier_summary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0 article" 
-	/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/cancel"
+            android:gravity="left"
+            android:onClick="onClickCancel"
+            android:layout_margin="10dp" />
+
+        <fr.utc.assos.payutc.views.PanierSummary
+            android:id="@+id/confirm_panier_summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="0 article" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/badgez"
+            android:padding="10dp" />
+
+    </RelativeLayout>
     
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

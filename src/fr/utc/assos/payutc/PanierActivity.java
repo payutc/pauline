@@ -42,7 +42,7 @@ public class PanierActivity extends BaseActivity {
 			}
 		});
 		
-		Toast.makeText(this, "Appuyer sur un article pour le supprimer.", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Appuyer sur un article pour le supprimer", Toast.LENGTH_LONG).show();
     }
     
     /**
