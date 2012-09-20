@@ -21,19 +21,15 @@
     <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingleft="20dp"
-        android:paddingright="20dp"
         android:gravity="center"
         android:text="Appuie sur le bouton" />
     
     <TextView 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingleft="20dp"
-        android:paddingright="20dp"
         android:paddingBottom="20dp"
         android:gravity="center"
-        android:text="pour t'identifier avec le CAS." />
+        android:text="pour t'identifier avec le CAS" />
     
     <Button
         android:layout_width="wrap_content"

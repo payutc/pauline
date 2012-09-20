@@ -33,7 +33,7 @@ public class HomeActivity extends BaseActivity {
         
         ListView lv = (ListView)findViewById(R.id.list_view);
 
-        final String[] items = new String[] {"Vente libre", "Vente produit", "Deconnexion"};
+        final String[] items = new String[] {"Vente libre", "Vente produit", "Déconnexion"};
         lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
 
 

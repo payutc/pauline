@@ -60,6 +60,12 @@ public class ShowArticleActivity extends BaseActivity {
 				Item i = mAdapter.getItem(position);
 				mAdapter.remove(i);
 				mSession.removeItem(i);
+
+	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
+	        	if (mSession.getNbItems()<1) {
+	        		ib.setImageResource(R.drawable.panier);
+	        	}
+	        	
 				mPanierSummary.set(mSession);
 			}
 		});
@@ -81,6 +87,11 @@ public class ShowArticleActivity extends BaseActivity {
 
         	// ajouter l'item dans le panier
             mSession.addItem(i);
+
+        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
+        	if (mSession.getNbItems()==1) {
+        		ib.setImageResource(R.drawable.panierfull);
+        	}
             
         	// affichage du nouveaux résumé
             PanierSummary summary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
@@ -135,33 +146,38 @@ public class ShowArticleActivity extends BaseActivity {
     	startActivityForResult(intent, PANIER);*/
     	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
     	ib.setVisibility(View.GONE);
-    	ib = (ImageButton) findViewById(R.id.button_products);
-    	ib.setVisibility(View.VISIBLE);
-
     	GridView gv = (GridView) findViewById(R.id.show_articles_view);
     	gv.setVisibility(View.GONE);
-    	ListView lv = (ListView) findViewById(R.id.panier_list);
-    	lv.setVisibility(View.VISIBLE);
-    	
-    	TextView tv = (TextView) findViewById(R.id.panier_help);
-    	tv.setVisibility(View.VISIBLE);
+
+    	ib = (ImageButton) findViewById(R.id.button_products);
+    	ib.setVisibility(View.VISIBLE);
+    	if (mSession.getNbItems()>0) {
+	    	ListView lv = (ListView) findViewById(R.id.panier_list);
+	    	lv.setVisibility(View.VISIBLE);
+	    	TextView tv = (TextView) findViewById(R.id.panier_help);
+	    	tv.setVisibility(View.VISIBLE);
+    	}
+    	else {
+	    	TextView tv = (TextView) findViewById(R.id.panier_empty);
+	    	tv.setVisibility(View.VISIBLE);
+    	}
     }
     
     public void onClickProducts(View view) {
     	Log.d(LOG_TAG,"onClickProducts");
     	ImageButton ib = (ImageButton) findViewById(R.id.button_products);
     	ib.setVisibility(View.GONE);
-    	ib = (ImageButton) findViewById(R.id.button_panier);
-    	ib.setVisibility(View.VISIBLE);
-
-    	TextView tv = (TextView) findViewById(R.id.panier_help);
+    	TextView tv = (TextView) findViewById(R.id.panier_empty);
+    	tv.setVisibility(View.GONE);
+    	tv = (TextView) findViewById(R.id.panier_help);
     	tv.setVisibility(View.GONE);
     	ListView lv = (ListView) findViewById(R.id.panier_list);
     	lv.setVisibility(View.GONE);
+    	
+    	ib = (ImageButton) findViewById(R.id.button_panier);
+    	ib.setVisibility(View.VISIBLE);
     	GridView gv = (GridView) findViewById(R.id.show_articles_view);
     	gv.setVisibility(View.VISIBLE);
-    	
-
     }
     
 	@Override

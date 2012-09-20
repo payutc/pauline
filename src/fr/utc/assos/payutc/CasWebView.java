@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -30,7 +31,10 @@ public class CasWebView extends Activity {
         cookieManager.removeSessionCookie();
         webview = (WebView) findViewById(R.id.webview);
         webview.setWebViewClient(new HelloWebViewClient());
-        webview.getSettings().setJavaScriptEnabled(true);
+        WebSettings settings = webview.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setSaveFormData(false);
+        settings.setSavePassword(false);
         webview.loadUrl(casurl+"?service="+PaulineActivity.CAS_SERVICE);
     }
     
