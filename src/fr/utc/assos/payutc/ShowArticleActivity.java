@@ -7,13 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.soap.SoapTask;
@@ -48,18 +47,23 @@ public class ShowArticleActivity extends BaseActivity {
         mPanierSummary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
         
         new GetItemsTask().execute();
+        /* Decommente pour remplir manuellement les articles
+        ArrayList<Item> items = new ArrayList<Item>();
+        items.add(new Item(42, "coca", "abc", 1, 30));
+        items.add(new Item(42, "biere", "abc", 1, 40));
+        items.add(new Item(42, "orangina", "abc", 1, 50));
+        items.add(new Item(42, "pepsi", "abc", 1, 60));
+        initGridView(items);
+        */
         
-		ListView lv = (ListView)findViewById(R.id.panier_list);
-		        
-        mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
-        
-        lv.setAdapter(mAdapter);
+        initListView();
 
+		ListView lv = (ListView)findViewById(R.id.panier_list);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Item i = mAdapter.getItem(position);
 				mAdapter.remove(i);
-				mSession.removeItem(i);
+				//mSession.removeItem(i);
 
 	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
 	        	if (mSession.getNbItems()<1) {
@@ -71,6 +75,12 @@ public class ShowArticleActivity extends BaseActivity {
 		});
     }
     
+    protected void initListView() {
+		ListView lv = (ListView)findViewById(R.id.panier_list);
+        mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
+        lv.setAdapter(mAdapter);
+    }
+    
     protected void initGridView(ArrayList<Item> items) {
     	IconAdapter adapter = new IconAdapter(this, R.layout.icon, items);
         
@@ -79,6 +89,11 @@ public class ShowArticleActivity extends BaseActivity {
         
         
         gridview.setOnItemClickListener(mOnItemClickListener);
+    }
+    
+    protected void initPanierView() {
+        PanierSummary summary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
+		summary.set(mSession);
     }
     
     protected OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
@@ -165,6 +180,11 @@ public class ShowArticleActivity extends BaseActivity {
     
     public void onClickProducts(View view) {
     	Log.d(LOG_TAG,"onClickProducts");
+    	loadProductView();
+    }
+    
+    public void loadProductView() {
+    	Log.d(LOG_TAG,"onClickProducts");
     	ImageButton ib = (ImageButton) findViewById(R.id.button_products);
     	ib.setVisibility(View.GONE);
     	TextView tv = (TextView) findViewById(R.id.panier_empty);
@@ -184,16 +204,21 @@ public class ShowArticleActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
-		
+
+
+		initListView();
+        
 		switch (requestCode) {
 		case CONFIRM_PAYMENT:
 	    	if (resultCode == RESULT_OK) {
 	    		mSession.clearItems();
+	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
+	        	ib.setImageResource(R.drawable.panier);
+	    		loadProductView();
 	    	}
 		}
 
-        PanierSummary summary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
-		summary.set(mSession);
+		initPanierView();
     }
 
 	/*private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {

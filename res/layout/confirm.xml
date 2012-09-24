@@ -9,12 +9,13 @@
         android:layout_height="wrap_content" >
 
         <ImageButton
+            android:id="@+id/imageButton1"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/cancel"
+            android:layout_margin="10dp"
             android:gravity="left"
             android:onClick="onClickCancel"
-            android:layout_margin="10dp" />
+            android:src="@drawable/cancel" />
 
         <fr.utc.assos.payutc.views.PanierSummary
             android:id="@+id/confirm_panier_summary"
@@ -29,11 +30,25 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_alignParentRight="true"
-            android:src="@drawable/badgez"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:src="@drawable/badgez" />
 
     </RelativeLayout>
     
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickDebugOk"
+            android:visibility="gone"
+            android:text="ok" />
+        
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickDebugFail"
+            android:visibility="gone"
+            android:text="Fail" />
+        
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 

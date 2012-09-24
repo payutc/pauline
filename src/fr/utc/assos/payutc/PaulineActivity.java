@@ -1,7 +1,9 @@
 package fr.utc.assos.payutc;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.Properties;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -11,6 +13,8 @@ import javax.net.ssl.SSLSocketFactory;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,14 +30,21 @@ import fr.utc.assos.payutc.soap.SoapTask;
  */
 public class PaulineActivity extends BaseActivity {
 
-	/** Urls pour l'api soap */
+	/* DEV
+	// Urls pour l'api soap
 	public static final String API_HOST = "assos.utc.fr";
 	public static final String API_PATH = "/payutc_dev/server/POSS2.class.php";
 	public static final String API_NAMESPACE = "https://assos.utc.fr:443/payutc_dev/server/POSS2.class.php";
 	public static final boolean API_SSL = true;
-	
-	/** Id du point de vente */
+	// Id du point de vente
 	public final static int ID_POI				= 46;
+	// */
+	public static final String API_HOST = "assos.utc.fr";
+	public static final String API_PATH = "/buckutt/server/POSS2.class.php";
+	public static final String API_NAMESPACE = "https://assos.utc.fr:443/buckutt/POSS2.class.php";
+	public static final boolean API_SSL = true;
+	public final static int ID_POI				= 48;
+	
 	
 	/** Cas service */
 	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
@@ -52,6 +63,7 @@ public class PaulineActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate PaulineActivity");
         setContentView(R.layout.main);
+        
         HttpsURLConnection.setDefaultSSLSocketFactory(createAdditionalCertsSSLSocketFactory());
         HostnameVerifier v = new HostnameVerifier() {
         	public boolean verify(String hostname, SSLSession session) {
@@ -67,6 +79,8 @@ public class PaulineActivity extends BaseActivity {
         
         GetCasUrlTask task = new GetCasUrlTask();
         task.execute();
+        // decomment pour aller directement au home sans se logger
+        //startHomeActivity();
         
     }
     
@@ -139,7 +153,7 @@ public class PaulineActivity extends BaseActivity {
 
     	public GetCasUrlTask() {
 			super("Synchronization", PaulineActivity.this, 
-					"Synchronization avec le serveur en cour...", 1);
+					"Synchronization avec le serveur en cours...", 1);
 		}
     	
     	@Override

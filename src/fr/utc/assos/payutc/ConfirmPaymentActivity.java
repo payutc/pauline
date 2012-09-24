@@ -43,6 +43,14 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	finish();
     }
     
+    public void onClickDebugOk(View _view) {
+    	onResultTransaction(PaulineActivity.PBUY.new TransactionResult("thomas", "recouvreux", 44), null);
+    }
+    
+    public void onClickDebugFail(View _view) {
+    	onResultTransaction(null, "Plus de details en mode normal");
+    }
+    
     protected void onResultTransaction(PBuy.TransactionResult r, String lastExceptionMessage) {
     	if (r!=null) {
     		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE) {
