@@ -13,6 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.soap.SoapTask;
@@ -215,6 +216,7 @@ public class ShowArticleActivity extends BaseActivity {
 	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
 	        	ib.setImageResource(R.drawable.panier);
 	    		loadProductView();
+	    		Toast.makeText(this, "Succès de la transaction", Toast.LENGTH_SHORT).show();
 	    	}
 		}
 
