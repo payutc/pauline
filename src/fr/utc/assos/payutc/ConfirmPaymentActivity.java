@@ -57,7 +57,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     			stop(true);
     		}
     		else {
-    			Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
+    			Toast.makeText(this, "Succès de la transaction", Toast.LENGTH_SHORT).show();
     		}
     	}
     	else {
