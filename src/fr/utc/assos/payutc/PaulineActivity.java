@@ -30,7 +30,7 @@ import fr.utc.assos.payutc.soap.SoapTask;
  */
 public class PaulineActivity extends BaseActivity {
 
-	/* DEV
+	//* DEV
 	// Urls pour l'api soap
 	public static final String API_HOST = "assos.utc.fr";
 	public static final String API_PATH = "/payutc_dev/server/POSS2.class.php";
@@ -39,12 +39,13 @@ public class PaulineActivity extends BaseActivity {
 	// Id du point de vente
 	public final static int ID_POI				= 46;
 	// */
+	/*
 	public static final String API_HOST = "assos.utc.fr";
-	public static final String API_PATH = "/buckutt/server/POSS2.class.php";
+	public static final String API_PATH = "/buckutt/POSS2.class.php";
 	public static final String API_NAMESPACE = "https://assos.utc.fr:443/buckutt/POSS2.class.php";
 	public static final boolean API_SSL = true;
 	public final static int ID_POI				= 48;
-	
+	//*/
 	
 	/** Cas service */
 	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
