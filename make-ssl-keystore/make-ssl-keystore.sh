@@ -8,7 +8,7 @@ keytool \
       -v \
       -trustcacerts \
       -alias 0 \
-      -file <(openssl x509 -in certificat.pem) \
+      -file <(openssl x509 -in $1) \
       -keystore $CERTSTORE \
       -storetype BKS \
       -provider org.bouncycastle.jce.provider.BouncyCastleProvider \

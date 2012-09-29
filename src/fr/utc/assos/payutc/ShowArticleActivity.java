@@ -2,6 +2,8 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -115,17 +117,37 @@ public class ShowArticleActivity extends BaseActivity {
         }
     };
     
+    protected void onGetItemsFails(Exception e) {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Impossible de recuperer les articles")
+    		   .setMessage(e.getMessage())
+    	       .setCancelable(false)
+    	       .setPositiveButton("Encore !", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	        	   dialog.cancel();
+    	        	   new GetItemsTask().execute();
+    	           }
+    	       })
+    	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+   	                	ShowArticleActivity.this.finish();
+    	           }
+    	       });
+    	AlertDialog alert = builder.create();
+    	alert.show();
+    }
+    
     private class GetItemsTask extends SoapTask {
     	private ArrayList<Item> mItems=null;
     	
     	public GetItemsTask() {
     		super("Chargement", ShowArticleActivity.this, 
-    				"Veuillez patienter", 2);
+    				"Veuillez patienter", 0);
     	}
     	
 		@Override
 		protected boolean callSoap() throws Exception {
-			mItems = PaulineActivity.PBUY.getArticles();
+			mItems = PaulineActivity.POSS.getArticles();
 			return mItems != null;
 		}
 		
@@ -133,7 +155,7 @@ public class ShowArticleActivity extends BaseActivity {
 		protected void onPostExecute(Integer osef) {
 			super.onPostExecute(osef);
 	        if (mItems == null) {
-	        	Log.e(LOG_TAG, "Error:soap return null");
+	        	onGetItemsFails(lastException);
 	        }
 	        else {
 	        	initGridView(mItems);

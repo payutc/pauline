@@ -11,8 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
-import fr.utc.assos.payutc.soap.PBuy;
-import fr.utc.assos.payutc.soap.PBuy.TransactionResult;
+import fr.utc.assos.payutc.api.POSS.TransactionResult;
 import fr.utc.assos.payutc.soap.SoapTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
@@ -44,15 +43,15 @@ public class ConfirmPaymentActivity extends BaseActivity {
     }
     
     public void onClickDebugOk(View _view) {
-    	onResultTransaction(PaulineActivity.PBUY.new TransactionResult("thomas", "recouvreux", 44), null);
+    	onResultTransaction(PaulineActivity.POSS.new TransactionResult("thomas", "recouvreux", 44), null);
     }
     
     public void onClickDebugFail(View _view) {
     	onResultTransaction(null, "Plus de details en mode normal");
     }
     
-    protected void onResultTransaction(PBuy.TransactionResult r, String lastExceptionMessage) {
-    	if (r!=null) {
+    protected void onResultTransaction(TransactionResult transactionResult, String lastExceptionMessage) {
+    	if (transactionResult!=null) {
     		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE) {
     			stop(true);
     		}
@@ -105,7 +104,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	
 		@Override
 		protected boolean callSoap() throws Exception {
-			r = PaulineActivity.PBUY.transaction(mIdBuyer, mIds, "via Pauline");
+			r = PaulineActivity.POSS.transaction(mIdBuyer, mIds, "via Pauline");
 			return true;
 		}
 		

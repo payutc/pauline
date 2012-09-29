@@ -86,7 +86,7 @@ public class HomeActivity extends BaseActivity {
     			for (int i=0; i<3; ++i) {
 	    			try {
 	    				Log.d(LOG_TAG,"onDestroy : unload");
-						PaulineActivity.PBUY.unload();
+						PaulineActivity.POSS.unload();
 						break;
 					} catch (Exception e) {
 						e.printStackTrace();

@@ -14,6 +14,7 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.ksoap2.transport.HttpsTransportSE;
+import org.ksoap2.transport.KeepAliveHttpsTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Log;
@@ -28,12 +29,22 @@ public class PBuy {
 	private String path;
 	private boolean ssl;
 	HashMap<String, String> cookies = new HashMap<String, String>();
+	HttpTransportSE androidHttpTransport;
 	
 	public PBuy(String _host, String _path, String _namespace, boolean _ssl) {
 		host = _host;
 		path = _path;
 		namespace = _namespace;
 		ssl = _ssl;
+		if (ssl) {
+			androidHttpTransport = new KeepAliveHttpsTransportSE(host, 443, path, 10000);
+		}
+		else {
+			androidHttpTransport = new HttpTransportSE(host+path, 10000);
+		}
+		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
+		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
+		//androidHttpTransport.debug = true; 
 	}
 	
 	public String getCasUrl() throws IOException, XmlPullParserException, ApiException {
@@ -125,17 +136,6 @@ public class PBuy {
 		
 		Log.d(TAG, "fin envelope");
 		
-		HttpTransportSE androidHttpTransport;
-		if (ssl) {
-			androidHttpTransport = new HttpsTransportSE (host, 443, path, 10000);
-		}
-		else {
-			androidHttpTransport = new HttpTransportSE(host+path, 10000);
-		}
-			
-		//Ceci est optionnel, on l'utilise pour savoir si nous voulons ou non utiliser 
-		//un paquet "sniffer" pour vérifier le message original (androidHttpTransport.requestDump)
-		androidHttpTransport.debug = true; 
 
 		//Envoi de la requête
 		@SuppressWarnings("unchecked")

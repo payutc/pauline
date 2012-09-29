@@ -1,4 +1,4 @@
-package fr.utc.assos.payutc.soap;
+package fr.utc.assos.payutc.api;
 
 
 

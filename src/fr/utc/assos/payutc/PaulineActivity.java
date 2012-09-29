@@ -1,9 +1,7 @@
 package fr.utc.assos.payutc;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
-import java.util.Properties;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -13,14 +11,12 @@ import javax.net.ssl.SSLSocketFactory;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import fr.utc.assos.payutc.soap.AdditionalKeyStoresSSLSocketFactory;
-import fr.utc.assos.payutc.soap.PBuy;
+import fr.utc.assos.payutc.api.AdditionalKeyStoresSSLSocketFactory;
+import fr.utc.assos.payutc.api.POSS;
 import fr.utc.assos.payutc.soap.SoapTask;
 
 /**
@@ -30,12 +26,13 @@ import fr.utc.assos.payutc.soap.SoapTask;
  */
 public class PaulineActivity extends BaseActivity {
 
-	//* DEV
+	// DEV
 	// Urls pour l'api soap
 	public static final String API_HOST = "assos.utc.fr";
 	public static final String API_PATH = "/payutc_dev/server/POSS2.class.php";
 	public static final String API_NAMESPACE = "https://assos.utc.fr:443/payutc_dev/server/POSS2.class.php";
 	public static final boolean API_SSL = true;
+	public static final String API_URL = "https://assos.utc.fr/payutc_dev/mozart/api.php";
 	// Id du point de vente
 	public final static int ID_POI				= 46;
 	// */
@@ -52,7 +49,8 @@ public class PaulineActivity extends BaseActivity {
 	
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	public static PBuy PBUY;
+	//public static PBuy PBUY;
+	public static POSS POSS;
 	public static final int CASWEBVIEW	= 0;
 	public static final int HOMEACTIVITY = 1;
 	
@@ -76,7 +74,8 @@ public class PaulineActivity extends BaseActivity {
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
         */
-        PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
+        //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
+        POSS = new POSS(API_URL);
         
         GetCasUrlTask task = new GetCasUrlTask();
         task.execute();
@@ -87,7 +86,8 @@ public class PaulineActivity extends BaseActivity {
     
 
     public void onClickLogin(View _view) {
-    	LogByCas();
+    	//LogByCas();
+    	new LoadPosTask("42","24").execute(); 
     }
     
 	@Override
@@ -149,6 +149,26 @@ public class PaulineActivity extends BaseActivity {
         
     }
     
+    protected void onGetCasUrlFails(Exception e) {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Echec de la conexion avec le serveur")
+    		   .setMessage(e.getMessage())
+    	       .setCancelable(false)
+    	       .setPositiveButton("Encore !", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	        	   dialog.cancel();
+    	        	   new GetCasUrlTask().execute();
+    	           }
+    	       })
+    	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+   	                	PaulineActivity.this.finish();
+    	           }
+    	       });
+    	AlertDialog alert = builder.create();
+    	alert.show();
+    }
+    
     private class GetCasUrlTask extends SoapTask {
     	private String mUrl;
 
@@ -159,7 +179,8 @@ public class PaulineActivity extends BaseActivity {
     	
     	@Override
     	protected boolean callSoap() throws Exception {
-    		mUrl = PBUY.getCasUrl();
+    		//mUrl = PBUY.getCasUrl();
+    		mUrl = POSS.getCasUrl();
     		return mUrl!=null;
     	}
         
@@ -168,13 +189,7 @@ public class PaulineActivity extends BaseActivity {
         protected void onPostExecute(Integer osef) {
     		super.onPostExecute(osef);
         	if (mUrl==null) {
-        		Toast.makeText(PaulineActivity.this, "Echec", Toast.LENGTH_SHORT).show();
-        		try {
-					Thread.sleep(2000L);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-        		finish();
+        		onGetCasUrlFails(lastException);
         	}
         	_CAS_URL = mUrl;
         }
@@ -194,7 +209,7 @@ public class PaulineActivity extends BaseActivity {
     	
     	@Override
     	protected boolean callSoap() throws Exception {
-    		mLoaded = PBUY.loadPos(mTicket, mService, ID_POI);
+    		mLoaded = POSS.loadPos(mTicket, mService, ID_POI);
     		return true;
     	}
 

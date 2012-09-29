@@ -14,18 +14,18 @@ public class Item implements Parcelable {
 	
 	private int mId;
 	private String mName;
-	private String mType;
+	private String mCategory;
 	private int mIdImg;
 	private int mCost;
 	private String mEncodedImg;
 	private Bitmap mImage;
 	
-	public Item(int id, String name, String type, int idImg, int cost) {
+	public Item(int id, String name, String category, int idImg, int cost) {
 		mImage = null;
 		mEncodedImg = "";
 		mId = id;
 		mName = name;
-		mType = type;
+		mCategory = category;
 		mIdImg = idImg;
 		mCost = cost;
 	}
@@ -36,7 +36,7 @@ public class Item implements Parcelable {
 		mEncodedImg = "";
 		mId = Integer.parseInt((String)ht.get("id"));
 		mName = (String)ht.get("name"); 
-		mType = (String)ht.get("type");
+		mCategory = (String)ht.get("category_id");
 		if (ht.get("idImg") != null) 
 			mIdImg = Integer.parseInt((String)ht.get("idImg"));
 		else
@@ -83,8 +83,8 @@ public class Item implements Parcelable {
 		return mCost;
 	}
 	
-	public String getType() {
-		return mType;
+	public String getCategory() {
+		return mCategory;
 	}
 
 	public int describeContents() {
@@ -94,7 +94,7 @@ public class Item implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mId);
 		dest.writeString(mName);
-		dest.writeString(mType);
+		dest.writeString(mCategory);
 		dest.writeInt(mIdImg);
 		dest.writeInt(mCost);
 		dest.writeString(mEncodedImg);
@@ -103,7 +103,7 @@ public class Item implements Parcelable {
 	private Item(Parcel in) {
 		mId	= in.readInt();
 		mName = in.readString();
-		mType = in.readString();
+		mCategory = in.readString();
 		mIdImg = in.readInt();
 		mCost = in.readInt();
 		mEncodedImg = in.readString();
