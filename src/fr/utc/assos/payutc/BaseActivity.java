@@ -1,9 +1,14 @@
 package fr.utc.assos.payutc;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
+import fr.utc.assos.payutc.api.ApiTask;
+import fr.utc.assos.payutc.api.POSS.CustomerDetails;
 
 public class BaseActivity extends NfcActivity {
 	private static final String LOG_TAG		= "BaseActivity";
@@ -47,6 +52,7 @@ public class BaseActivity extends NfcActivity {
 	@Override
 	protected void onIdentification(String id) {
 		Log.d(LOG_TAG, "Identified : "+id);
+		new GetCustomerDetails().execute(id);
 	}
 	
 	/**
@@ -78,5 +84,54 @@ public class BaseActivity extends NfcActivity {
 	
 	final protected void stop() {
 		stop(RESULT_OK);
+	}
+	
+	protected void onGetCustomerDetailsFails(Exception e) {
+		Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+	}
+	
+	protected void onGetCustomerDetailsSuccess(CustomerDetails details) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+		builder.setMessage("Solde : "+Item.costToString(details.mSolde/100.0))
+		       .setCancelable(true)
+		       .setTitle(details.mFirstName+" "+details.mLastName)
+		       .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                dialog.cancel();
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
+	protected class GetCustomerDetails extends ApiTask<String,Integer,CustomerDetails> {
+
+		public GetCustomerDetails() {
+			super("Récupération des infos", BaseActivity.this, "Un instant s'il vous plait");
+		}
+
+		@Override
+		protected CustomerDetails doInBackground(String... ids) {
+			String id = ids[0];
+			CustomerDetails details = null;
+			try {
+				details = PaulineActivity.POSS.getCustomerDetails(id);
+			} catch (Exception e) {
+				Log.e(mTag, "doInBackground", e);
+				lastException = e;
+			}
+			return details;
+		}
+		
+		@Override
+		protected void onPostExecute(CustomerDetails details) {
+			super.onPostExecute(details);
+			if (details==null) {
+				onGetCustomerDetailsFails(lastException);
+			}
+			else {
+				onGetCustomerDetailsSuccess(details);
+			}
+		}
 	}
 }

@@ -20,6 +20,8 @@ public class Item implements Parcelable {
 	private String mEncodedImg;
 	private Bitmap mImage;
 	
+	public Item() {}
+	
 	public Item(int id, String name, String category, int idImg, int cost) {
 		mImage = null;
 		mEncodedImg = "";
@@ -121,4 +123,8 @@ public class Item implements Parcelable {
 			return new Item[size];
 		}
 	};
+	
+	public void setImage(Bitmap img) {
+		mImage = img;
+	}
 }

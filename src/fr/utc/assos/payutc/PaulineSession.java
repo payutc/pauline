@@ -123,4 +123,5 @@ public class PaulineSession implements Parcelable {
 			return new PaulineSession[size];
 		}
 	};
+	
 }

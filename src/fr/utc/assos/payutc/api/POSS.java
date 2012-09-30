@@ -7,6 +7,9 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import fr.utc.assos.payutc.Item;
 
@@ -59,6 +62,19 @@ public class POSS extends JsonApiClient {
 		return articles;
 	}
 	
+	public Bitmap getImage64(int id, int width, int height) throws IOException, JSONException, ApiException {
+    	Arg[] args =  {
+    			new Arg("img_id", ""+id),
+    			new Arg("outw", ""+width),
+    			new Arg("outh", ""+height),
+    	};
+		Object raw_result = call("getImage64", args);
+		String encodedImage = (String) raw_result;
+		byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+		Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+		return decodedByte;
+	}
+	
 	public class TransactionResult {
 		public String firstName;
 		public String lastName;
@@ -89,6 +105,32 @@ public class POSS extends JsonApiClient {
 		int solde = json_result.getInt("solde");
 		TransactionResult retour = new TransactionResult(first_name, last_name, solde); 
 		return retour;
+	}
+	
+	public class CustomerDetails {
+		public String mFirstName, mLastName;
+		public int mSolde;
+		
+		public CustomerDetails(String fName, String lName, int solde) {
+			mFirstName = fName;
+			mLastName = lName;
+			mSolde = solde;
+		}
+	}
+	
+	public CustomerDetails getCustomerDetails(String id) throws IOException, JSONException, ApiException {
+    	Arg[] args =  {
+    		new Arg("badge_id", id),
+    	};
+		Object raw_result = call("getBuyerInfo", args);
+		Log.d(LOG_TAG, "transaction : " + raw_result.toString());
+		
+		JSONObject json_result = (JSONObject) raw_result;
+		String fName = json_result.optString("firstname", "Inconnu");
+		String lName = json_result.optString("lastname", "Inconnu");
+		int solde = json_result.optInt("solde", -1);
+		
+		return new CustomerDetails(fName, lName, solde);
 	}
 
 }

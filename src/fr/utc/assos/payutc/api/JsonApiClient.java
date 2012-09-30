@@ -22,8 +22,8 @@ public class JsonApiClient {
 	
 	public class Arg {
 		public String key, value;
-		Arg(String _key, String _value) {
-			key = _key; value = _value;
+		Arg(String _key, Object _value) {
+			key = _key; value = String.valueOf(_value);
 		}
 	}
 	
@@ -79,7 +79,14 @@ public class JsonApiClient {
 			throws IOException, JSONException, ApiException {
 		String post_result = post(api_url+"?method="+URLEncoder.encode(method, "UTF-8"), args);
 		//Log.d(LOG_TAG, "post_result : "+post_result);
-		JSONObject result = new JSONObject(post_result);
+		
+		JSONObject result = null;
+		try {
+			result = new JSONObject(post_result);
+		}
+		catch (JSONException e) {
+			throw new ApiException(42, e.getMessage()+". Impossible de parser : "+post_result);
+		}
 
 		if (result.opt("success") == null) {
 			int err_code = 42;

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class ApiTask extends AsyncTask<Integer, Integer, Integer> {
+public class ApiTask<key1 extends Object, key2 extends Object, key3 extends Object> extends AsyncTask<key1,key2,key3> {
 	protected ProgressDialog mProgressDialog;
 	protected Exception lastException = null;
 	protected Context mContext;
@@ -40,7 +40,7 @@ public class ApiTask extends AsyncTask<Integer, Integer, Integer> {
     }
     
     @Override
-    protected Integer doInBackground(Integer... args) {
+    protected key3 doInBackground(key1... args) {
     	
 		try {
 			callSoap();
@@ -48,22 +48,12 @@ public class ApiTask extends AsyncTask<Integer, Integer, Integer> {
 			Log.e(mTag, "doInBackground", e);
 			lastException = e;
 		}
-    	
-    	return 0;
+		
+		return null;
     }
-
-	@Override
-	protected void onProgressUpdate(Integer... progress) {
-		String lastExceptionMsg = "";
-		if (lastException!=null) {
-			lastExceptionMsg = lastException.getMessage();
-		}
-		mProgressDialog.setMessage(mMessage + " (nb. echec : "+progress[0]+")" + lastExceptionMsg);
-	}
 	
 	@Override
-	protected void onPostExecute(Integer osef) {
-		super.onPostExecute(osef);
+	protected void onPostExecute(Object osef) {
     	mProgressDialog.dismiss();
 	}
 }

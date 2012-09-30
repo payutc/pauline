@@ -11,10 +11,11 @@ import javax.net.ssl.SSLSocketFactory;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 import fr.utc.assos.payutc.api.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.api.POSS;
 import fr.utc.assos.payutc.soap.SoapTask;
@@ -77,8 +78,9 @@ public class PaulineActivity extends BaseActivity {
         //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
         POSS = new POSS(API_URL);
         
-        GetCasUrlTask task = new GetCasUrlTask();
-        task.execute();
+        (new GetCasUrlTask()).execute();
+        
+        
         // decomment pour aller directement au home sans se logger
         //startHomeActivity();
         
@@ -86,8 +88,8 @@ public class PaulineActivity extends BaseActivity {
     
 
     public void onClickLogin(View _view) {
-    	//LogByCas();
-    	new LoadPosTask("42","24").execute(); 
+    	LogByCas();
+    	//new LoadPosTask("42","24").execute(); 
     }
     
 	@Override

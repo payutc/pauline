@@ -1,10 +1,16 @@
 package fr.utc.assos.payutc;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +43,8 @@ public class ShowArticleActivity extends BaseActivity {
 	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
 
-	ArrayAdapter<Item> mAdapter;
+	ArrayAdapter<Item> mPanierAdapter;
+	IconAdapter mGridAdapter;
 	
 	PanierSummary mPanierSummary;
 	
@@ -57,15 +64,16 @@ public class ShowArticleActivity extends BaseActivity {
         items.add(new Item(42, "orangina", "abc", 1, 50));
         items.add(new Item(42, "pepsi", "abc", 1, 60));
         initGridView(items);
-        */
+    	new DownloadImgTask().execute(items.toArray(new Item[items.size()]));
+        //*/
         
         initListView();
 
 		ListView lv = (ListView)findViewById(R.id.panier_list);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Item i = mAdapter.getItem(position);
-				mAdapter.remove(i);
+				Item i = mPanierAdapter.getItem(position);
+				mPanierAdapter.remove(i);
 				//mSession.removeItem(i);
 
 	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
@@ -80,15 +88,15 @@ public class ShowArticleActivity extends BaseActivity {
     
     protected void initListView() {
 		ListView lv = (ListView)findViewById(R.id.panier_list);
-        mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
-        lv.setAdapter(mAdapter);
+		mPanierAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
+        lv.setAdapter(mPanierAdapter);
     }
     
     protected void initGridView(ArrayList<Item> items) {
-    	IconAdapter adapter = new IconAdapter(this, R.layout.icon, items);
+    	mGridAdapter = new IconAdapter(this, R.layout.icon, items);
         
         GridView gridview = (GridView) findViewById(R.id.show_articles_view);
-        gridview.setAdapter(adapter);
+        gridview.setAdapter(mGridAdapter);
         
         
         gridview.setOnItemClickListener(mOnItemClickListener);
@@ -158,10 +166,45 @@ public class ShowArticleActivity extends BaseActivity {
 	        	onGetItemsFails(lastException);
 	        }
 	        else {
-	        	initGridView(mItems);
+	        	onGetItemsSuccess(mItems);
 	        }
 		}
     	
+    }
+    
+    protected void onGetItemsSuccess(ArrayList<Item> items) {
+    	initGridView(items);
+    	new DownloadImgTask().execute(items.toArray(new Item[items.size()]));
+    	/*
+    	for (Item i : items) {
+    		Bitmap im = null;
+    		try {
+    			im = getImageFromCache(i.getIdImg());
+    		}
+    		catch (Exception _e) {}
+    		if (im==null) {
+    			new DownloadImgTask(mGridAdapter).execute(i);
+    		}
+    		else {
+				i.setImage(im);
+				mGridAdapter.notifyDataSetChanged();
+    		}
+    		break;
+    	}
+    	*/
+    }
+    
+    public Bitmap getImageFromCache(int id) throws FileNotFoundException {
+    	File cacheDir = getCacheDir();
+    	String cacheDirPath = cacheDir.getAbsolutePath();
+		return BitmapFactory.decodeFile(cacheDirPath+"/"+id+".png");
+    }
+    
+    public void saveImageToCache(int id, Bitmap im) throws FileNotFoundException {
+    	File cacheDir = getCacheDir();
+    	String cacheDirPath = cacheDir.getAbsolutePath();
+    	FileOutputStream fOut = new FileOutputStream(cacheDirPath+"/"+id+".png");
+    	im.compress(Bitmap.CompressFormat.PNG, 85, fOut);
     }
     
     public void onClickCancel(View view) {
@@ -180,8 +223,6 @@ public class ShowArticleActivity extends BaseActivity {
     
     public void onClickPanier(View view) {
     	Log.d(LOG_TAG,"onClickPanier");
-    	/*Intent intent = new Intent(this, fr.utc.assos.payutc.PanierActivity.class);
-    	startActivityForResult(intent, PANIER);*/
     	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
     	ib.setVisibility(View.GONE);
     	GridView gv = (GridView) findViewById(R.id.show_articles_view);
@@ -245,33 +286,50 @@ public class ShowArticleActivity extends BaseActivity {
 		initPanierView();
     }
 
-	/*private class DownloadImgTask extends AsyncTask<Item, Integer, Integer> {
+	private class DownloadImgTask extends AsyncTask<Item, Object, Object> {
 		private final static String LOG_TAG		= "DownloadImg";
-		IconAdapter mAdapter;
 		
-		public DownloadImgTask(IconAdapter adapter) {
-			mAdapter = adapter;
+		public DownloadImgTask() {
 		}
 
 		@Override
-		protected Integer doInBackground(Item... items) {
-			Item item = items[0];
-			GetImageResult result = PaulineActivity.PBUY.getImage(item.getIdImg());
-			if (result == null) {
-				Log.e(LOG_TAG, "Error (img#"+item.getIdImg()+"): soap return null");
+		protected Object doInBackground(Item... items) {
+			for (Item item : items) {
+				Bitmap im = null;
+				try {
+	    			im = getImageFromCache(item.getIdImg());
+	    		}
+	    		catch (Exception e) {
+					Log.w(LOG_TAG, "getImage #"+item.getIdImg()+" error getFromCache. ", e);
+				}
+				if (im==null) {
+					try {
+						im = PaulineActivity.POSS.getImage64(item.getIdImg(), 72, 72);
+					}
+					catch (Exception e) {
+						Log.e(LOG_TAG, "getImage #"+item.getIdImg(), e);
+					}
+					if (im!=null) {
+						try {
+							saveImageToCache(item.getIdImg(), im);
+						}
+						catch (Exception e) {
+							Log.e(LOG_TAG, "getImage #"+item.getIdImg()+" error saveToCache. ", e);
+						}
+					}
+				}
+				if (im!=null) {
+					item.setImage(im);
+				}
 			}
-			else if (result.getErrorCode() != 0) {
-				Log.e(LOG_TAG, "Error (img#"+item.getIdImg()+"):"+result.getErrorCode());
-			}
-			else {
-				item.setmImage(result.getEncoded());
-			}
-			return 0;
+
+			
+			return null;
 		}
 		
 		@Override
-		protected void onPostExecute(Integer result) {
-			mAdapter.notifyDataSetChanged();
+		protected void onPostExecute(Object result) {
+			ShowArticleActivity.this.mGridAdapter.notifyDataSetChanged();
 		}
-	 }*/
+	 }
 }
