@@ -99,7 +99,7 @@ public class AdditionalKeyStoresSSLSocketFactory extends SSLSocketFactory {
          * Delegate to the default trust manager.
          */
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-        	Log.i("TrustManager", "checkClientTrusted");
+        	//Log.d("TrustManager", "checkClientTrusted");
         	final X509TrustManager defaultX509TrustManager = x509TrustManagers.get(0);
             defaultX509TrustManager.checkClientTrusted(chain, authType);
         }
@@ -108,17 +108,17 @@ public class AdditionalKeyStoresSSLSocketFactory extends SSLSocketFactory {
          * Loop over the trustmanagers until we find one that accepts our server
          */
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-        	Log.i("TrustManager", "checkServerTrusted");
+        	/*Log.d("TrustManager", "checkServerTrusted");
         	for (X509Certificate c : chain) {
-        		Log.i("TrustManager", "DN = "+c.getSubjectDN());
-        		Log.i("TrustManager", "AltNames = "+c.getSubjectAlternativeNames());
-        		Log.i("TrustManager", "UID = "+c.getSubjectUniqueID());
-        		Log.i("TrustManager", "X500 = "+c.getSubjectX500Principal());
-        		//Log.i("TrustManager", c.toString());
+        		Log.d("TrustManager", "DN = "+c.getSubjectDN());
+        		Log.d("TrustManager", "AltNames = "+c.getSubjectAlternativeNames());
+        		Log.d("TrustManager", "UID = "+c.getSubjectUniqueID());
+        		Log.d("TrustManager", "X500 = "+c.getSubjectX500Principal());
+        		//Log.d("TrustManager", c.toString());
         	}
-        	Log.i("TrustManager", authType);
+        	Log.i("TrustManager", authType);*/
             for( X509TrustManager tm : x509TrustManagers ) {
-            	Log.i("TrustManager", tm.toString());
+            	//Log.d("TrustManager", tm.toString());
                 try {
                     tm.checkServerTrusted(chain,authType);
                     return;
