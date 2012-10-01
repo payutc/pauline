@@ -8,11 +8,13 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
+import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,9 +35,9 @@ public class PaulineActivity extends BaseActivity {
 	public static final String API_PATH = "/payutc_dev/server/POSS2.class.php";
 	public static final String API_NAMESPACE = "https://assos.utc.fr:443/payutc_dev/server/POSS2.class.php";
 	public static final boolean API_SSL = true;
-	public static final String API_URL = "https://assos.utc.fr/payutc_dev/mozart/api.php";
+	public static String API_URL;
 	// Id du point de vente
-	public final static int ID_POI				= 46;
+	public static int POI_ID = -1;
 	// */
 	/*
 	public static final String API_HOST = "assos.utc.fr";
@@ -46,7 +48,7 @@ public class PaulineActivity extends BaseActivity {
 	//*/
 	
 	/** Cas service */
-	public static final String CAS_SERVICE		= "https://cas.utc.fr/cas/";
+	public static String CAS_SERVICE;
 	
 	public static final String LOG_TAG			= "PaulineActivity";
 	
@@ -76,9 +78,31 @@ public class PaulineActivity extends BaseActivity {
         schemeRegistry.register(new Scheme("https", createAdditionalCertsSSLSocketFactory(), 443));
         */
         //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
-        POSS = new POSS(API_URL);
         
-        (new GetCasUrlTask()).execute();
+        boolean configOk = false;
+        try {
+        	loadConfig();
+        	configOk = true;
+        }
+        catch (Exception e) {
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        	builder.setTitle("Impossible de charger la config")
+        		   .setMessage(e.getMessage())
+        	       .setCancelable(false)
+        	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+       	                	finish();
+        	           }
+        	       });
+        	AlertDialog alert = builder.create();
+        	alert.show();
+        }
+
+        if (configOk) {
+	        POSS = new POSS(API_URL);
+	        (new GetCasUrlTask()).execute();
+        }
+        
         
         
         // decomment pour aller directement au home sans se logger
@@ -86,10 +110,42 @@ public class PaulineActivity extends BaseActivity {
         
     }
     
+    protected void loadConfig() throws Exception {
+    	String poi_id = null;
+    	XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(false);
+        XmlPullParser xrp = factory.newPullParser();
+        
+        xrp.setInput(getResources().openRawResource(R.raw.config), "UTF-8");
+        
+		while (xrp.getEventType() != XmlResourceParser.END_DOCUMENT) {
+			 
+		    if (xrp.getEventType() == XmlResourceParser.START_TAG) {
+
+		            String s = xrp.getName();
+		            Log.i(LOG_TAG, "name "+s);
+		            if (s.equals("config")) {
+		                API_URL = xrp.getAttributeValue(null, "api_url");
+		                CAS_SERVICE = xrp.getAttributeValue(null, "cas_service");
+		                poi_id = xrp.getAttributeValue(null, "poi_id");
+		            }
+		    }
+		    xrp.next();
+		}
+        if (API_URL==null) { throw new Exception("Config pour api_url introuvable"); }
+        if (CAS_SERVICE==null) { throw new Exception("Config pour cas_service introuvable"); }
+        if (poi_id==null) { throw new Exception("Config pour poi_id introuvable"); }
+        try {
+        	POI_ID = Integer.parseInt(poi_id);
+        }
+        catch (Exception e) {
+        	throw new Exception("Format poi_id incorrect : "+e.getMessage());
+        }
+    }
 
     public void onClickLogin(View _view) {
-    	LogByCas();
-    	//new LoadPosTask("42","24").execute(); 
+    	//LogByCas();
+    	new LoadPosTask("42","24").execute(); 
     }
     
 	@Override
@@ -211,7 +267,7 @@ public class PaulineActivity extends BaseActivity {
     	
     	@Override
     	protected boolean callSoap() throws Exception {
-    		mLoaded = POSS.loadPos(mTicket, mService, ID_POI);
+    		mLoaded = POSS.loadPos(mTicket, mService, POI_ID);
     		return true;
     	}
 
