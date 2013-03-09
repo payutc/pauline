@@ -55,6 +55,7 @@ public class Item implements Parcelable {
 		// Send all output to the Appendable object sb
 		Formatter formatter = new Formatter(sb, Locale.FRENCH);
 		formatter.format("%,.2f", p);
+		formatter.close();
 		return sb.toString()+" €";
 	}
 	

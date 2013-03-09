@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
-import fr.utc.assos.payutc.soap.SoapTask;
+import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 
@@ -145,7 +145,7 @@ public class ShowArticleActivity extends BaseActivity {
     	alert.show();
     }
     
-    private class GetItemsTask extends SoapTask {
+    private class GetItemsTask extends ApiTask<Integer, Integer, Integer> {
     	private ArrayList<Item> mItems=null;
     	
     	public GetItemsTask() {
