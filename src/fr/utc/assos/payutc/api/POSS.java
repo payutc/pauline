@@ -56,7 +56,7 @@ public class POSS extends JsonApiClient {
 			//Log.d(LOG_TAG, "key : "+key);
 			JSONObject i = json_articles.getJSONObject(key);
 			//Log.d(LOG_TAG, "object : "+i.toString());
-			articles.add(new Item(i.getInt("id"), i.getString("name"), i.optString("category_id", "noCategory"), i.optInt("idImg", 1), i.getInt("price")));
+			articles.add(new Item(i.getInt("id"), i.getString("name"), i.optString("category_id", "noCategory"), i.optInt("image", 1), i.getInt("price")));
 		}
 		
 		return articles;

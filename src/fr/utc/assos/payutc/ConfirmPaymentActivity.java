@@ -30,12 +30,13 @@ public class ConfirmPaymentActivity extends BaseActivity {
 
         mPanierSummary = (PanierSummary) findViewById(R.id.confirm_panier_summary);
         mPanierSummary.set(mSession);
-        		
+        
         ListView lv = (ListView)findViewById(R.id.confirm_list);
 
         mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
         
         lv.setAdapter(mAdapter);
+        new DownloadImgTask(mAdapter, PaulineActivity.imageCache).execute(mSession.getItems().toArray(new Item[mSession.getItems().size()]));
     }
     
     public void onClickCancel(View _view) {

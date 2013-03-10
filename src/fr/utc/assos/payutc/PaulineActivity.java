@@ -41,6 +41,9 @@ public class PaulineActivity extends BaseActivity {
 	/** POSS Client */
 	public static POSS POSS;
 	
+	/** Image cache */
+	public static ImageCache imageCache;
+	
 	/** ID des Activity */
 	public static final int CASWEBVIEW	= 0;
 	public static final int HOMEACTIVITY = 1;
@@ -92,6 +95,7 @@ public class PaulineActivity extends BaseActivity {
 	        (new GetCasUrlTask()).execute();
         }
         
+        imageCache = new ImageCache(getCacheDir());
         
         
         // decomment pour aller directement au home sans se logger
