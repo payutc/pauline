@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config
-   api_url=""
-   cas_service=""
-   poi_id=""
+  api_url="https://assos.utc.fr/buckutt/POSS2WithExceptions"
+  cas_service="https://cas.utc.fr/cas/"
+  poi_id="48"
 />
