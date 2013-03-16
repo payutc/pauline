@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
-import fr.utc.assos.payutc.soap.SoapTask;
+import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 
@@ -40,7 +39,6 @@ import fr.utc.assos.payutc.views.PanierSummary;
 public class ShowArticleActivity extends BaseActivity {
 	private static final String LOG_TAG = "ShowArticleActivity";
 	
-	private static final int PANIER				= 0;
 	private static final int CONFIRM_PAYMENT 	= 1;
 
 	ArrayAdapter<Item> mPanierAdapter;
@@ -145,7 +143,7 @@ public class ShowArticleActivity extends BaseActivity {
     	alert.show();
     }
     
-    private class GetItemsTask extends SoapTask {
+    private class GetItemsTask extends ApiTask<Integer, Integer, Integer> {
     	private ArrayList<Item> mItems=null;
     	
     	public GetItemsTask() {
@@ -174,7 +172,7 @@ public class ShowArticleActivity extends BaseActivity {
     
     protected void onGetItemsSuccess(ArrayList<Item> items) {
     	initGridView(items);
-    	new DownloadImgTask().execute(items.toArray(new Item[items.size()]));
+    	new DownloadImgTask(mGridAdapter, PaulineActivity.imageCache).execute(items.toArray(new Item[items.size()]));
     	/*
     	for (Item i : items) {
     		Bitmap im = null;
@@ -285,51 +283,4 @@ public class ShowArticleActivity extends BaseActivity {
 
 		initPanierView();
     }
-
-	private class DownloadImgTask extends AsyncTask<Item, Object, Object> {
-		private final static String LOG_TAG		= "DownloadImg";
-		
-		public DownloadImgTask() {
-		}
-
-		@Override
-		protected Object doInBackground(Item... items) {
-			for (Item item : items) {
-				Bitmap im = null;
-				try {
-	    			im = getImageFromCache(item.getIdImg());
-	    		}
-	    		catch (Exception e) {
-					Log.w(LOG_TAG, "getImage #"+item.getIdImg()+" error getFromCache. ", e);
-				}
-				if (im==null) {
-					try {
-						im = PaulineActivity.POSS.getImage64(item.getIdImg(), 72, 72);
-					}
-					catch (Exception e) {
-						Log.e(LOG_TAG, "getImage #"+item.getIdImg(), e);
-					}
-					if (im!=null) {
-						try {
-							saveImageToCache(item.getIdImg(), im);
-						}
-						catch (Exception e) {
-							Log.e(LOG_TAG, "getImage #"+item.getIdImg()+" error saveToCache. ", e);
-						}
-					}
-				}
-				if (im!=null) {
-					item.setImage(im);
-				}
-			}
-
-			
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Object result) {
-			ShowArticleActivity.this.mGridAdapter.notifyDataSetChanged();
-		}
-	 }
 }

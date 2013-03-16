@@ -1,0 +1,32 @@
+
+
+deploy:         Run setconfig, build & reinstall
+                Exemples:
+                make deploy API_URL=http://localhost/payutc POI_ID=42
+                make deploy DEVICE=emulator-5556 API_URL=http://localhost/payutc POI_ID=42
+
+setconfig:      Change API_URL & POI_ID in res/raw/config
+                Exemple: make setconfig API_URL=http://localhost/payutc POI_ID=42
+
+build:          Build the signed & aligned apk in release mode
+
+
+All the following commands work on an existing apk (signed or unsigned).
+You can precise the path to the apk by using the APK variable, default is 
+pauline-unsigned.apk
+
+apk-sign:       Sign the apk, create pauline.apk (signed version of 
+                pauline-unsigned.apk)
+
+apk-setconfig:  Change the config in a existing apk. Will save the old $(APK)
+                in $(APK)~.
+                Exemples:
+                make setconfig API_URL=http://localhost/payutc POI_ID=42
+
+apk-showconfig: Show the config of an APK
+
+install:        Install the signed APK on the device. Need adb.
+
+reinstall:      Override the current installation. Need adb.
+
+showdevices:    Show available devices. Need adb.

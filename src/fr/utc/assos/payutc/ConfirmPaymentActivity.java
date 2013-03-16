@@ -11,8 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
+import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS.TransactionResult;
-import fr.utc.assos.payutc.soap.SoapTask;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 public class ConfirmPaymentActivity extends BaseActivity {
@@ -30,12 +30,13 @@ public class ConfirmPaymentActivity extends BaseActivity {
 
         mPanierSummary = (PanierSummary) findViewById(R.id.confirm_panier_summary);
         mPanierSummary.set(mSession);
-        		
+        
         ListView lv = (ListView)findViewById(R.id.confirm_list);
 
         mAdapter = new ListItemAdapter(this, R.layout.list_item, mSession.getItems());
         
         lv.setAdapter(mAdapter);
+        new DownloadImgTask(mAdapter, PaulineActivity.imageCache).execute(mSession.getItems().toArray(new Item[mSession.getItems().size()]));
     }
     
     public void onClickCancel(View _view) {
@@ -85,7 +86,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     }
     
 
-    protected class TransactionTask extends SoapTask {
+    protected class TransactionTask extends ApiTask<Integer, Integer, Integer> {
     	private ArrayList<Integer> mIds;
     	private String mIdBuyer;
     	private TransactionResult r=null;

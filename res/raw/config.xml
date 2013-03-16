@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config
-   api_url="https://assos.utc.fr/payutc/mozart/api.php"
-   cas_service="https://cas.utc.fr/cas/"
-   poi_id="48"
+  api_url="https://assos.utc.fr/payutc_dev/server/POSS2WithExceptions"
+  cas_service="https://cas.utc.fr/cas/"
+  poi_id="48"
 />

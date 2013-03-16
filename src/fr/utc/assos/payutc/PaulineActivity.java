@@ -19,8 +19,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import fr.utc.assos.payutc.api.AdditionalKeyStoresSSLSocketFactory;
+import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS;
-import fr.utc.assos.payutc.soap.SoapTask;
 
 /**
  * Demande au seller de badger
@@ -28,35 +28,27 @@ import fr.utc.assos.payutc.soap.SoapTask;
  *
  */
 public class PaulineActivity extends BaseActivity {
-
-	// DEV
-	// Urls pour l'api soap
-	public static final String API_HOST = "assos.utc.fr";
-	public static final String API_PATH = "/payutc_dev/server/POSS2.class.php";
-	public static final String API_NAMESPACE = "https://assos.utc.fr:443/payutc_dev/server/POSS2.class.php";
-	public static final boolean API_SSL = true;
-	public static String API_URL;
-	// Id du point de vente
-	public static int POI_ID = -1;
-	// */
-	/*
-	public static final String API_HOST = "assos.utc.fr";
-	public static final String API_PATH = "/buckutt/POSS2.class.php";
-	public static final String API_NAMESPACE = "https://assos.utc.fr:443/buckutt/POSS2.class.php";
-	public static final boolean API_SSL = true;
-	public final static int ID_POI				= 48;
-	//*/
-	
-	/** Cas service */
-	public static String CAS_SERVICE;
-	
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	//public static PBuy PBUY;
+	/** Sera remplie en lisant la config */
+	public static String API_URL;
+	/** Id du point de vente */
+	public static int POI_ID = -1;
+	
+	/** Cas service, sera remplie en lisant la config */
+	public static String CAS_SERVICE;
+	
+	/** POSS Client */
 	public static POSS POSS;
+	
+	/** Image cache */
+	public static ImageCache imageCache;
+	
+	/** ID des Activity */
 	public static final int CASWEBVIEW	= 0;
 	public static final int HOMEACTIVITY = 1;
 	
+	/* url du CAS, sera remplie en appellanc POSS.getCasUrl */
 	private static String _CAS_URL		= null; 
 	
     /** Called when the activity is first created. */
@@ -103,6 +95,7 @@ public class PaulineActivity extends BaseActivity {
 	        (new GetCasUrlTask()).execute();
         }
         
+        imageCache = new ImageCache(getCacheDir());
         
         
         // decomment pour aller directement au home sans se logger
@@ -144,8 +137,8 @@ public class PaulineActivity extends BaseActivity {
     }
 
     public void onClickLogin(View _view) {
-    	//LogByCas();
-    	new LoadPosTask("42","24").execute(); 
+    	LogByCas();
+    	//new LoadPosTask("42","24").execute();
     }
     
 	@Override
@@ -227,7 +220,7 @@ public class PaulineActivity extends BaseActivity {
     	alert.show();
     }
     
-    private class GetCasUrlTask extends SoapTask {
+    private class GetCasUrlTask extends ApiTask<Integer, Integer, Integer> {
     	private String mUrl;
 
     	public GetCasUrlTask() {
@@ -253,7 +246,7 @@ public class PaulineActivity extends BaseActivity {
         }
     }
 
-    private class LoadPosTask extends SoapTask {
+    private class LoadPosTask extends ApiTask<Integer, Integer, Integer> {
     	private String mTicket, mService;
     	private boolean mLoaded;
     	

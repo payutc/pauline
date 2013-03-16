@@ -5,22 +5,24 @@ public class ApiException extends Exception {
 	 * Je sais pas c'est quoi, eclipse l'a généré tout seul
 	 */
 	private static final long serialVersionUID = -7241957979809837995L;
-	int errCode;
+	String errType;
+	String errCode;
 	String errMsg;
 	public static final String DEFAULT_MSG	= "No msg. available.";
 	
-	ApiException(int err) {
-		this(err, DEFAULT_MSG);
-	}
 	
-	ApiException(int err, String err_msg) {
-		errCode=err;
+	ApiException(String err_type, String err_code, String err_msg) {
+		errType = err_type;
+		if (errType == null || errType == "") {
+			errType = "UntypedError";
+		}
+		errCode=err_code;
 		if (err_msg==null) err_msg = DEFAULT_MSG;
 		errMsg=err_msg;
 	}
 	
 	@Override
 	public String getMessage() {
-		return "Err #" + errCode + " : " + errMsg;
+		return "Err " + errType + "(" + errCode + ")" + " : " + errMsg;
 	}
 }

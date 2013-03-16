@@ -42,7 +42,7 @@ public class JsonApiClient {
 	protected String post(String uri, Arg[] args) 
 			throws IOException {
 		String data = arglist2string(args);
-		Log.d(LOG_TAG, "post data : "+data);
+		Log.d(LOG_TAG, "post "+uri+", data : "+data);
 		URL url = new URL(uri);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -57,9 +57,17 @@ public class JsonApiClient {
         DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
         wr.writeBytes(data);
         wr.flush();
+        
 
 		StringBuilder builder = new StringBuilder();
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		InputStreamReader is;
+		if (conn.getResponseCode() == 200) {
+			is = new InputStreamReader(conn.getInputStream(), "UTF-8");
+		}
+		else {
+			is = new InputStreamReader(conn.getErrorStream(), "UTF-8");
+		}
+        BufferedReader in = new BufferedReader(is);
 	    String inputLine;
 	    while ((inputLine = in.readLine()) != null) {
 	    	builder.append(inputLine);
@@ -77,7 +85,7 @@ public class JsonApiClient {
 	}
 	protected Object call(String method, Arg[] args)
 			throws IOException, JSONException, ApiException {
-		String post_result = post(api_url+"?method="+URLEncoder.encode(method, "UTF-8"), args);
+		String post_result = post(api_url+"/"+URLEncoder.encode(method, "UTF-8"), args);
 		//Log.d(LOG_TAG, "post_result : "+post_result);
 		
 		JSONObject result = null;
@@ -85,22 +93,47 @@ public class JsonApiClient {
 			result = new JSONObject(post_result);
 		}
 		catch (JSONException e) {
-			throw new ApiException(42, e.getMessage()+". Impossible de parser : "+post_result);
+			try {
+				return Integer.valueOf(post_result);
+			}
+			catch (NumberFormatException e2) {
+				try {
+					return Float.valueOf(post_result);
+				}
+				catch (NumberFormatException e3) {
+					if (post_result.length() > 1 && post_result.startsWith("\"") && post_result.endsWith("\"")) {
+						return post_result.substring(1, post_result.length()-1)
+												.replaceAll("\\\\([^\\\\])", "$1");
+					}
+					else if (post_result == "true") {
+						return true;
+					}
+					else if (post_result == "false") {
+						return false;
+					}
+					else {
+						throw new ApiException("LocalParseError", "42", e.getMessage()+". Impossible de parser : "+post_result);
+					}
+				}
+			}
 		}
 
-		if (result.opt("success") == null) {
-			int err_code = 42;
+		if (result.opt("error") != null) {
+			String err_code = "42";
 			String err_msg = null;
+			String err_type = null;
 			try {
-				err_code = result.getInt("error");
-				err_msg = result.getString("error_msg");
+				JSONObject error = result.getJSONObject("error");
+				err_code = error.getString("code");
+				err_msg = error.getString("message");
+				err_type = error.getString("type");
 			} catch (Exception e) {
-				Log.e(LOG_TAG, "soap", e);
+				Log.e(LOG_TAG, "parse error failed", e);
 			}
-			throw new ApiException(err_code, err_msg);
+			throw new ApiException(err_type, err_code, err_msg);
 		}
 		
-		return result.get("success");
+		return result;
 	}
 	
 

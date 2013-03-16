@@ -11,12 +11,18 @@ public class ApiTask<key1 extends Object, key2 extends Object, key3 extends Obje
 	protected Context mContext;
 	protected String mTitle;
 	protected String mMessage;
+	protected int mMaxTries;
 	protected String mTag;
 	
 	public ApiTask(String title, Context ctx, String msg) {
+		this(title, ctx, msg, 3);
+	}
+	
+	public ApiTask(String title, Context ctx, String msg, int max_tries) {
 		mTitle = title;
 		mContext = ctx;
 		mMessage = msg;
+		mMaxTries = max_tries;
 		mTag = getClass().getName();
 	}
 	
