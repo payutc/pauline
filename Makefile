@@ -13,12 +13,13 @@ APK_UNZIP_DIR=apk_unzip
 # parameters for config
 API_URL=https://assos.utc.fr/buckutt/POSS2WithExceptions
 POI_ID=48
+CAS_URL=https://cas.utc.fr/cas/
 
 deploy: setconfig build reinstall
 
 # change the config (API_URL and POI_ID)
 setconfig:
-	echo '<?xml version="1.0" encoding="utf-8"?>\n<config\n  api_url="$(API_URL)"\n  cas_service="https://cas.utc.fr/cas/"\n  poi_id="$(POI_ID)"\n/>' > res/raw/config.xml
+	echo '<?xml version="1.0" encoding="utf-8"?>\n<config\n  api_url="$(API_URL)"\n  cas_service="$(CAS_URL)"\n  poi_id="$(POI_ID)"\n/>' > res/raw/config.xml
 
 # Build the signed & aligned apk in release mode
 build:
