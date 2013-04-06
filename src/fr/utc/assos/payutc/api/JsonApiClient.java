@@ -150,10 +150,15 @@ public class JsonApiClient {
 		    Log.d(LOG_TAG, "cookies : "+cookiesHeader);
 	    	String[] cookieSplit = cookiesHeader.replace("; ", ";").split(";");
 	    	for (String cookieString : cookieSplit) {
-	    		String cookieKey = cookieString.substring(0, cookieString.indexOf("="));
-	    		String cookieValue = cookieString.substring(cookieString.indexOf("=")+1);
-	    		cookies.put(cookieKey, cookieValue);
-	    		Log.d(LOG_TAG, cookieKey + " = " + cookieValue);
+	    		try {
+		    		String cookieKey = cookieString.substring(0, cookieString.indexOf("="));
+		    		String cookieValue = cookieString.substring(cookieString.indexOf("=")+1);
+		    		cookies.put(cookieKey, cookieValue);
+		    		Log.d(LOG_TAG, cookieKey + " = " + cookieValue);
+	    		}
+	    		catch (Exception ex) {
+	    			Log.w(LOG_TAG, "error parsing cookie : '"+cookieString+"'", ex);
+	    		}
 	    	}
 		}
 	}
