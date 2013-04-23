@@ -63,12 +63,20 @@ public class Item implements Parcelable {
 		return mIdImg;
 	}
 	
+	public void setIdImg(int id) {
+		mIdImg = id;
+	}
+	
 	public int getId() {
 		return mId;
 	}
 	
 	public String getName() {
 		return mName;
+	}
+	
+	public void setName(String name) {
+		mName = name;
 	}
 	
 	synchronized public Bitmap getImg() {
