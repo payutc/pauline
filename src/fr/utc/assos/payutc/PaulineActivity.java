@@ -100,7 +100,6 @@ public class PaulineActivity extends BaseActivity {
         
         // decomment pour aller directement au home sans se logger
         //startHomeActivity();
-        
     }
     
     protected void loadConfig() throws Exception {
