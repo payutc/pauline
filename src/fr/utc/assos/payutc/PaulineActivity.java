@@ -11,10 +11,13 @@ import javax.net.ssl.SSLSocketFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -100,7 +103,6 @@ public class PaulineActivity extends BaseActivity {
         
         // decomment pour aller directement au home sans se logger
         //startHomeActivity();
-        
     }
     
     protected void loadConfig() throws Exception {
