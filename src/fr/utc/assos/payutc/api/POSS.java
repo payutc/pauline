@@ -35,7 +35,7 @@ public class POSS extends JsonApiClient {
 		Log.i(LOG_TAG, "cancelTransaction("+transactionId+")");
 		Arg[] args =  { new Arg("purchase_id", transactionId) };
     	Object r = call("cancel", args);
-		Log.d(LOG_TAG, "cancelTransaction : "+r.toString());
+		Log.d(LOG_TAG, "cancelTransaction : "+r);
 	}
 
     public boolean loadPos(String ticket, String service, int poi_id) throws IOException, JSONException, ApiException {

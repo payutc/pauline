@@ -45,7 +45,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		    	       .setCancelable(false)
 		    	       .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
 		    	           public void onClick(DialogInterface dialog, int id) {
-		    	        	   new cancelTransaction(i);
+		    	        	   (new cancelTransaction(i)).execute();
 		    	        	   dialog.cancel();
 		    	           }
 		    	       })
@@ -111,8 +111,12 @@ public class CustomerInfosActivity extends BaseActivity {
 	protected void onCancelTransactionResult(Item i, Exception lastException) {
 		String title, message;
 		if (lastException == null) {
-			title = "Annulation enregistrée";
-			message = "La transaction a été annulée";
+			title = "Succès";
+			message = "La transaction #"+i.getId();
+			message += " "+i.getName();
+			message += " "+Item.costToString(i.getCost()/100.0);
+			message += "a été annulée.";
+			mAdapter.remove(i);
 		}
 		else {
 			title = "Echec";
@@ -160,7 +164,9 @@ public class CustomerInfosActivity extends BaseActivity {
 	protected class cancelTransaction extends ApiTask<String,Integer,Integer> {
 		Item item;
 		public cancelTransaction(Item item) {
-			super("Récupération des infos", CustomerInfosActivity.this, "Un instant s'il vous plait");
+			super("Annulation de la transaction en cours...", 
+					CustomerInfosActivity.this, 
+					"Un instant s'il vous plait");
 			this.item = item;
 		}
 

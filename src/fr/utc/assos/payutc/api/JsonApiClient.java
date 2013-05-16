@@ -87,7 +87,11 @@ public class JsonApiClient {
 	protected Object call(String method, Arg[] args)
 			throws IOException, JSONException, ApiException {
 		String post_result = post(api_url+"/"+URLEncoder.encode(method, "UTF-8"), args);
-		//Log.d(LOG_TAG, "post_result : "+post_result);
+		Log.d(LOG_TAG, "post_result : '"+post_result+"'");
+		
+		if (post_result == null) {
+			return null;
+		}
 		
 		JSONObject result = null;
 		try {
@@ -106,11 +110,14 @@ public class JsonApiClient {
 						return post_result.substring(1, post_result.length()-1)
 												.replaceAll("\\\\([^\\\\])", "$1");
 					}
-					else if (post_result == "true") {
+					else if (post_result.equals("true")) {
 						return true;
 					}
-					else if (post_result == "false") {
+					else if (post_result.equals("false")) {
 						return false;
+					}
+					else if (post_result.equals("null")) {
+						return null;
 					}
 					else {
 						throw new ApiException("LocalParseError", "42", e.getMessage()+". Impossible de parser : "+post_result);
