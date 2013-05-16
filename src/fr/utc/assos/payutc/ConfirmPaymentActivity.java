@@ -115,7 +115,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	
     	public TransactionTask(String id, ArrayList<Item> items) {
     		super("Transaction", ConfirmPaymentActivity.this,
-    				"Transaction en cours...", 0);
+    				"Transaction en cours...");
 			mIds = new ArrayList<Integer>();
 			for (int i=0; i<items.size(); ++i) {
 				Item item = items.get(i);
