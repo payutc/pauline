@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +74,7 @@ public class JsonApiClient {
 	    	builder.append(inputLine);
 	    }
 		in.close();
-	    update_cookies(conn.getHeaderField("Set-Cookie"));
+	    updateCookies(conn.getHeaderFields().get("Set-Cookie"));
 		
         return builder.toString();
 	}
@@ -145,21 +146,21 @@ public class JsonApiClient {
         return sb.toString();
 	}
 	
-	synchronized void update_cookies(String cookiesHeader) {
+	synchronized void updateCookies(List<String> cookiesHeader) {
 		if (cookiesHeader!=null) {
 		    Log.d(LOG_TAG, "cookies : "+cookiesHeader);
-	    	String[] cookieSplit = cookiesHeader.replace("; ", ";").split(";");
-	    	for (String cookieString : cookieSplit) {
-	    		try {
-		    		String cookieKey = cookieString.substring(0, cookieString.indexOf("="));
-		    		String cookieValue = cookieString.substring(cookieString.indexOf("=")+1);
-		    		cookies.put(cookieKey, cookieValue);
-		    		Log.d(LOG_TAG, cookieKey + " = " + cookieValue);
-	    		}
-	    		catch (Exception ex) {
-	    			Log.w(LOG_TAG, "error parsing cookie : '"+cookieString+"'", ex);
-	    		}
-	    	}
+		    for (String cookie : cookiesHeader) {
+		    	try {
+			    	cookie = cookie.substring(0, cookie.indexOf(";"));
+			        String cookieName = cookie.substring(0, cookie.indexOf("="));
+			        String cookieValue = cookie.substring(cookie.indexOf("=") + 1, cookie.length());
+				    cookies.put(cookieName, cookieValue);
+				    Log.d(LOG_TAG, cookieName + " = " + cookieValue);
+		    	}
+		    	catch (Exception ex) {
+		    		Log.w(LOG_TAG, "error parsing cookie : '"+cookie+"'", ex);
+		    	}
+		    }
 		}
 	}
 }

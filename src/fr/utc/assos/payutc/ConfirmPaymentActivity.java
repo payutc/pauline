@@ -2,9 +2,12 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -52,20 +55,39 @@ public class ConfirmPaymentActivity extends BaseActivity {
     }
     
     protected void onResultTransaction(TransactionResult transactionResult, String lastExceptionMessage) {
+    	Vibrator v = (Vibrator) getSystemService(ConfirmPaymentActivity.VIBRATOR_SERVICE);
+        final View screen = findViewById(R.id.confirm_layout);
     	if (transactionResult!=null) {
+    		// Only perform this pattern one time (-1 means "do not repeat")
+    		v.vibrate(300);
     		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE) {
     			stop(true);
     		}
     		else {
+    	        ObjectAnimator colorFade = ObjectAnimator.ofObject(
+    	        					screen, 
+    	        					"backgroundColor", 
+    	        					new ArgbEvaluator(),
+    	        					0xffffffff, 0xff00ff00, 0xffffffff);
+    			colorFade.setDuration(700);
+        		colorFade.setIntValues();
+                colorFade.start();
     			Toast.makeText(this, R.string.success_transaction, Toast.LENGTH_SHORT).show();
     		}
     	}
     	else {
+    		long[] pattern = {
+    		    0,  // Start immediately
+    		    300, 100, 300
+    		};
+    		v.vibrate(pattern, -1);
+    		screen.setBackgroundColor(0xffff0000);
     		AlertDialog.Builder builder = new AlertDialog.Builder(this);
     		builder.setTitle("Échec de la transaction")
     			.setMessage(lastExceptionMessage)
     			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
     		           public void onClick(DialogInterface dialog, int id) {
+   		        			screen.setBackgroundColor(0xffffffff);
     		                dialog.cancel();
     		           }});
     		

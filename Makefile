@@ -14,6 +14,7 @@ APK_UNZIP_DIR=apk_unzip
 API_URL=https://assos.utc.fr/buckutt/POSS2WithExceptions
 POI_ID=48
 CAS_URL=https://cas.utc.fr/cas/
+PACKAGE=fr.utc.assos.payutc
 
 deploy: setconfig build reinstall
 
@@ -57,7 +58,7 @@ reinstall:
 	if [ -z "$(DEVICE)" ]; then adb -d install -r $(S_APK); else adb -s $(DEVICE) install -r $(S_APK); fi
 
 uninstall:
-	if [ -z "$(DEVICE)" ]; then adb -d uninstall $(S_APK); else adb -s $(DEVICE) uninstall $(S_APK); fi
+	if [ -z "$(DEVICE)" ]; then adb -d uninstall $(PACKAGE); else adb -s $(DEVICE) uninstall $(PACKAGE); fi
 
 showdevices:
 	adb devices

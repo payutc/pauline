@@ -50,7 +50,7 @@ public class POSS extends JsonApiClient {
     }
 
     public boolean unload() throws IOException, JSONException, ApiException {
-		Object result = call("unload");
+		Object result = call("logout");
 		Log.d(LOG_TAG, "unload" + result.toString());
     	return true;
     }
