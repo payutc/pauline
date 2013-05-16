@@ -45,11 +45,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		    	       .setCancelable(false)
 		    	       .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
 		    	           public void onClick(DialogInterface dialog, int id) {
-		    	        	   Toast.makeText(
-		    	        			   CustomerInfosActivity.this, 
-		    	        			   "Cette fonctionalité n'est pas disponible pour le moment", 
-		    	        			   Toast.LENGTH_LONG).show();
-		    	        	   mAdapter.remove(i);
+		    	        	   new cancelTransaction(i);
 		    	        	   dialog.cancel();
 		    	           }
 		    	       })
@@ -112,6 +108,22 @@ public class CustomerInfosActivity extends BaseActivity {
         new DownloadImgTask(mAdapter, PaulineActivity.imageCache).execute(l.toArray(new Item[l.size()]));
 	}
 	
+	protected void onCancelTransactionResult(Item i, Exception lastException) {
+		String title, message;
+		if (lastException == null) {
+			title = "Annulation enregistrée";
+			message = "La transaction a été annulée";
+		}
+		else {
+			title = "Echec";
+			message = "Une erreur est survenue." + lastException.getMessage();
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(title).setMessage(message);
+		
+		builder.create().show();
+	}
+	
 	protected class GetCustomerDetails extends ApiTask<String,Integer,Integer> {
 		
 		protected String mId;
@@ -142,6 +154,29 @@ public class CustomerInfosActivity extends BaseActivity {
 			else {
 				onGetCustomerDetailsSuccess(mDetails, mItems);
 			}
+		}
+	}
+
+	protected class cancelTransaction extends ApiTask<String,Integer,Integer> {
+		Item item;
+		public cancelTransaction(Item item) {
+			super("Récupération des infos", CustomerInfosActivity.this, "Un instant s'il vous plait");
+			this.item = item;
+		}
+
+		@Override
+		protected boolean callSoap() throws Exception {
+			// @TODO, could be optimized, get article each time just to
+			// get the name is slow... Maybe the server should return the
+			// name of the objects directly
+			PaulineActivity.POSS.cancelTransaction(item.getId());
+			return true;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer osef) {
+			super.onPostExecute(osef);
+			onCancelTransactionResult(item, lastException);
 		}
 	}
 	
