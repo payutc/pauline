@@ -148,7 +148,7 @@ public class ShowArticleActivity extends BaseActivity {
     	
     	public GetItemsTask() {
     		super("Chargement", ShowArticleActivity.this, 
-    				"Veuillez patienter", 0);
+    				"Veuillez patienter");
     	}
     	
 		@Override

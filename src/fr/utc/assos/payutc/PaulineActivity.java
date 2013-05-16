@@ -224,7 +224,7 @@ public class PaulineActivity extends BaseActivity {
 
     	public GetCasUrlTask() {
 			super("Synchronization", PaulineActivity.this, 
-					"Synchronization avec le serveur en cours...", 1);
+					"Synchronization avec le serveur en cours...");
 		}
     	
     	@Override
@@ -251,7 +251,7 @@ public class PaulineActivity extends BaseActivity {
     	
     	public LoadPosTask(String ticket, String service) {
     		super("Identification", PaulineActivity.this, 
-    				"Connection au serveur en cour...", 1);
+    				"Connection au serveur en cour...");
     		mTicket = ticket;
     		mService = service;
     		mLoaded = false;
