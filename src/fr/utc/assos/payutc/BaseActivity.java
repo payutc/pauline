@@ -47,7 +47,7 @@ public class BaseActivity extends NfcActivity {
 	@Override
 	protected void onIdentification(String id) {
 		Log.d(LOG_TAG, "Identified : "+id);
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.CustomerInfosActivity.class);
+    	Intent intent = new Intent(this, CustomerInfosActivity.class);
 		Bundle b = new Bundle();
 		b.putString("CustomerId", id);
 		intent.putExtras(b);

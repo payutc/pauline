@@ -108,7 +108,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     }
     
 
-    protected class TransactionTask extends ApiTask<Integer, Integer, Integer> {
+    protected class TransactionTask extends ApiTask<Integer, Integer, Object> {
     	private ArrayList<Integer> mIds;
     	private String mIdBuyer;
     	private TransactionResult r=null;
@@ -132,7 +132,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
 		}
 		
 		@Override
-		protected void onPostExecute(Integer osef) {
+		protected void onPostExecute(Object osef) {
 			super.onPostExecute(osef);
 			Log.d(ConfirmPaymentActivity.LOG_TAG, "result transaction : "+r);
 			String lastExceptionMessage = "";

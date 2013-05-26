@@ -64,6 +64,7 @@ showdevices:
 	adb devices
 
 clean:
+	ant clean
 	rm -f $(S_APK)
 	rm -f $(APK_UNZIP_DIR)
 
