@@ -47,10 +47,7 @@ public class HomeActivity extends BaseActivity {
 				case 1:
 			    	startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
 			    	break;
-			    	
-				/*case 2:
-					startCancelTransactionActivity();
-					break;*/
+			    
 				case 2:
 					finish();
 					break;
@@ -65,12 +62,6 @@ public class HomeActivity extends BaseActivity {
     	Log.d(LOG_TAG,"startShowArticleActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
     	mSession.setHomeChoice(type);
-    	startActivity(intent);
-    }
-    
-    private void startCancelTransactionActivity() {
-    	Log.d(LOG_TAG,"startCancelTransactionActivity");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.CancelTransactionActivity.class);
     	startActivity(intent);
     }
     

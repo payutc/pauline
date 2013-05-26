@@ -2,6 +2,7 @@ package fr.utc.assos.payutc.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.json.JSONException;
@@ -11,6 +12,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fr.utc.assos.payutc.Item;
 
 public class POSS extends JsonApiClient {
@@ -24,6 +29,13 @@ public class POSS extends JsonApiClient {
 		String url = (String) call("getCasUrl");
 		Log.d(LOG_TAG, "getCasUrl : "+url);
 		return url;
+	}
+	
+	public void cancelTransaction(int transactionId) throws IOException, JSONException, ApiException {
+		Log.i(LOG_TAG, "cancelTransaction("+transactionId+")");
+		Arg[] args =  { new Arg("purchase_id", transactionId) };
+    	Object r = call("cancel", args);
+		Log.d(LOG_TAG, "cancelTransaction : "+r);
 	}
 
     public boolean loadPos(String ticket, String service, int poi_id) throws IOException, JSONException, ApiException {
@@ -107,15 +119,22 @@ public class POSS extends JsonApiClient {
 		return retour;
 	}
 	
-	public class CustomerDetails {
-		public String mFirstName, mLastName;
-		public int mSolde;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Purchase {
+		public int pur_price;
+		public int pur_id;
+		public int obj_id;
+
+		public Purchase() {}  // jackson need a dummy constructor
+	}
+	
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class CustomerDetails {
+		public String firstname, lastname;
+		public int solde;
+		public HashMap<String, Purchase> last_purchase;
 		
-		public CustomerDetails(String fName, String lName, int solde) {
-			mFirstName = fName;
-			mLastName = lName;
-			mSolde = solde;
-		}
+		public CustomerDetails() {} // jackson need a dummy constructor
 	}
 	
 	public CustomerDetails getCustomerDetails(String id) throws IOException, JSONException, ApiException {
@@ -123,14 +142,17 @@ public class POSS extends JsonApiClient {
     		new Arg("badge_id", id),
     	};
 		Object raw_result = call("getBuyerInfo", args);
-		Log.d(LOG_TAG, "transaction : " + raw_result.toString());
+		String s = raw_result.toString();
+		// UGLY, may break later, this is because php always return [] 
+		// for empty array, whereas we are expected a json object for 
+		// last_purchase
+		s = s.replace("[]", "{}");
+		Log.d(LOG_TAG, "customer details : " + s);
 		
-		JSONObject json_result = (JSONObject) raw_result;
-		String fName = json_result.optString("firstname", "Inconnu");
-		String lName = json_result.optString("lastname", "Inconnu");
-		int solde = json_result.optInt("solde", -1);
+		ObjectMapper mapper = new ObjectMapper();
+		CustomerDetails details = mapper.readValue(s, CustomerDetails.class);
 		
-		return new CustomerDetails(fName, lName, solde);
+		return details;
 	}
 
 }
