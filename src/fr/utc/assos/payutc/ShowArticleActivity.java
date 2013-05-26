@@ -143,7 +143,7 @@ public class ShowArticleActivity extends BaseActivity {
     	alert.show();
     }
     
-    private class GetItemsTask extends ApiTask<Integer, Integer, Integer> {
+    private class GetItemsTask extends ApiTask<Integer, Integer, Object> {
     	private ArrayList<Item> mItems=null;
     	
     	public GetItemsTask() {
@@ -158,7 +158,7 @@ public class ShowArticleActivity extends BaseActivity {
 		}
 		
 		@Override
-		protected void onPostExecute(Integer osef) {
+		protected void onPostExecute(Object osef) {
 			super.onPostExecute(osef);
 	        if (mItems == null) {
 	        	onGetItemsFails(lastException);

@@ -128,7 +128,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		builder.create().show();
 	}
 	
-	protected class GetCustomerDetails extends ApiTask<String,Integer,Integer> {
+	protected class GetCustomerDetails extends ApiTask<String,Integer,Object> {
 		
 		protected String mId;
 		CustomerDetails mDetails = null;
@@ -150,7 +150,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		}
 		
 		@Override
-		protected void onPostExecute(Integer osef) {
+		protected void onPostExecute(Object osef) {
 			super.onPostExecute(osef);
 			if (mDetails==null || mItems==null) {
 				onGetCustomerDetailsFails(lastException);
@@ -161,7 +161,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		}
 	}
 
-	protected class cancelTransaction extends ApiTask<String,Integer,Integer> {
+	protected class cancelTransaction extends ApiTask<String,Integer,Object> {
 		Item item;
 		public cancelTransaction(Item item) {
 			super("Annulation de la transaction en cours...", 
@@ -180,7 +180,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		}
 		
 		@Override
-		protected void onPostExecute(Integer osef) {
+		protected void onPostExecute(Object osef) {
 			super.onPostExecute(osef);
 			onCancelTransactionResult(item, lastException);
 		}

@@ -219,7 +219,7 @@ public class PaulineActivity extends BaseActivity {
     	alert.show();
     }
     
-    private class GetCasUrlTask extends ApiTask<Integer, Integer, Integer> {
+    private class GetCasUrlTask extends ApiTask<Integer, Integer, Object> {
     	private String mUrl;
 
     	public GetCasUrlTask() {
@@ -236,7 +236,7 @@ public class PaulineActivity extends BaseActivity {
         
 
         @Override
-        protected void onPostExecute(Integer osef) {
+        protected void onPostExecute(Object osef) {
     		super.onPostExecute(osef);
         	if (mUrl==null) {
         		onGetCasUrlFails(lastException);
@@ -245,7 +245,7 @@ public class PaulineActivity extends BaseActivity {
         }
     }
 
-    private class LoadPosTask extends ApiTask<Integer, Integer, Integer> {
+    private class LoadPosTask extends ApiTask<Integer, Integer, Object> {
     	private String mTicket, mService;
     	private boolean mLoaded;
     	
@@ -264,7 +264,7 @@ public class PaulineActivity extends BaseActivity {
     	}
 
         @Override
-        protected void onPostExecute(Integer osef) {
+        protected void onPostExecute(Object osef) {
         	super.onPostExecute(osef);
         	if (mLoaded) {
         		startHomeActivity();
