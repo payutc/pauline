@@ -3,7 +3,6 @@ package fr.utc.assos.payutc;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

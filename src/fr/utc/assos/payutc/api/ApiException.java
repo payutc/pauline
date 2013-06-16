@@ -1,28 +1,36 @@
 package fr.utc.assos.payutc.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiException extends Exception {
 	/**
 	 * Je sais pas c'est quoi, eclipse l'a généré tout seul
 	 */
 	private static final long serialVersionUID = -7241957979809837995L;
-	String errType;
-	String errCode;
-	String errMsg;
+	public String type;
+	public String code;
+	public String message;
 	public static final String DEFAULT_MSG	= "No msg. available.";
-	
+
+	public ApiException() {
+		type = "UnitializedException";
+		code = "42";
+		message = DEFAULT_MSG;
+	}
 	
 	ApiException(String err_type, String err_code, String err_msg) {
-		errType = err_type;
-		if (errType == null || errType == "") {
-			errType = "UntypedError";
+		type = err_type;
+		if (type == null || type.equals("")) {
+			type = "UntypedError";
 		}
-		errCode=err_code;
+		code=err_code;
 		if (err_msg==null) err_msg = DEFAULT_MSG;
-		errMsg=err_msg;
+		message=err_msg;
 	}
 	
 	@Override
 	public String getMessage() {
-		return "Err " + errType + "(" + errCode + ")" + " : " + errMsg;
+		return "Err " + type + "(" + code + ")" + " : " + message;
 	}
 }

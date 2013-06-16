@@ -30,6 +30,8 @@
         <activity android:name="PanierActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".CasWebView"></activity>
         <activity android:name="CustomerInfosActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="SetupAppActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="FundationsActivity" android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

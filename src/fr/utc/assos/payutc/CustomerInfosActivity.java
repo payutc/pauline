@@ -1,7 +1,6 @@
 package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -74,6 +73,7 @@ public class CustomerInfosActivity extends BaseActivity {
     }
     
 	protected void onGetCustomerDetailsFails(Exception e) {
+		Log.d("coucou", ""+e);
 		Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		stop();
 	}
@@ -83,13 +83,10 @@ public class CustomerInfosActivity extends BaseActivity {
 		TextView money = (TextView) findViewById(R.id.money);
 		username.setText(details.firstname+" "+details.lastname);
 		money.setText(Item.costToString(details.solde/100.0));
-		
-		Set<String> keys = details.last_purchase.keySet();
 		ArrayList<Item> l = new ArrayList<Item>();
-		for (String key : keys) {
-			Purchase p = details.last_purchase.get(key);
+		for (Purchase p : details.last_purchases) {
 			// We will use item.id to store the purchase id, little hack...
-			Item item = new Item(p.pur_id, "???????", "??????", 0, p.pur_price);
+			Item item = new Item(p.pur_id, "??????", 0, p.pur_price);
 			// Could be optimized by using an hashmap, but since there is never
 			// lot of items, this optimization is probably useless
 			for (Item i : items) {
@@ -101,7 +98,6 @@ public class CustomerInfosActivity extends BaseActivity {
 			}
 			l.add(item);
 		}
-
 		mAdapter.clear();
 		mAdapter.addAll(l);
 		
@@ -145,7 +141,7 @@ public class CustomerInfosActivity extends BaseActivity {
 			// get the name is slow... Maybe the server should return the
 			// name of the objects directly
 			mDetails = PaulineActivity.POSS.getCustomerDetails(mId);
-			mItems = PaulineActivity.POSS.getArticles();
+			mItems = PaulineActivity.POSS.getArticles(mSession.getFunId());
 			return mDetails != null && mItems != null;
 		}
 		
@@ -175,7 +171,7 @@ public class CustomerInfosActivity extends BaseActivity {
 			// @TODO, could be optimized, get article each time just to
 			// get the name is slow... Maybe the server should return the
 			// name of the objects directly
-			PaulineActivity.POSS.cancelTransaction(item.getId());
+			PaulineActivity.POSS.cancelTransaction(mSession.getFunId(), item.getId());
 			return true;
 		}
 		

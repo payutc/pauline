@@ -153,7 +153,7 @@ public class ShowArticleActivity extends BaseActivity {
     	
 		@Override
 		protected boolean callSoap() throws Exception {
-			mItems = PaulineActivity.POSS.getArticles();
+			mItems = PaulineActivity.POSS.getArticles(mSession.getFunId());
 			return mItems != null;
 		}
 		
@@ -173,23 +173,6 @@ public class ShowArticleActivity extends BaseActivity {
     protected void onGetItemsSuccess(ArrayList<Item> items) {
     	initGridView(items);
     	new DownloadImgTask(mGridAdapter, PaulineActivity.imageCache).execute(items.toArray(new Item[items.size()]));
-    	/*
-    	for (Item i : items) {
-    		Bitmap im = null;
-    		try {
-    			im = getImageFromCache(i.getIdImg());
-    		}
-    		catch (Exception _e) {}
-    		if (im==null) {
-    			new DownloadImgTask(mGridAdapter).execute(i);
-    		}
-    		else {
-				i.setImage(im);
-				mGridAdapter.notifyDataSetChanged();
-    		}
-    		break;
-    	}
-    	*/
     }
     
     public Bitmap getImageFromCache(int id) throws FileNotFoundException {

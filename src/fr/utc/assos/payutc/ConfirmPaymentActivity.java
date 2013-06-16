@@ -46,10 +46,6 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	finish();
     }
     
-    public void onClickDebugOk(View _view) {
-    	onResultTransaction(PaulineActivity.POSS.new TransactionResult("thomas", "recouvreux", 44), null);
-    }
-    
     public void onClickDebugFail(View _view) {
     	onResultTransaction(null, "Plus de details en mode normal");
     }
@@ -127,7 +123,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	
 		@Override
 		protected boolean callSoap() throws Exception {
-			r = PaulineActivity.POSS.transaction(mIdBuyer, mIds, "via Pauline");
+			r = PaulineActivity.POSS.transaction(mSession.getFunId(), mIdBuyer, mIds);
 			return true;
 		}
 		

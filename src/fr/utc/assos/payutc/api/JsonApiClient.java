@@ -12,24 +12,36 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonApiClient {
 	public static final String LOG_TAG = "JsonApiClient";
 	public String api_url;
-	HashMap<String, String> cookies = new HashMap<String, String>();
+	static HashMap<String, String> cookies = new HashMap<String, String>();
+	ObjectMapper mapper;
 	
-	public class Arg {
+	protected class Arg {
 		public String key, value;
 		Arg(String _key, Object _value) {
 			key = _key; value = String.valueOf(_value);
 		}
 	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	protected static class ServiceException {
+		public ApiException error;
+		public ServiceException() {}
+	}
+	
 	
 	public JsonApiClient(String url) {
 		api_url = url;
+		mapper = new ObjectMapper();
 	}
 	
 	protected String arglist2string(Arg[] args) throws UnsupportedEncodingException {
@@ -78,14 +90,46 @@ public class JsonApiClient {
 		
         return builder.toString();
 	}
+	
 
-	protected Object call(String method) 
+	protected <T> T call(String method, TypeReference<T> valueTypeRef) 
+			throws UnsupportedEncodingException, ApiException, IOException {
+		Arg[] args = {};
+		return call(method, args, valueTypeRef);
+	}
+	protected <T> T call(String method, Class<T> valueType) 
 			throws IOException, JSONException, ApiException {
 		Arg[] args = {};
-		return call(method, args);
+		return call(method, args, valueType);
 	}
-	protected Object call(String method, Arg[] args)
-			throws IOException, JSONException, ApiException {
+	protected <T> T call(String method, Arg[] args, TypeReference<T> valueTypeRef) 
+			throws ApiException, UnsupportedEncodingException, IOException {
+		String post_result = _call(method, args);
+		// tente de parser le résultat
+		T result = null;
+		try {
+			result = mapper.readValue(post_result, valueTypeRef);
+		}
+		catch (IOException e) {
+			throw new ApiException("LocalParseError", "42", e.getMessage()+". Impossible de parser : "+post_result);
+		}
+		return result;
+	}
+	protected <T> T call(String method, Arg[] args, Class<T> valueType) 
+			throws ApiException, UnsupportedEncodingException, IOException {
+		String post_result = _call(method, args);
+		// tente de parser le résultat
+		T result = null;
+		try {
+			result = mapper.readValue(post_result, valueType);
+		}
+		catch (IOException e) {
+			throw new ApiException("LocalParseError", "42", e.getMessage()+". Impossible de parser : "+post_result);
+		}
+		return result;
+	}
+	protected String _call(String method, Arg[] args)
+			throws ApiException, UnsupportedEncodingException, IOException {
 		String post_result = post(api_url+"/"+URLEncoder.encode(method, "UTF-8"), args);
 		Log.d(LOG_TAG, "post_result : '"+post_result+"'");
 		
@@ -93,55 +137,15 @@ public class JsonApiClient {
 			return null;
 		}
 		
-		JSONObject result = null;
+		// test si c'est une exception
 		try {
-			result = new JSONObject(post_result);
-		}
-		catch (JSONException e) {
-			try {
-				return Integer.valueOf(post_result);
-			}
-			catch (NumberFormatException e2) {
-				try {
-					return Float.valueOf(post_result);
-				}
-				catch (NumberFormatException e3) {
-					if (post_result.length() > 1 && post_result.startsWith("\"") && post_result.endsWith("\"")) {
-						return post_result.substring(1, post_result.length()-1)
-												.replaceAll("\\\\([^\\\\])", "$1");
-					}
-					else if (post_result.equals("true")) {
-						return true;
-					}
-					else if (post_result.equals("false")) {
-						return false;
-					}
-					else if (post_result.equals("null")) {
-						return null;
-					}
-					else {
-						throw new ApiException("LocalParseError", "42", e.getMessage()+". Impossible de parser : "+post_result);
-					}
-				}
+			ServiceException e = mapper.readValue(post_result, ServiceException.class);
+			if (e != null && e.error != null) {
+				throw e.error;
 			}
 		}
-
-		if (result.opt("error") != null) {
-			String err_code = "42";
-			String err_msg = null;
-			String err_type = null;
-			try {
-				JSONObject error = result.getJSONObject("error");
-				err_code = error.getString("code");
-				err_msg = error.getString("message");
-				err_type = error.getString("type");
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "parse error failed", e);
-			}
-			throw new ApiException(err_type, err_code, err_msg);
-		}
-		
-		return result;
+		catch (IOException _osef) {}
+		return post_result;
 	}
 	
 

@@ -33,7 +33,7 @@ public class HomeActivity extends BaseActivity {
         
         ListView lv = (ListView)findViewById(R.id.list_view);
 
-        final String[] items = new String[] {"Vente libre", "Vente produit", "Déconnexion"};
+        final String[] items = new String[] {"Vente libre", "Vente produit", "Retour au choix de l'asso"};
         lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
 
 
@@ -47,9 +47,9 @@ public class HomeActivity extends BaseActivity {
 				case 1:
 			    	startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
 			    	break;
-			    
+				    
 				case 2:
-					finish();
+					stop();
 					break;
 				
 				default: break;
@@ -59,31 +59,26 @@ public class HomeActivity extends BaseActivity {
     }
     
     private void startShowArticleActivity(int type) {
-    	Log.d(LOG_TAG,"startShowArticleActivity");
+    	Log.d(LOG_TAG, "startShowArticleActivity");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.ShowArticleActivity.class);
     	mSession.setHomeChoice(type);
-    	startActivity(intent);
-    }
-    
-    public void onClickCancel(View view) {
-    	stop();
+    	startActivityForResult(intent, type);
     }
     
     @Override
-    protected void onDestroy() {
-    	super.onDestroy();
-    	new Thread(new Runnable() {
-    		public void run() {
-    			for (int i=0; i<3; ++i) {
-	    			try {
-	    				Log.d(LOG_TAG,"onDestroy : unload");
-						PaulineActivity.POSS.unload();
-						break;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-    			}
-    		}
-    		}).start();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		Log.d(LOG_TAG, "requestCode:"+requestCode+" ,resultCode:"+resultCode + " " +RESULT_OK);
+        
+		switch (requestCode) {
+			case PaulineSession.SETUP_APP:
+		    	if (resultCode == RESULT_OK) {
+		            final String[] items = new String[] {"Vente libre", "Vente produit", "Déconnexion"};
+		            ListView lv = (ListView)findViewById(R.id.list_view);
+		            lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
+		    	}
+		    default:
+		    	break;
+	    }
     }
 }
