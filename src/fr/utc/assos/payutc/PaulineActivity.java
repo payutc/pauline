@@ -8,15 +8,10 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,13 +29,17 @@ import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 public class PaulineActivity extends BaseActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	/** Sera remplie en lisant la config */
-	public static String POSS_API_URL;
+	/** URL du serveur */
+	final public static String SERVER_URL = "http://payutc.rox/payutc/server/web/";
 	
-	public static String KEY_API_URL;
+	/** URL vers POSS3 */
+	final public static String POSS_API_URL = SERVER_URL+"POSS3";
+	
+	/** URL vers KEY */
+	final public static String KEY_API_URL = SERVER_URL+"KEY";
 	
 	/** Cas service, sera remplie en lisant la config */
-	public static String CAS_SERVICE = "http://localhost";
+	final public static String CAS_SERVICE = "http://localhost";
 	
 	/** POSS Client */
 	public static POSS POSS;
@@ -76,29 +75,8 @@ public class PaulineActivity extends BaseActivity {
         */
         //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
         
-        boolean configOk = false;
-        try {
-        	loadConfig();
-        	configOk = true;
-        }
-        catch (Exception e) {
-        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        	builder.setTitle("Impossible de charger la config")
-        		   .setMessage(e.getMessage())
-        	       .setCancelable(false)
-        	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-       	                	finish();
-        	           }
-        	       });
-        	AlertDialog alert = builder.create();
-        	alert.show();
-        }
-
-        if (configOk) {
-	        POSS = new POSS(POSS_API_URL);
-	        (new GetCasUrlTask(new GetCasUrlResponseHandler(this))).execute();
-        }
+	    POSS = new POSS(POSS_API_URL);
+	    new GetCasUrlTask(new GetCasUrlResponseHandler(this)).execute();
         
         imageCache = new ImageCache(getCacheDir());
         
@@ -108,30 +86,6 @@ public class PaulineActivity extends BaseActivity {
         
         // decomment pour aller directement au home sans se logger
         //startHomeActivity();
-    }
-    
-    protected void loadConfig() throws Exception {
-    	XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory.setNamespaceAware(false);
-        XmlPullParser xrp = factory.newPullParser();
-        
-        xrp.setInput(getResources().openRawResource(R.raw.config), "UTF-8");
-        
-		while (xrp.getEventType() != XmlResourceParser.END_DOCUMENT) {
-			 
-		    if (xrp.getEventType() == XmlResourceParser.START_TAG) {
-
-		            String s = xrp.getName();
-		            Log.i(LOG_TAG, "name "+s);
-		            if (s.equals("config")) {
-		                POSS_API_URL = xrp.getAttributeValue(null, "poss_api_url");
-		                KEY_API_URL = xrp.getAttributeValue(null, "key_api_url");
-		            }
-		    }
-		    xrp.next();
-		}
-        if (POSS_API_URL==null) { throw new Exception("Config pour poss_api_url introuvable"); }
-        if (KEY_API_URL==null) { throw new Exception("Config pour key_api_url introuvable"); }
     }
 
     public void onClickLogin(View _view) {

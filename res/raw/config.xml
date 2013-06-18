@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<config
-  poss_api_url="http://localhost/payutc/server/web/POSS3"
-  key_api_url="http://localhost/payutc/server/web/KEY"
-/>
