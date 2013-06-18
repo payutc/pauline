@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,6 +23,8 @@ import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.IconAdapter;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.api.ApiTask;
+import fr.utc.assos.payutc.api.ResponseHandler;
+import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 
@@ -54,7 +55,7 @@ public class ShowArticleActivity extends BaseActivity {
         
         mPanierSummary = (PanierSummary) findViewById(R.id.show_articles_panier_summary);
         
-        new GetItemsTask().execute();
+        new GetItemsTask(new GetItemsTaskRespHandler()).execute();
         /* Decommente pour remplir manuellement les articles
         ArrayList<Item> items = new ArrayList<Item>();
         items.add(new Item(42, "coca", "abc", 1, 30));
@@ -123,56 +124,49 @@ public class ShowArticleActivity extends BaseActivity {
         }
     };
     
-    protected void onGetItemsFails(Exception e) {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	builder.setTitle("Impossible de recuperer les articles")
-    		   .setMessage(e.getMessage())
-    	       .setCancelable(false)
-    	       .setPositiveButton("Encore !", new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	        	   dialog.cancel();
-    	        	   new GetItemsTask().execute();
-    	           }
-    	       })
-    	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-   	                	ShowArticleActivity.this.finish();
-    	           }
-    	       });
-    	AlertDialog alert = builder.create();
-    	alert.show();
+    /*
+     * No retry
+     * No exit
+     * This is not critic, the use can go back and try again, maybe later we should
+     * allow retry and exit activity on failure.
+     */
+    protected class GetItemsTaskRespHandler extends DisplayDialogOnError<ArrayList<Item>> {
+
+		public GetItemsTaskRespHandler() {
+			super(ShowArticleActivity.this, "Impossible de récupérer les articles");
+			againListener = new DialogInterface.OnClickListener() {
+ 	           public void onClick(DialogInterface dialog, int id) {
+	        	   dialog.cancel();
+	        	   new GetItemsTask(GetItemsTaskRespHandler.this).execute();
+	           }
+	       };
+		}
+
+		@Override
+		public void onSuccess(ArrayList<Item> items) {
+			// init grid (without images)
+			initGridView(items);
+			// then download the images (async)
+	    	new DownloadImgTask(mGridAdapter, PaulineActivity.imageCache)
+	    			.execute(items.toArray(new Item[items.size()]));
+		}
     }
     
-    private class GetItemsTask extends ApiTask<Integer, Integer, Object> {
-    	private ArrayList<Item> mItems=null;
+    protected class GetItemsTask extends ApiTask<ArrayList<Item>> {
     	
-    	public GetItemsTask() {
-    		super("Chargement", ShowArticleActivity.this, 
-    				"Veuillez patienter");
+    	public GetItemsTask(ResponseHandler<ArrayList<Item>> handler) {
+    		super(ShowArticleActivity.this, "Chargement", 
+    				"Veuillez patienter", handler);
     	}
     	
 		@Override
-		protected boolean callSoap() throws Exception {
-			mItems = PaulineActivity.POSS.getArticles(mSession.getFunId());
-			return mItems != null;
+		protected ArrayList<Item> callSoap() throws Exception {
+			ArrayList<Item> items = PaulineActivity.POSS.getArticles(mSession.getFunId());
+			if (items == null) { // should never happen
+				throw new Exception("items est vide");
+			}
+			return items;
 		}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-	        if (mItems == null) {
-	        	onGetItemsFails(lastException);
-	        }
-	        else {
-	        	onGetItemsSuccess(mItems);
-	        }
-		}
-    	
-    }
-    
-    protected void onGetItemsSuccess(ArrayList<Item> items) {
-    	initGridView(items);
-    	new DownloadImgTask(mGridAdapter, PaulineActivity.imageCache).execute(items.toArray(new Item[items.size()]));
     }
     
     public Bitmap getImageFromCache(int id) throws FileNotFoundException {

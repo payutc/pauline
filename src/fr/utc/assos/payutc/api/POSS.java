@@ -28,10 +28,10 @@ public class POSS extends JsonApiClient {
 		return url;
 	}
 
-	public void cancelTransaction(int fun_id, int transactionId) throws IOException, JSONException, ApiException {
+	public void cancelTransaction(int funId, int transactionId) throws IOException, JSONException, ApiException {
 		Log.i(LOG_TAG, "cancelTransaction("+transactionId+")");
 		Arg[] args =  {
-			new Arg("fun_id", fun_id),
+			new Arg("fun_id", funId),
 			new Arg("pur_id", transactionId)
 		};
 		boolean r = call("cancel", args, Boolean.class);
@@ -59,7 +59,7 @@ public class POSS extends JsonApiClient {
 
 	public boolean logout() throws IOException, JSONException, ApiException {
 		boolean r = call("logout", Boolean.class);
-		Log.d(LOG_TAG, "loginApp : "+r);
+		Log.d(LOG_TAG, "logout : "+r);
 		return r;
 	}
 

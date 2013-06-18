@@ -23,6 +23,8 @@ import android.view.View;
 import fr.utc.assos.payutc.api.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS;
+import fr.utc.assos.payutc.api.ResponseHandler;
+import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 
 /**
  * Demande au seller de badger
@@ -95,7 +97,7 @@ public class PaulineActivity extends BaseActivity {
 
         if (configOk) {
 	        POSS = new POSS(POSS_API_URL);
-	        (new GetCasUrlTask()).execute();
+	        (new GetCasUrlTask(new GetCasUrlResponseHandler(this))).execute();
         }
         
         imageCache = new ImageCache(getCacheDir());
@@ -147,12 +149,12 @@ public class PaulineActivity extends BaseActivity {
 				if (resultCode == RESULT_OK) {
 					String ticket = data.getStringExtra("ticket");
 					Log.i(LOG_TAG, "ticket : "+ticket);
-					new LoginCasTask(ticket, CAS_SERVICE).execute();
+					new LoginCasTask(ticket, CAS_SERVICE, new LoginCasResHandler(this)).execute();
 				}
 			break;
 			case SETUP_APP_ACTIVITY:
 				if (resultCode == RESULT_OK) {
-					new LoginAppTask().execute();
+					new LoginAppTask(new LoginAppRespHandler(this)).execute();
 				}
 			default: break;
 		}
@@ -207,134 +209,120 @@ public class PaulineActivity extends BaseActivity {
         
     }
     
-    protected void onGetCasUrlFails(Exception e) {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	builder.setTitle("Echec de la conexion avec le serveur")
-    		   .setMessage(e.getMessage())
-    	       .setCancelable(false)
-    	       .setPositiveButton("Encore !", new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	        	   dialog.cancel();
-    	        	   new GetCasUrlTask().execute();
-    	           }
-    	       })
-    	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-   	                	PaulineActivity.this.finish();
-    	           }
-    	       });
-    	AlertDialog alert = builder.create();
-    	alert.show();
+    /*
+     * Allow retry
+     * Exit Activity
+     * 
+     * If this function fails, the application can't go further, so we authorize
+     * the user to retry, but we exit if the user does not want to retry.
+     */
+    protected class GetCasUrlResponseHandler extends DisplayDialogOnError<String> {
+		public GetCasUrlResponseHandler(Activity ctx) {
+			super(ctx, "Echec de la synchronisation avec le serveur", null, true);
+			againListener = new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					new GetCasUrlTask(GetCasUrlResponseHandler.this).execute();
+				}
+	        };
+		}
+
+		@Override
+		public void onSuccess(String url) {
+			_CAS_URL = url;
+		}
+    	
     }
     
-    private class GetCasUrlTask extends ApiTask<Integer, Integer, Object> {
-    	private String mUrl;
+    protected class GetCasUrlTask extends ApiTask<String> {
 
-    	public GetCasUrlTask() {
-			super("Synchronization", PaulineActivity.this, 
-					"Synchronization avec le serveur en cours...");
+    	public GetCasUrlTask(ResponseHandler<String> handler) {
+			super(PaulineActivity.this, "Synchronization", 
+					"Synchronization avec le serveur en cours...", handler);
 		}
     	
     	@Override
-    	protected boolean callSoap() throws Exception {
-    		//mUrl = PBUY.getCasUrl();
-    		mUrl = POSS.getCasUrl();
-    		return mUrl!=null;
+    	protected String callSoap() throws Exception {
+    		String url = POSS.getCasUrl();
+    		if (url == null || url.isEmpty()) {
+    			throw new Exception("L'url du CAS est vide");
+    		}
+    		return url;
     	}
-        
+    }
+    
+    /*
+     * No retry
+     * Stay in activity
+     * 
+     * In case of failure the user can push again the button "Connexion" to login.
+     */
+    protected class LoginCasResHandler extends DisplayDialogOnError<String> {
 
-        @Override
-        protected void onPostExecute(Object osef) {
-    		super.onPostExecute(osef);
-        	if (mUrl==null) {
-        		onGetCasUrlFails(lastException);
-        	}
-        	_CAS_URL = mUrl;
-        }
+		public LoginCasResHandler(Activity ctx) {
+			super(ctx, "Echec de l'identification");
+		}
+
+		@Override
+		public void onSuccess(String sellerLogin) {
+			mSession.setSellerLogin(sellerLogin);
+			if (getKey(PaulineActivity.this) != null) {
+    			new LoginAppTask(new LoginAppRespHandler(ctx)).execute();
+    		}
+    		else {
+    			startSetupAppActivity();
+    		}
+		}
+    	
     }
 
-    private class LoginCasTask extends ApiTask<Integer, Integer, Object> {
+    private class LoginCasTask extends ApiTask<String> {
     	private String ticket, service;
-    	private String seller;
     	
-    	public LoginCasTask(String ticket, String service) {
-    		super("Identification", PaulineActivity.this, 
-    				"Connection au serveur en cour...");
+    	public LoginCasTask(String ticket, String service, ResponseHandler<String> handler) {
+    		super(PaulineActivity.this, "Identification", 
+    				"Connection au serveur en cour...", handler);
     		this.ticket = ticket;
     		this.service = service;
-    		seller = "";
     	}
     	
     	@Override
-    	protected boolean callSoap() throws Exception {
-    		seller = POSS.loginCas(ticket, service);
-    		return true;
-    	}
-
-        @Override
-        protected void onPostExecute(Object osef) {
-        	super.onPostExecute(osef);
-        	if (seller != null && !seller.isEmpty()) {
-				mSession.setSellerLogin(seller);
-        		if (getKey(PaulineActivity.this) != null) {
-        			(new LoginAppTask()).execute();
-        		}
-        		else {
-        			startSetupAppActivity();
-        		}
-        	}
-        	else {
-        		AlertDialog.Builder builder = new AlertDialog.Builder(PaulineActivity.this);
-        		builder.setTitle("Echec de l'identification")
-        			.setMessage(lastException.getMessage())
-        			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
-        		           public void onClick(DialogInterface dialog, int id) {
-        		                dialog.cancel();
-        		           }});
-        		builder.create().show();
-        	}
-        }
-    }
-    
-    
-    public void onResultLoginAppTask(String errorMessage) {
-    	if (errorMessage != null) {
-    		AlertDialog.Builder builder = new AlertDialog.Builder(PaulineActivity.this);
-    		builder.setTitle("Echec de l'identification")
-    			.setMessage(errorMessage)
-    			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
-    		           public void onClick(DialogInterface dialog, int id) {
-    		                dialog.cancel();
-    		           }});
-    		builder.create().show();
-    	}
-    	else {
-    		startFundationsActivity();
+    	protected String callSoap() throws Exception {
+    		String seller = POSS.loginCas(ticket, service);
+    		if (seller == null || seller.isEmpty()) {
+    			throw new Exception("Erreur de login Cas, valeur retournée vide.");
+    		}
+    		return seller;
     	}
     }
-
-    protected class LoginAppTask extends ApiTask<Integer, Integer, Object> {
-    	public LoginAppTask() {
-    		super("Connexion", PaulineActivity.this, 
-    				"Connexion au serveur...");
-    	}
-    	
-    	@Override
-    	protected boolean callSoap() throws Exception {
-    		String key = PaulineActivity.getKey(PaulineActivity.this);
-    		PaulineActivity.POSS.loginApp(key);
-    		return true;
-    	}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-			String lastExceptionMessage = null;
-			if (lastException!=null) {
-				lastExceptionMessage = lastException.getMessage();
-			}
-			onResultLoginAppTask(lastExceptionMessage);
+    
+    /*
+     * TODO Comportement not fixed yet, maybe a retry should be allowed ? Shall we exit the
+     * activity on failure ? Shall we allow here to go to the application setup ?
+     */
+    protected class LoginAppRespHandler extends DisplayDialogOnError<Boolean> {
+		public LoginAppRespHandler(Activity ctx) {
+			super(ctx, "Echec de l'identification");
 		}
+
+		@Override
+		public void onSuccess(Boolean _osef) {
+			startFundationsActivity();
+		}
+    	
+    }
+
+    protected class LoginAppTask extends ApiTask<Boolean> {
+    	public LoginAppTask(ResponseHandler<Boolean> handler) {
+    		super(PaulineActivity.this, "Connexion", 
+    				"Connexion au serveur...",  handler);
+    	}
+    	
+    	@Override
+    	protected Boolean callSoap() throws Exception {
+    		String key = PaulineActivity.getKey(PaulineActivity.this);
+    		return PaulineActivity.POSS.loginApp(key);
+    	}
     }
     
     public static void storeRemove(Activity a, String key) {

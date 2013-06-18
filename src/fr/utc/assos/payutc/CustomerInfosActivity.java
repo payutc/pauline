@@ -3,6 +3,7 @@ package fr.utc.assos.payutc;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,14 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.api.ApiTask;
+import fr.utc.assos.payutc.api.ResponseHandler;
 import fr.utc.assos.payutc.api.POSS.CustomerDetails;
 import fr.utc.assos.payutc.api.POSS.Purchase;
+import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 
 public class CustomerInfosActivity extends BaseActivity {
 	public final static String LOG_TAG = "BuyerInfoActivity";
 	
 	protected String mCustomerId;
 	protected ListItemAdapter mAdapter;
+	protected int money = 0;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +49,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		    	       .setCancelable(false)
 		    	       .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
 		    	           public void onClick(DialogInterface dialog, int id) {
-		    	        	   (new cancelTransaction(i)).execute();
+		    	        	   (new CancelTransaction(i)).execute();
 		    	        	   dialog.cancel();
 		    	           }
 		    	       })
@@ -65,121 +70,129 @@ public class CustomerInfosActivity extends BaseActivity {
     }
     
     public void onClickRefresh(View view) {
-		new GetCustomerDetails(mCustomerId).execute();
+		refresh();
     }
     
     public void refresh() {
-		new GetCustomerDetails(mCustomerId).execute();
+		new GetCustomerDetails(this, mCustomerId, mSession.getFunId(), 
+				new GetCustomerDetailsRespHandler()).execute();
     }
-    
-	protected void onGetCustomerDetailsFails(Exception e) {
-		Log.d("coucou", ""+e);
-		Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		stop();
-	}
 	
-	protected void onGetCustomerDetailsSuccess(CustomerDetails details, ArrayList<Item> items) {
-		TextView username = (TextView) findViewById(R.id.username);
-		TextView money = (TextView) findViewById(R.id.money);
-		username.setText(details.firstname+" "+details.lastname);
-		money.setText(Item.costToString(details.solde/100.0));
-		ArrayList<Item> l = new ArrayList<Item>();
-		for (Purchase p : details.last_purchases) {
-			// We will use item.id to store the purchase id, little hack...
-			Item item = new Item(p.pur_id, "??????", 0, p.pur_price);
-			// Could be optimized by using an hashmap, but since there is never
-			// lot of items, this optimization is probably useless
-			for (Item i : items) {
-				if (i.getId() == p.obj_id) {
-					item.setName(i.getName());
-					item.setIdImg(i.getIdImg());
-					break;
-				}
-			}
-			l.add(item);
-		}
-		mAdapter.clear();
-		mAdapter.addAll(l);
-		
-        new DownloadImgTask(mAdapter, PaulineActivity.imageCache).execute(l.toArray(new Item[l.size()]));
-	}
-	
-	protected void onCancelTransactionResult(Item i, Exception lastException) {
-		String title, message;
-		if (lastException == null) {
-			title = "Succès";
-			message = "La transaction #"+i.getId();
-			message += " "+i.getName();
-			message += " "+Item.costToString(i.getCost()/100.0);
-			message += "a été annulée.";
-			mAdapter.remove(i);
-		}
-		else {
-			title = "Echec";
-			message = "Une erreur est survenue." + lastException.getMessage();
-		}
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(title).setMessage(message);
-		
-		builder.create().show();
-	}
-	
-	protected class GetCustomerDetails extends ApiTask<String,Integer,Object> {
-		
-		protected String mId;
-		CustomerDetails mDetails = null;
-		private ArrayList<Item> mItems = null;
-		
-		public GetCustomerDetails(String id) {
-			super("Récupération des infos", CustomerInfosActivity.this, "Un instant s'il vous plait");
-			mId = id;
+    /*
+     * No retry
+     * Exit activity
+     * 
+     * There is no need for retry button, the user can just pass again the card.
+     * The activity exit because without these data the activity is useless.
+     */
+	protected class GetCustomerDetailsRespHandler extends DisplayDialogOnError<GetCustomerDetailsResult> {
+
+		public GetCustomerDetailsRespHandler() {
+			super(CustomerInfosActivity.this, "Impossible de récupérer des informations");
 		}
 
 		@Override
-		protected boolean callSoap() throws Exception {
+		public void onSuccess(GetCustomerDetailsResult r) {
+			TextView vUsername = (TextView) findViewById(R.id.username);
+			TextView vMoney = (TextView) findViewById(R.id.money);
+			vUsername.setText(r.customerDestails.firstname+" "+r.customerDestails.lastname);
+			money = r.customerDestails.solde;
+			vMoney.setText(Item.costToString(money/100.0));
+			ArrayList<Item> l = new ArrayList<Item>();
+			for (Purchase p : r.customerDestails.last_purchases) {
+				// We will use item.id to store the purchase id, little hack...
+				Item item = new Item(p.pur_id, "??????", 0, p.pur_price);
+				// Could be optimized by using an hashmap, but since there is never
+				// lot of items, this optimization is probably useless
+				for (Item i : r.items) {
+					if (i.getId() == p.obj_id) {
+						item.setName(i.getName());
+						item.setIdImg(i.getIdImg());
+						break;
+					}
+				}
+				l.add(item);
+			}
+			mAdapter.clear();
+			mAdapter.addAll(l);
+			
+	        new DownloadImgTask(mAdapter, PaulineActivity.imageCache).execute(l.toArray(new Item[l.size()]));
+		}
+		
+	}
+
+	public static class GetCustomerDetailsResult {
+		public CustomerDetails customerDestails;
+		public ArrayList<Item> items;
+	}
+	
+	public static class GetCustomerDetails extends ApiTask<GetCustomerDetailsResult> {
+		protected String badgeId;
+		protected int funId;
+		
+		public GetCustomerDetails(Context ctx, String badgeId, int funId,
+				ResponseHandler<GetCustomerDetailsResult> handler) {
+			super(ctx, "Récupération des infos",
+					"Un instant s'il vous plait", handler);
+			this.badgeId = badgeId;
+			this.funId = funId;
+		}
+
+		@Override
+		protected GetCustomerDetailsResult callSoap() throws Exception {
 			// @TODO, could be optimized, get article each time just to
 			// get the name is slow... Maybe the server should return the
 			// name of the objects directly
-			mDetails = PaulineActivity.POSS.getCustomerDetails(mId);
-			mItems = PaulineActivity.POSS.getArticles(mSession.getFunId());
-			return mDetails != null && mItems != null;
-		}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-			if (mDetails==null || mItems==null) {
-				onGetCustomerDetailsFails(lastException);
+			GetCustomerDetailsResult r = new GetCustomerDetailsResult();
+			r.customerDestails = PaulineActivity.POSS.getCustomerDetails(badgeId);
+			if (r.customerDestails == null) {
+				throw new Exception("Aucune informations sur l'utilisateur reçues.");
 			}
-			else {
-				onGetCustomerDetailsSuccess(mDetails, mItems);
+			r.items = PaulineActivity.POSS.getArticles(funId);
+			if (r.items == null) {
+				throw new Exception("Aucun articles reçue.");
 			}
+			return r;
 		}
 	}
+	
+	protected class CancelResponseHandler extends DisplayDialogOnError<Item> {
 
-	protected class cancelTransaction extends ApiTask<String,Integer,Object> {
+		public CancelResponseHandler() {
+			super(CustomerInfosActivity.this, "Echec");
+		}
+
+		@Override
+		public void onSuccess(Item i) {
+			String message;
+			message = "La transaction #"+i.getId() +
+					  " " + i.getName() +
+					  " " + Item.costToString(i.getCost()/100.0) +
+					  "a été annulée.";
+			mAdapter.remove(i);
+			money += i.getCost();
+			TextView vMoney = (TextView) findViewById(R.id.money);
+			vMoney.setText(Item.costToString(money/100.0));
+			Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+		}
+		
+	}
+
+	protected class CancelTransaction extends ApiTask<Item> {
 		Item item;
-		public cancelTransaction(Item item) {
-			super("Annulation de la transaction en cours...", 
-					CustomerInfosActivity.this, 
-					"Un instant s'il vous plait");
+		public CancelTransaction(Item item) {
+			super(CustomerInfosActivity.this, "Annulation de la transaction en cours...",
+					"Un instant s'il vous plait", new CancelResponseHandler());
 			this.item = item;
 		}
 
 		@Override
-		protected boolean callSoap() throws Exception {
+		protected Item callSoap() throws Exception {
 			// @TODO, could be optimized, get article each time just to
 			// get the name is slow... Maybe the server should return the
 			// name of the objects directly
 			PaulineActivity.POSS.cancelTransaction(mSession.getFunId(), item.getId());
-			return true;
-		}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-			onCancelTransactionResult(item, lastException);
+			return item;
 		}
 	}
-	
 }

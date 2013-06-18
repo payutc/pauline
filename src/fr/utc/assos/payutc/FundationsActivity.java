@@ -2,7 +2,6 @@ package fr.utc.assos.payutc;
 
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +14,8 @@ import android.widget.ListView;
 import fr.utc.assos.payutc.api.ApiException;
 import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS.Fundation;
+import fr.utc.assos.payutc.api.ResponseHandler;
+import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 
 public class FundationsActivity extends BaseActivity {
 	public final static String LOG_TAG		= "FundationsActivity";
@@ -40,7 +41,7 @@ public class FundationsActivity extends BaseActivity {
 		adapter = new ArrayAdapter<String>(this, R.layout.list_item, new ArrayList<String>());
 		lv.setAdapter(adapter);
 		
-		new GetFundationsTask().execute();
+		new GetFundationsTask(new GetFundationRespHandler()).execute();
     }
     
     public void updateListView() {
@@ -56,67 +57,68 @@ public class FundationsActivity extends BaseActivity {
     	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
     	startActivity(intent);
     }
+    
+    /*
+     * Allow retry
+     * Exit activity
+     * 
+     * Without the data, the application can't go further, so exit activity !
+     */
+    protected class GetFundationRespHandler extends DisplayDialogOnError<ArrayList<Fundation>> {
 
-    protected void onResultGetFundations(Exception ex) {
-    	String errorMessage = null;
-		if (ex == null && fundations.size() == 0) {
-			errorMessage = "Tu n'a les droits sur aucune fondation !";
+		public GetFundationRespHandler() {
+			super(FundationsActivity.this, "Erreur", null, true);
+			againListener = new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+							new GetFundationsTask(GetFundationRespHandler.this).execute();
+						}
+					};
 		}
-		else if (ex != null) {
-			errorMessage = ex.getMessage();
-		}
-    	if (errorMessage != null) {
-    		if (ex != null && ex instanceof ApiException) {
-    			ApiException aex = (ApiException)ex;
-    			if (aex.type.endsWith("CheckRightException")) {
-    				errorMessage = "Toi ou ton application n'avez pas le droit de vendre. " +
-    						"Contactes le président de ton association pour qu'il te donne" +
-    						" des droits. Le nom de ton application est '"+
-    						PaulineActivity.getAppName(this)+"'.";
-    			}
-    		}
-    		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    		builder.setTitle("Echec")
-    		.setMessage(errorMessage)
-    		.setPositiveButton("Encore !", new DialogInterface.OnClickListener() {
-    			public void onClick(DialogInterface dialog, int id) {
-    				dialog.cancel();
-    				new GetFundationsTask().execute();
-    			}
-    		})
-    		.setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
-    			public void onClick(DialogInterface dialog, int id) {
-    				dialog.cancel();
-    				stop(false);
-    			}});
-    		builder.create().show();
-    	}
-    	else {
-    		updateListView();
+
+		@Override
+		public void onSuccess(ArrayList<Fundation> response) {
+			fundations = response;
+			updateListView();
     		if (fundations.size() == 1) {
     			mSession.setFunId(fundations.get(0).fun_id);
     			startHomeActivity();
     		}
-    	}
+		}
+    	
     }
     
-    protected class GetFundationsTask extends ApiTask<Integer, Integer, Object> {
-    	public GetFundationsTask() {
-    		super("Patientez", FundationsActivity.this, 
-    				"Récupération des assos...");
+    protected class GetFundationsTask extends ApiTask<ArrayList<Fundation>> {
+    	
+    	public GetFundationsTask(ResponseHandler<ArrayList<Fundation>> handler) {
+    		super(FundationsActivity.this, "Patientez", 
+    				"Récupération des assos...", handler);
     	}
     	
     	@Override
-    	protected boolean callSoap() throws Exception {
-    		fundations = PaulineActivity.POSS.getFundations();
-    		return true;
+    	protected ArrayList<Fundation> callSoap() throws Exception {
+    		boolean noFundations = false;
+    		ArrayList<Fundation> fundations = null;
+    		try {
+    			 fundations = PaulineActivity.POSS.getFundations();
+    		}
+    		catch (ApiException ex) {
+    			if (ex.type.endsWith("CheckRightException")) {
+    				noFundations = true;
+    			}
+    			else {
+    				throw ex;
+    			}
+    		}
+    		if (noFundations || fundations == null || fundations.size() == 0) {
+				String errorMessage = "Toi ou ton application n'avez pas le droit de vendre. " +
+						"Contactes le président de ton association pour qu'il te donne" +
+						" des droits. Le nom de ton application est '"+
+						PaulineActivity.getAppName(FundationsActivity.this)+"'.";
+				throw new Exception(errorMessage);
+			}
+    		return fundations;
     	}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-			onResultGetFundations(lastException);
-		}
     }
     
     @Override

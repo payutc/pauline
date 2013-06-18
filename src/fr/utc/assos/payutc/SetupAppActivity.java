@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +12,8 @@ import android.widget.EditText;
 import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.KEY;
 import fr.utc.assos.payutc.api.KEY.Application;
+import fr.utc.assos.payutc.api.ResponseHandler;
+import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 
 public class SetupAppActivity extends BaseActivity {
 	public static final String LOG_TAG			= "SetupAppActivity";
@@ -31,66 +31,59 @@ public class SetupAppActivity extends BaseActivity {
         et.setText(defaultName);
 	}
 	
-	public void onResultSetupTask(Application app, String errorMessage) {
-		if (app != null) {
-			if (app.app_key == null || app.app_key.isEmpty()) {
-				errorMessage = "La key retournée n'est pas valide : "+app.app_key;
-			}
+	public void run(View v) {
+		EditText et = (EditText)findViewById(R.id.app_name);
+		String app_name = et.getText().toString();
+		new SetupApplicationTask(PaulineActivity.CAS_SERVICE, app_name, new SetupAppRespHandler()).execute();
+	}
+	
+	/*
+	 * No retry
+	 * Stay in activity
+	 * 
+	 * There is no special need to retry with the same data, plus the user can just 
+	 * press the button to retry.
+	 * There is no need to exit the activity, the user can decide to retry.
+	 */
+	protected class SetupAppRespHandler extends DisplayDialogOnError<Application> {
+		public SetupAppRespHandler() {
+			super(SetupAppActivity.this, "Echec");
 		}
-		if (errorMessage != null && !errorMessage.isEmpty()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    		builder.setTitle("Échec")
-    			.setMessage(errorMessage)
-    			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
-    		           public void onClick(DialogInterface dialog, int id) {
-    		                dialog.cancel();
-    		           }});
-    		builder.create().show();
-		}
-		else {
+
+		@Override
+		public void onSuccess(Application app) {
 			Log.d(LOG_TAG, "Key : "+app.app_key+" "+app.app_name);
-			PaulineActivity.setKey(this, app.app_key);
-			PaulineActivity.setAppName(this, app.app_name);
+			PaulineActivity.setKey(SetupAppActivity.this, app.app_key);
+			PaulineActivity.setAppName(SetupAppActivity.this, app.app_name);
 			stop(true);
 		}
 	}
 	
-	public void run(View v) {
-		EditText et = (EditText)findViewById(R.id.app_name);
-		String app_name = et.getText().toString();
-		(new SetupApplicationTask(PaulineActivity.CAS_SERVICE, app_name)).execute();
-	}
-
-    private class SetupApplicationTask extends ApiTask<Integer, Integer, Object> {
+    protected class SetupApplicationTask extends ApiTask<Application> {
     	protected String appUrl, appName;
     	protected KEY key;
     	protected Application app = null;
     	
     	
-    	public SetupApplicationTask(String app_url, String app_name) {
-    		super("SetupApplicationTask", SetupAppActivity.this, 
-    				"Installation de l'application...");
+    	public SetupApplicationTask(String app_url, String app_name,
+    			ResponseHandler<Application> handler) {
+    		super(SetupAppActivity.this, "SetupApplicationTask", 
+    				"Installation de l'application...", handler);
     		appUrl = app_url;
     		appName = app_name;
     		key = new KEY(PaulineActivity.KEY_API_URL);
     	}
     	
     	@Override
-    	protected boolean callSoap() throws Exception {
-    		app = key.registerApplication(appUrl, appName);
-    		return true;
-    	}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-			Log.d(SetupAppActivity.LOG_TAG, "result SetupApplicationTask : "+app);
-			String lastExceptionMessage = null;
-			if (lastException!=null) {
-				lastExceptionMessage = lastException.getMessage();
+    	protected Application callSoap() throws Exception {
+    		Application app = key.registerApplication(appUrl, appName);
+    		if (app == null) { //should never happen
+    			throw new Exception("L'application récupérée est vide");
+    		}
+    		if (app.app_key == null || app.app_key.isEmpty()) {
+				throw new Exception("La key retournée n'est pas valide : "+app.app_key);
 			}
-			onResultSetupTask(app, lastExceptionMessage);
-		}
+    		return app;
+    	}
     }
-    
 }
