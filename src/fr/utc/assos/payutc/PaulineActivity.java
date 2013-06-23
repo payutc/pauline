@@ -8,19 +8,18 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.XmlResourceParser;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import fr.utc.assos.payutc.api.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS;
+import fr.utc.assos.payutc.api.ResponseHandler;
+import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 
 /**
  * Demande au seller de badger
@@ -30,13 +29,17 @@ import fr.utc.assos.payutc.api.POSS;
 public class PaulineActivity extends BaseActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	/** Sera remplie en lisant la config */
-	public static String API_URL;
-	/** Id du point de vente */
-	public static int POI_ID = -1;
+	/** URL du serveur */
+	final public static String SERVER_URL = "http://payutc.rox/payutc/server/web/";
+	
+	/** URL vers POSS3 */
+	final public static String POSS_API_URL = SERVER_URL+"POSS3";
+	
+	/** URL vers KEY */
+	final public static String KEY_API_URL = SERVER_URL+"KEY";
 	
 	/** Cas service, sera remplie en lisant la config */
-	public static String CAS_SERVICE;
+	final public static String CAS_SERVICE = "http://localhost";
 	
 	/** POSS Client */
 	public static POSS POSS;
@@ -46,7 +49,8 @@ public class PaulineActivity extends BaseActivity {
 	
 	/** ID des Activity */
 	public static final int CASWEBVIEW	= 0;
-	public static final int HOMEACTIVITY = 1;
+	public static final int HOME_ACTIVITY = 1;
+	public static final int SETUP_APP_ACTIVITY = 2;
 	
 	/* url du CAS, sera remplie en appellanc POSS.getCasUrl */
 	private static String _CAS_URL		= null; 
@@ -71,73 +75,24 @@ public class PaulineActivity extends BaseActivity {
         */
         //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
         
-        boolean configOk = false;
-        try {
-        	loadConfig();
-        	configOk = true;
-        }
-        catch (Exception e) {
-        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        	builder.setTitle("Impossible de charger la config")
-        		   .setMessage(e.getMessage())
-        	       .setCancelable(false)
-        	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-       	                	finish();
-        	           }
-        	       });
-        	AlertDialog alert = builder.create();
-        	alert.show();
-        }
-
-        if (configOk) {
-	        POSS = new POSS(API_URL);
-	        (new GetCasUrlTask()).execute();
-        }
+	    POSS = new POSS(POSS_API_URL);
+	    new GetCasUrlTask(new GetCasUrlResponseHandler(this)).execute();
         
         imageCache = new ImageCache(getCacheDir());
+        
+        // uncomment to reset application key and name
+        //resetStore(this);
         
         
         // decomment pour aller directement au home sans se logger
         //startHomeActivity();
     }
-    
-    protected void loadConfig() throws Exception {
-    	String poi_id = null;
-    	XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory.setNamespaceAware(false);
-        XmlPullParser xrp = factory.newPullParser();
-        
-        xrp.setInput(getResources().openRawResource(R.raw.config), "UTF-8");
-        
-		while (xrp.getEventType() != XmlResourceParser.END_DOCUMENT) {
-			 
-		    if (xrp.getEventType() == XmlResourceParser.START_TAG) {
-
-		            String s = xrp.getName();
-		            Log.i(LOG_TAG, "name "+s);
-		            if (s.equals("config")) {
-		                API_URL = xrp.getAttributeValue(null, "api_url");
-		                CAS_SERVICE = xrp.getAttributeValue(null, "cas_service");
-		                poi_id = xrp.getAttributeValue(null, "poi_id");
-		            }
-		    }
-		    xrp.next();
-		}
-        if (API_URL==null) { throw new Exception("Config pour api_url introuvable"); }
-        if (CAS_SERVICE==null) { throw new Exception("Config pour cas_service introuvable"); }
-        if (poi_id==null) { throw new Exception("Config pour poi_id introuvable"); }
-        try {
-        	POI_ID = Integer.parseInt(poi_id);
-        }
-        catch (Exception e) {
-        	throw new Exception("Format poi_id incorrect : "+e.getMessage());
-        }
-    }
 
     public void onClickLogin(View _view) {
+    	// COMMENT TO LOGIN DIRECTLY (with faux-cas for example)
     	LogByCas();
-    	//new LoadPosTask("42","24").execute();
+    	// UNCOMMENT TO LOGIN DIRECTLY (with faux-cas for example)
+    	//new LoginCasTask("trecouvr@POSS3","POSS3").execute();
     }
     
 	@Override
@@ -148,9 +103,13 @@ public class PaulineActivity extends BaseActivity {
 				if (resultCode == RESULT_OK) {
 					String ticket = data.getStringExtra("ticket");
 					Log.i(LOG_TAG, "ticket : "+ticket);
-					new LoadPosTask(ticket, CAS_SERVICE).execute();
+					new LoginCasTask(ticket, CAS_SERVICE, new LoginCasResHandler(this)).execute();
 				}
 			break;
+			case SETUP_APP_ACTIVITY:
+				if (resultCode == RESULT_OK) {
+					new LoginAppTask(new LoginAppRespHandler(this)).execute();
+				}
 			default: break;
 		}
     }
@@ -162,13 +121,18 @@ public class PaulineActivity extends BaseActivity {
     	b.putString("casurl", _CAS_URL);
     	intent.putExtras(b);
     	startActivityForResult(intent, CASWEBVIEW);
-    	//new LoadPosTask("42","24").execute(); 
     }
     
-    public void startHomeActivity() {
+    public void startSetupAppActivity() {
     	Log.d(LOG_TAG,"startHomeActivity");
-    	Intent intent = new Intent(this, fr.utc.assos.payutc.HomeActivity.class);
-    	startActivityForResult(intent,HOMEACTIVITY);
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.SetupAppActivity.class);
+    	startActivityForResult(intent,SETUP_APP_ACTIVITY);
+    }
+    
+    public void startFundationsActivity() {
+    	Log.d(LOG_TAG,"startFundationsActivity");
+    	Intent intent = new Intent(this, fr.utc.assos.payutc.FundationsActivity.class);
+    	startActivity(intent);
     }
     
     protected SSLSocketFactory createAdditionalCertsSSLSocketFactory() {
@@ -199,87 +163,160 @@ public class PaulineActivity extends BaseActivity {
         
     }
     
-    protected void onGetCasUrlFails(Exception e) {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    	builder.setTitle("Echec de la conexion avec le serveur")
-    		   .setMessage(e.getMessage())
-    	       .setCancelable(false)
-    	       .setPositiveButton("Encore !", new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	        	   dialog.cancel();
-    	        	   new GetCasUrlTask().execute();
-    	           }
-    	       })
-    	       .setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-   	                	PaulineActivity.this.finish();
-    	           }
-    	       });
-    	AlertDialog alert = builder.create();
-    	alert.show();
+    /*
+     * Allow retry
+     * Exit Activity
+     * 
+     * If this function fails, the application can't go further, so we authorize
+     * the user to retry, but we exit if the user does not want to retry.
+     */
+    protected class GetCasUrlResponseHandler extends DisplayDialogOnError<String> {
+		public GetCasUrlResponseHandler(Activity ctx) {
+			super(ctx, "Echec de la synchronisation avec le serveur", null, true);
+			againListener = new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					new GetCasUrlTask(GetCasUrlResponseHandler.this).execute();
+				}
+	        };
+		}
+
+		@Override
+		public void onSuccess(String url) {
+			_CAS_URL = url;
+		}
+    	
     }
     
-    private class GetCasUrlTask extends ApiTask<Integer, Integer, Object> {
-    	private String mUrl;
+    protected class GetCasUrlTask extends ApiTask<String> {
 
-    	public GetCasUrlTask() {
-			super("Synchronization", PaulineActivity.this, 
-					"Synchronization avec le serveur en cours...");
+    	public GetCasUrlTask(ResponseHandler<String> handler) {
+			super(PaulineActivity.this, "Synchronization", 
+					"Synchronization avec le serveur en cours...", handler);
 		}
     	
     	@Override
-    	protected boolean callSoap() throws Exception {
-    		//mUrl = PBUY.getCasUrl();
-    		mUrl = POSS.getCasUrl();
-    		return mUrl!=null;
+    	protected String callSoap() throws Exception {
+    		String url = POSS.getCasUrl();
+    		if (url == null || url.isEmpty()) {
+    			throw new Exception("L'url du CAS est vide");
+    		}
+    		return url;
     	}
-        
+    }
+    
+    /*
+     * No retry
+     * Stay in activity
+     * 
+     * In case of failure the user can push again the button "Connexion" to login.
+     */
+    protected class LoginCasResHandler extends DisplayDialogOnError<String> {
 
-        @Override
-        protected void onPostExecute(Object osef) {
-    		super.onPostExecute(osef);
-        	if (mUrl==null) {
-        		onGetCasUrlFails(lastException);
-        	}
-        	_CAS_URL = mUrl;
-        }
+		public LoginCasResHandler(Activity ctx) {
+			super(ctx, "Echec de l'identification");
+		}
+
+		@Override
+		public void onSuccess(String sellerLogin) {
+			mSession.setSellerLogin(sellerLogin);
+			if (getKey(PaulineActivity.this) != null) {
+    			new LoginAppTask(new LoginAppRespHandler(ctx)).execute();
+    		}
+    		else {
+    			startSetupAppActivity();
+    		}
+		}
+    	
     }
 
-    private class LoadPosTask extends ApiTask<Integer, Integer, Object> {
-    	private String mTicket, mService;
-    	private boolean mLoaded;
+    private class LoginCasTask extends ApiTask<String> {
+    	private String ticket, service;
     	
-    	public LoadPosTask(String ticket, String service) {
-    		super("Identification", PaulineActivity.this, 
-    				"Connection au serveur en cour...");
-    		mTicket = ticket;
-    		mService = service;
-    		mLoaded = false;
+    	public LoginCasTask(String ticket, String service, ResponseHandler<String> handler) {
+    		super(PaulineActivity.this, "Identification", 
+    				"Connection au serveur en cour...", handler);
+    		this.ticket = ticket;
+    		this.service = service;
     	}
     	
     	@Override
-    	protected boolean callSoap() throws Exception {
-    		mLoaded = POSS.loadPos(mTicket, mService, POI_ID);
-    		return true;
+    	protected String callSoap() throws Exception {
+    		String seller = POSS.loginCas(ticket, service);
+    		if (seller == null || seller.isEmpty()) {
+    			throw new Exception("Erreur de login Cas, valeur retournée vide.");
+    		}
+    		return seller;
     	}
+    }
+    
+    /*
+     * TODO Comportement not fixed yet, maybe a retry should be allowed ? Shall we exit the
+     * activity on failure ? Shall we allow here to go to the application setup ?
+     */
+    protected class LoginAppRespHandler extends DisplayDialogOnError<Boolean> {
+		public LoginAppRespHandler(Activity ctx) {
+			super(ctx, "Echec de l'identification");
+		}
 
-        @Override
-        protected void onPostExecute(Object osef) {
-        	super.onPostExecute(osef);
-        	if (mLoaded) {
-        		startHomeActivity();
-        	}
-        	else {
-        		AlertDialog.Builder builder = new AlertDialog.Builder(PaulineActivity.this);
-        		builder.setTitle("Echec de l'identification")
-        			.setMessage(lastException.getMessage())
-        			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
-        		           public void onClick(DialogInterface dialog, int id) {
-        		                dialog.cancel();
-        		           }});
-        		builder.create().show();
-        	}
-        }
+		@Override
+		public void onSuccess(Boolean _osef) {
+			startFundationsActivity();
+		}
+    	
+    }
+
+    protected class LoginAppTask extends ApiTask<Boolean> {
+    	public LoginAppTask(ResponseHandler<Boolean> handler) {
+    		super(PaulineActivity.this, "Connexion", 
+    				"Connexion au serveur...",  handler);
+    	}
+    	
+    	@Override
+    	protected Boolean callSoap() throws Exception {
+    		String key = PaulineActivity.getKey(PaulineActivity.this);
+    		return PaulineActivity.POSS.loginApp(key);
+    	}
+    }
+    
+    public static void storeRemove(Activity a, String key) {
+    	SharedPreferences prefs = a.getSharedPreferences("prefs", MODE_PRIVATE);
+    	SharedPreferences.Editor editor = prefs.edit();
+    	editor.remove(key);
+    	editor.commit();
+    }
+    
+    public static void storeSet(Activity a, String key, String val) {
+    	SharedPreferences prefs = a.getSharedPreferences("prefs", MODE_PRIVATE);
+    	SharedPreferences.Editor editor = prefs.edit();
+    	editor.putString(key, val);
+    	editor.commit();
+    }
+
+    public static String storeGet(Activity a, String key) {
+    	SharedPreferences prefs = a.getSharedPreferences("prefs", MODE_PRIVATE);
+    	return prefs.getString(key, null);
+    }
+    
+    public static String getKey(Activity a) {
+    	return storeGet(a, "app_key");
+    }
+    
+    public static void setKey(Activity a, String key) {
+    	storeSet(a, "app_key", key);
+    }
+    
+    public static String getAppName(Activity a) {
+    	return storeGet(a, "app_name");
+    }
+    
+    public static void setAppName(Activity a, String name) {
+    	storeSet(a, "app_name", name);
+    }
+    
+    public static void resetStore(Activity a) {
+    	storeRemove(a, "app_key");
+    	storeRemove(a, "app_name");
     }
 
 }

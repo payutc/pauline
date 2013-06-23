@@ -16,6 +16,7 @@ import android.widget.Toast;
 import fr.utc.assos.payutc.adapters.ListItemAdapter;
 import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS.TransactionResult;
+import fr.utc.assos.payutc.api.ResponseHandler;
 import fr.utc.assos.payutc.views.PanierSummary;
 
 public class ConfirmPaymentActivity extends BaseActivity {
@@ -44,10 +45,6 @@ public class ConfirmPaymentActivity extends BaseActivity {
     
     public void onClickCancel(View _view) {
     	finish();
-    }
-    
-    public void onClickDebugOk(View _view) {
-    	onResultTransaction(PaulineActivity.POSS.new TransactionResult("thomas", "recouvreux", 44), null);
     }
     
     public void onClickDebugFail(View _view) {
@@ -98,7 +95,8 @@ public class ConfirmPaymentActivity extends BaseActivity {
     protected void startTransaction(String id) {
     	Log.d(LOG_TAG,"startTransaction");
     	mSession.setBuyerId(id);
-    	new TransactionTask(mSession.getBuyerId() ,mSession.getItems()).execute();
+    	new TransactionTask(mSession.getBuyerId(), mSession.getItems(),
+    			new TransactionResponseHandler()).execute();
     }
     
     @Override
@@ -107,39 +105,80 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	startTransaction(id);
     }
     
+    
+    /*
+     * Custom handler
+     * 
+     * In case of failure, paint screen in red, vibrate and display a dialog.
+     * In case of success, paint screen in green, vibrate (diff than on error) and display a Toast.
+     */
+    protected class TransactionResponseHandler implements ResponseHandler<TransactionResult> {
 
-    protected class TransactionTask extends ApiTask<Integer, Integer, Object> {
-    	private ArrayList<Integer> mIds;
-    	private String mIdBuyer;
-    	private TransactionResult r=null;
+		@Override
+		public void onError(Exception ex) {
+			Vibrator v = (Vibrator) getSystemService(ConfirmPaymentActivity.VIBRATOR_SERVICE);
+	        final View screen = findViewById(R.id.confirm_layout);
+			long[] pattern = {
+    		    0,  // Start immediately
+    		    300, 100, 300
+    		};
+    		v.vibrate(pattern, -1);
+    		screen.setBackgroundColor(0xffff0000);
+    		AlertDialog.Builder builder = new AlertDialog.Builder(ConfirmPaymentActivity.this);
+    		builder.setTitle("Échec de la transaction")
+    			.setMessage(ex.getMessage())
+    			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
+    		           public void onClick(DialogInterface dialog, int id) {
+   		        			screen.setBackgroundColor(0xffffffff);
+    		                dialog.cancel();
+    		           }});
+    		
+    		builder.create().show();
+		}
+		
+		@Override
+		public void onSuccess(TransactionResult _response) {
+			Vibrator v = (Vibrator) getSystemService(ConfirmPaymentActivity.VIBRATOR_SERVICE);
+	        final View screen = findViewById(R.id.confirm_layout);
+    		// Only perform this pattern one time (-1 means "do not repeat")
+    		v.vibrate(300);
+    		if (mSession.getHomeChoice() == PaulineSession.VENTE_LIBRE) {
+    			stop(true);
+    		}
+    		else {
+    	        ObjectAnimator colorFade = ObjectAnimator.ofObject(
+    	        					screen, 
+    	        					"backgroundColor", 
+    	        					new ArgbEvaluator(),
+    	        					0xffffffff, 0xff00ff00, 0xffffffff);
+    			colorFade.setDuration(700);
+        		colorFade.setIntValues();
+                colorFade.start();
+    			Toast.makeText(ConfirmPaymentActivity.this, R.string.success_transaction, Toast.LENGTH_SHORT).show();
+	    	}
+		}
+    }
+    
+    protected class TransactionTask extends ApiTask<TransactionResult> {
+    	private ArrayList<Integer> itemIds;
+    	private String buyerId;
     	
-    	public TransactionTask(String id, ArrayList<Item> items) {
-    		super("Transaction", ConfirmPaymentActivity.this,
-    				"Transaction en cours...");
-			mIds = new ArrayList<Integer>();
+    	public TransactionTask(String buyerId, ArrayList<Item> items, 
+    			TransactionResponseHandler respHandler) {
+    		super(ConfirmPaymentActivity.this, "Transaction",
+    				"Transaction en cours...", respHandler);
+    		itemIds = new ArrayList<Integer>();
 			for (int i=0; i<items.size(); ++i) {
 				Item item = items.get(i);
-				mIds.add(item.getId());
+				itemIds.add(item.getId());
 			}
-    		mIdBuyer = id;
+    		this.buyerId = buyerId;
     	}
     	
     	
 		@Override
-		protected boolean callSoap() throws Exception {
-			r = PaulineActivity.POSS.transaction(mIdBuyer, mIds, "via Pauline");
-			return true;
-		}
-		
-		@Override
-		protected void onPostExecute(Object osef) {
-			super.onPostExecute(osef);
-			Log.d(ConfirmPaymentActivity.LOG_TAG, "result transaction : "+r);
-			String lastExceptionMessage = "";
-			if (lastException!=null) {
-				lastExceptionMessage = lastException.getMessage();
-			}
-			onResultTransaction(r, lastExceptionMessage);
+		protected TransactionResult callSoap() throws Exception {
+			return PaulineActivity.POSS.transaction(mSession.getFunId(), buyerId, itemIds);
 		}
     }
 }

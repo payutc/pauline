@@ -12,15 +12,20 @@ public class PaulineSession implements Parcelable {
 	public final static int VENTE_LIBRE			= 0;
 	public final static int VENTE_PRODUIT		= 1;
 	public final static int ANNULER_VENTE		= 2;
+	public final static int SETUP_APP			= 3;
 	
 	private ArrayList<Item> mPanier;
 	private int mHomeChoice;
 	private String mIdBuyer;
+	private int mFunId;
+	private String mSellerLogin;
 	
 	public PaulineSession() {
 		mPanier	= new ArrayList<Item>();
 		mHomeChoice = -1;
 		mIdBuyer = "";
+		mFunId = -1;
+		mSellerLogin = "";
 	}
 	
 	public void save(Intent intent) {
@@ -84,12 +89,28 @@ public class PaulineSession implements Parcelable {
 		return mIdBuyer;
 	}
 	
+	public void setSellerLogin(String l) {
+		mSellerLogin = l;
+	}
+	
+	public String getSellerLogin() {
+		return mSellerLogin;
+	}
+	
 	public int getHomeChoice() {
 		return mHomeChoice;
 	}
 	
 	public void setHomeChoice(int c) {
 		mHomeChoice = c;
+	}
+	
+	public int getFunId() {
+		return mFunId;
+	}
+	
+	public void setFunId(int v) {
+		mFunId = v;
 	}
 	
 	public int describeContents() {
@@ -101,6 +122,8 @@ public class PaulineSession implements Parcelable {
 		dest.writeParcelableArray(items, flags);
 		dest.writeInt(mHomeChoice);
 		dest.writeString(mIdBuyer);
+		dest.writeInt(mFunId);
+		dest.writeString(mSellerLogin);
 	}
 
 	private PaulineSession(Parcel in) {
@@ -112,6 +135,8 @@ public class PaulineSession implements Parcelable {
 		}
 		mHomeChoice = in.readInt();
 		mIdBuyer = in.readString();
+		mFunId = in.readInt();
+		mSellerLogin = in.readString();
     }
 	
 	public static final Parcelable.Creator<PaulineSession> CREATOR = new Parcelable.Creator<PaulineSession>() {
