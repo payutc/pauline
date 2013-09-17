@@ -5,7 +5,6 @@
     android:orientation="vertical" >
     
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -57,7 +56,7 @@
 	android:text="Touche un article pour le supprimer"
 	android:visibility="gone"/>
     
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android" 
+    <GridView
     android:id="@+id/show_articles_view"
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent"
@@ -72,7 +71,7 @@
 	/>
     
     
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ListView
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/panier_list" 
