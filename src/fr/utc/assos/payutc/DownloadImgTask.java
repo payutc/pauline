@@ -28,7 +28,7 @@ public class DownloadImgTask extends AsyncTask<Item, Object, Object> {
 			}
 			if (im==null) {
 				try {
-					im = PaulineActivity.POSS.getImage64(item.getIdImg(), 72, 72);
+					im = PaulineActivity.POSS.getImage64(item.getIdImg(), 120, 120);
 				}
 				catch (Exception e) {
 					Log.e(LOG_TAG, "getImage #"+item.getIdImg(), e);
