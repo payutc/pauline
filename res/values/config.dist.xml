@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Uncomment and set the server URL below, with a final slash -->
+    <!--<string name="api_url">http://payutc.rox/payutc/server/web/</string>-->
+    
+    <!-- Uncomment and set to a valid CAS ticket for automatic login (see faux-cas project) -->
+    <!--<string name="debug_cas_ticket">puyouart@http://localhost@694</string>-->
+</resources>

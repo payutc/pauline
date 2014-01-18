@@ -71,7 +71,7 @@ public class SetupAppActivity extends BaseActivity {
     				"Installation de l'application...", handler);
     		appUrl = app_url;
     		appName = app_name;
-    		key = new KEY(PaulineActivity.KEY_API_URL);
+    		key = new KEY(getString(R.string.api_url) + "KEY");
     	}
     	
     	@Override

@@ -4,5 +4,16 @@
     <string name="badgez">Badgez !</string>
     <string name="mystore_password">pauline</string>
     <string name="success_transaction">Succès de la transaction</string>
-
+    <string name="bonjour">Bonjour !</string>
+    <string name="payutc">payutc</string>
+    <string name="login_instructions">Appuie sur le bouton\npour t\'identifier avec le CAS</string>
+    <string name="login">Connexion</string>
+    <string name="cancel">Annuler</string>
+    <string name="yes">Oui</string>
+    <string name="retry">Réessayer</string>
+    <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
+    <string name="getcasurl_doing">Synchronisation en cours&#8230;</string>
+    <string name="login_doing">Connexion à payutc&#8230;</string>
+    <string name="login_failed">Échec de l\'identification</string>
+    <string name="loading">Chargement&#8230;</string>
 </resources>

@@ -29,16 +29,7 @@ import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 public class PaulineActivity extends BaseActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	/** URL du serveur */
-	final public static String SERVER_URL = "http://payutc.rox/payutc/server/web/";
-	
-	/** URL vers POSS3 */
-	final public static String POSS_API_URL = SERVER_URL+"POSS3";
-	
-	/** URL vers KEY */
-	final public static String KEY_API_URL = SERVER_URL+"KEY";
-	
-	/** Cas service, sera remplie en lisant la config */
+	/** Fake service used to acquire and validate a CAS ticket */
 	final public static String CAS_SERVICE = "http://localhost";
 	
 	/** POSS Client */
@@ -52,8 +43,8 @@ public class PaulineActivity extends BaseActivity {
 	public static final int HOME_ACTIVITY = 1;
 	public static final int SETUP_APP_ACTIVITY = 2;
 	
-	/* url du CAS, sera remplie en appellanc POSS.getCasUrl */
-	private static String _CAS_URL		= null; 
+	/** URL to CAS server (will be retrieved from server) */
+	private static String CAS_URL = null; 
 	
     /** Called when the activity is first created. */
     @Override
@@ -75,24 +66,23 @@ public class PaulineActivity extends BaseActivity {
         */
         //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
         
-	    POSS = new POSS(POSS_API_URL);
+	    POSS = new POSS(getString(R.string.api_url) + "POSS3");
 	    new GetCasUrlTask(new GetCasUrlResponseHandler(this)).execute();
         
         imageCache = new ImageCache(getCacheDir());
         
-        // uncomment to reset application key and name
-        //resetStore(this);
-        
-        
-        // decomment pour aller directement au home sans se logger
+        // uncomment to skip login
         //startHomeActivity();
     }
 
     public void onClickLogin(View _view) {
-    	// COMMENT TO LOGIN DIRECTLY (with faux-cas for example)
-    	LogByCas();
-    	// UNCOMMENT TO LOGIN DIRECTLY (with faux-cas for example)
-    	//new LoginCasTask("trecouvr@POSS3","POSS3").execute();
+    	int resId = getResources().getIdentifier("debug_cas_ticket", "string", getPackageName());
+    	if(resId != 0) {
+    		new LoginCasTask(getString(resId), CAS_SERVICE, new LoginCasResHandler(this)).execute();
+    	}
+    	else {
+    		LogByCas();
+    	}
     }
     
 	@Override
@@ -118,7 +108,7 @@ public class PaulineActivity extends BaseActivity {
     	Log.d(LOG_TAG,"startCasWebView");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
     	Bundle b = new Bundle();
-    	b.putString("casurl", _CAS_URL);
+    	b.putString("casurl", CAS_URL + "/login?service=" + CAS_SERVICE);
     	intent.putExtras(b);
     	startActivityForResult(intent, CASWEBVIEW);
     }
@@ -172,7 +162,7 @@ public class PaulineActivity extends BaseActivity {
      */
     protected class GetCasUrlResponseHandler extends DisplayDialogOnError<String> {
 		public GetCasUrlResponseHandler(Activity ctx) {
-			super(ctx, "Echec de la synchronisation avec le serveur", null, true);
+			super(ctx, getString(R.string.getcasurl_failed), null, true);
 			againListener = new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					dialog.cancel();
@@ -183,7 +173,7 @@ public class PaulineActivity extends BaseActivity {
 
 		@Override
 		public void onSuccess(String url) {
-			_CAS_URL = url;
+			CAS_URL = url;
 		}
     	
     }
@@ -191,8 +181,8 @@ public class PaulineActivity extends BaseActivity {
     protected class GetCasUrlTask extends ApiTask<String> {
 
     	public GetCasUrlTask(ResponseHandler<String> handler) {
-			super(PaulineActivity.this, "Synchronization", 
-					"Synchronization avec le serveur en cours...", handler);
+			super(PaulineActivity.this, getString(R.string.loading), 
+					getString(R.string.getcasurl_doing), handler);
 		}
     	
     	@Override
@@ -214,7 +204,7 @@ public class PaulineActivity extends BaseActivity {
     protected class LoginCasResHandler extends DisplayDialogOnError<String> {
 
 		public LoginCasResHandler(Activity ctx) {
-			super(ctx, "Echec de l'identification");
+			super(ctx, getString(R.string.login_failed));
 		}
 
 		@Override
@@ -234,8 +224,8 @@ public class PaulineActivity extends BaseActivity {
     	private String ticket, service;
     	
     	public LoginCasTask(String ticket, String service, ResponseHandler<String> handler) {
-    		super(PaulineActivity.this, "Identification", 
-    				"Connection au serveur en cour...", handler);
+    		super(PaulineActivity.this, getString(R.string.loading), 
+    				getString(R.string.login_doing), handler);
     		this.ticket = ticket;
     		this.service = service;
     	}
@@ -244,7 +234,7 @@ public class PaulineActivity extends BaseActivity {
     	protected String callSoap() throws Exception {
     		String seller = POSS.loginCas(ticket, service);
     		if (seller == null || seller.isEmpty()) {
-    			throw new Exception("Erreur de login Cas, valeur retournée vide.");
+    			throw new Exception("Erreur de login CAS, valeur retournée vide");
     		}
     		return seller;
     	}
@@ -256,7 +246,7 @@ public class PaulineActivity extends BaseActivity {
      */
     protected class LoginAppRespHandler extends DisplayDialogOnError<Boolean> {
 		public LoginAppRespHandler(Activity ctx) {
-			super(ctx, "Echec de l'identification");
+			super(ctx, getString(R.string.login_failed));
 		}
 
 		@Override
@@ -268,8 +258,8 @@ public class PaulineActivity extends BaseActivity {
 
     protected class LoginAppTask extends ApiTask<Boolean> {
     	public LoginAppTask(ResponseHandler<Boolean> handler) {
-    		super(PaulineActivity.this, "Connexion", 
-    				"Connexion au serveur...",  handler);
+    		super(PaulineActivity.this, getString(R.string.login), 
+    				getString(R.string.login_doing),  handler);
     	}
     	
     	@Override

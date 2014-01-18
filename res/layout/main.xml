@@ -9,32 +9,30 @@
         android:id="@+id/imageView1"
         android:layout_width="300dp"
         android:layout_height="100dp"
-        android:src="@drawable/badgez" />
-	
-    <TextView 
+        android:contentDescription="@string/payutc"
+        android:src="@drawable/payutc_rect_500" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp"
         android:gravity="center"
-        android:paddingBottom="20dp"
-        android:text="Bonjour !" />
-    
-    <TextView 
+        android:text="@string/bonjour"
+        android:textSize="16sp" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
         android:gravity="center"
-        android:text="Appuie sur le bouton" />
-    
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
-        android:gravity="center"
-        android:text="pour t'identifier avec le CAS" />
-    
+        android:text="@string/login_instructions"
+        android:textSize="16sp" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClickLogin"
-        android:text="Connexion" />
+        android:text="@string/login" />
 
 </LinearLayout>
