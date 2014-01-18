@@ -47,7 +47,7 @@ public class SetupAppActivity extends BaseActivity {
 	 */
 	protected class SetupAppRespHandler extends DisplayDialogOnError<Application> {
 		public SetupAppRespHandler() {
-			super(SetupAppActivity.this, "Echec");
+			super(SetupAppActivity.this, getString(R.string.error));
 		}
 
 		@Override
@@ -67,8 +67,8 @@ public class SetupAppActivity extends BaseActivity {
     	
     	public SetupApplicationTask(String app_url, String app_name,
     			ResponseHandler<Application> handler) {
-    		super(SetupAppActivity.this, "SetupApplicationTask", 
-    				"Installation de l'application...", handler);
+    		super(SetupAppActivity.this, getString(R.string.loading), 
+    				getString(R.string.setup_doing), handler);
     		appUrl = app_url;
     		appName = app_name;
     		key = new KEY(getString(R.string.api_url) + "KEY");
@@ -81,7 +81,7 @@ public class SetupAppActivity extends BaseActivity {
     			throw new Exception("L'application récupérée est vide");
     		}
     		if (app.app_key == null || app.app_key.isEmpty()) {
-				throw new Exception("La key retournée n'est pas valide : "+app.app_key);
+				throw new Exception("La clé retournée n'est pas valide : "+app.app_key);
 			}
     		return app;
     	}

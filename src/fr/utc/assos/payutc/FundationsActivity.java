@@ -67,7 +67,7 @@ public class FundationsActivity extends BaseActivity {
     protected class GetFundationRespHandler extends DisplayDialogOnError<ArrayList<Fundation>> {
 
 		public GetFundationRespHandler() {
-			super(FundationsActivity.this, "Erreur", null, true);
+			super(FundationsActivity.this, getString(R.string.error), null, true);
 			againListener = new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							dialog.cancel();
@@ -91,8 +91,8 @@ public class FundationsActivity extends BaseActivity {
     protected class GetFundationsTask extends ApiTask<ArrayList<Fundation>> {
     	
     	public GetFundationsTask(ResponseHandler<ArrayList<Fundation>> handler) {
-    		super(FundationsActivity.this, "Patientez", 
-    				"Récupération des assos...", handler);
+    		super(FundationsActivity.this, getString(R.string.loading), 
+    				getString(R.string.getfundations), handler);
     	}
     	
     	@Override
@@ -111,11 +111,9 @@ public class FundationsActivity extends BaseActivity {
     			}
     		}
     		if (noFundations || fundations == null || fundations.size() == 0) {
-				String errorMessage = "Toi ou ton application n'avez pas le droit de vendre. " +
-						"Contactes le président de ton association pour qu'il te donne" +
-						" des droits. Le nom de ton application est '"+
-						PaulineActivity.getAppName(FundationsActivity.this)+"'.";
-				throw new Exception(errorMessage);
+				throw new Exception(
+						String.format(getString(R.string.getfundations_perm_error),
+						PaulineActivity.getAppName(FundationsActivity.this)));
 			}
     		return fundations;
     	}

@@ -8,12 +8,19 @@
     <string name="payutc">payutc</string>
     <string name="login_instructions">Appuie sur le bouton\npour t\'identifier avec le CAS</string>
     <string name="login">Connexion</string>
+    <string name="error">Erreur</string>
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
+    <string name="confirm">Valider</string>
     <string name="retry">Réessayer</string>
     <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
     <string name="getcasurl_doing">Synchronisation en cours&#8230;</string>
     <string name="login_doing">Connexion à payutc&#8230;</string>
     <string name="login_failed">Échec de l\'identification</string>
     <string name="loading">Chargement&#8230;</string>
+    <string name="getfundations">Récupération des assos&#8230;</string>
+    <string name="getfundations_perm_error">Toi ou ton application n\'avez pas le droit de vendre. Contacte le président de ton association.\n\nLe nom de ton application est : %s</string>
+    <string name="setup_instruction">Ce téléphone n\'a pas de clé d\'application. Pour en générer une, choisis un nom.</string>
+    <string name="setup_app_name">Nom de l\'application</string>
+    <string name="setup_doing">Déclaration de l\'application&#8230;</string>
 </resources>
