@@ -29,7 +29,7 @@ import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 public class PaulineActivity extends BaseActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	/** Cas service, sera remplie en lisant la config */
+	/** Fake service used to acquire and validate a CAS ticket */
 	final public static String CAS_SERVICE = "http://localhost";
 	
 	/** POSS Client */
@@ -43,8 +43,8 @@ public class PaulineActivity extends BaseActivity {
 	public static final int HOME_ACTIVITY = 1;
 	public static final int SETUP_APP_ACTIVITY = 2;
 	
-	/* url du CAS, sera remplie en appellanc POSS.getCasUrl */
-	private static String _CAS_URL		= null; 
+	/** URL to CAS server (will be retrieved from server) */
+	private static String CAS_URL = null; 
 	
     /** Called when the activity is first created. */
     @Override
@@ -74,16 +74,18 @@ public class PaulineActivity extends BaseActivity {
         // uncomment to reset application key and name
         //resetStore(this);
         
-        
-        // decomment pour aller directement au home sans se logger
+        // uncomment to skip login
         //startHomeActivity();
     }
 
     public void onClickLogin(View _view) {
-    	// COMMENT TO LOGIN DIRECTLY (with faux-cas for example)
-    	LogByCas();
-    	// UNCOMMENT TO LOGIN DIRECTLY (with faux-cas for example)
-    	//new LoginCasTask("trecouvr@POSS3","POSS3").execute();
+    	int resId = getResources().getIdentifier("debug_cas_ticket", "string", getPackageName());
+    	if(resId != 0) {
+    		new LoginCasTask(getString(resId), CAS_SERVICE, new LoginCasResHandler(this)).execute();
+    	}
+    	else {
+    		LogByCas();
+    	}
     }
     
 	@Override
@@ -109,7 +111,7 @@ public class PaulineActivity extends BaseActivity {
     	Log.d(LOG_TAG,"startCasWebView");
     	Intent intent = new Intent(this, fr.utc.assos.payutc.CasWebView.class);
     	Bundle b = new Bundle();
-    	b.putString("casurl", _CAS_URL);
+    	b.putString("casurl", CAS_URL + "/login?service=" + CAS_SERVICE);
     	intent.putExtras(b);
     	startActivityForResult(intent, CASWEBVIEW);
     }
@@ -174,7 +176,7 @@ public class PaulineActivity extends BaseActivity {
 
 		@Override
 		public void onSuccess(String url) {
-			_CAS_URL = url;
+			CAS_URL = url;
 		}
     	
     }
