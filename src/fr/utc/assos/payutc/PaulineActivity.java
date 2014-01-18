@@ -9,12 +9,14 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import fr.utc.assos.payutc.api.AdditionalKeyStoresSSLSocketFactory;
 import fr.utc.assos.payutc.api.ApiTask;
 import fr.utc.assos.payutc.api.POSS;
@@ -71,8 +73,26 @@ public class PaulineActivity extends BaseActivity {
         
         imageCache = new ImageCache(getCacheDir());
         
-        // uncomment to reset application key and name
-        //resetStore(this);
+        // Setup long click on image to clear key
+        ImageView iv = (ImageView)findViewById(R.id.imageView1);
+        iv.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				new AlertDialog.Builder(PaulineActivity.this)
+					.setTitle("Effacer la clé d'application ?")
+					.setMessage("Voulez-vous vraiment effacer la clé d'application ?\n\nLe téléphone perdra toutes ses permissions.\n\nSEUL UN ADMINISTRATEUR DEVRAIT UTILISER CETTE FONCTION !")
+					.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				               dialog.cancel();
+				           }})
+					.setPositiveButton("Oui, effacer", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   resetStore(PaulineActivity.this);
+				               dialog.cancel();
+				           }}).create().show();
+				return true;
+			}
+        });
         
         // uncomment to skip login
         //startHomeActivity();
