@@ -11,8 +11,6 @@
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
     <string name="retry">Réessayer</string>
-    <string name="erase_key_title">Effacer la clé d\'application ?</string>
-    <string name="erase_key_text">Voulez-vous vraiment effacer la clé d\'application ?\n\nLe téléphone perdra toutes ses permissions.\n\nSEUL UN ADMINISTRATEUR DEVRAIT UTILISER CETTE FONCTION !</string>
     <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
     <string name="getcasurl_doing">Synchronisation en cours&#8230;</string>
     <string name="login_doing">Connexion à payutc&#8230;</string>

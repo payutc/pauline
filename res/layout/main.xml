@@ -10,7 +10,6 @@
         android:layout_width="300dp"
         android:layout_height="100dp"
         android:contentDescription="@string/payutc"
-        android:longClickable="true"
         android:src="@drawable/payutc_rect_500" />
 
     <TextView
