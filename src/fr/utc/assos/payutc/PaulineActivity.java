@@ -79,13 +79,13 @@ public class PaulineActivity extends BaseActivity {
 			@Override
 			public boolean onLongClick(View v) {
 				new AlertDialog.Builder(PaulineActivity.this)
-					.setTitle("Effacer la clé d'application ?")
-					.setMessage("Voulez-vous vraiment effacer la clé d'application ?\n\nLe téléphone perdra toutes ses permissions.\n\nSEUL UN ADMINISTRATEUR DEVRAIT UTILISER CETTE FONCTION !")
-					.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+					.setTitle(getString(R.string.erase_key_title))
+					.setMessage(getString(R.string.erase_key_text))
+					.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				               dialog.cancel();
 				           }})
-					.setPositiveButton("Oui, effacer", new DialogInterface.OnClickListener() {
+					.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				        	   resetStore(PaulineActivity.this);
 				               dialog.cancel();
@@ -185,7 +185,7 @@ public class PaulineActivity extends BaseActivity {
      */
     protected class GetCasUrlResponseHandler extends DisplayDialogOnError<String> {
 		public GetCasUrlResponseHandler(Activity ctx) {
-			super(ctx, "Echec de la synchronisation avec le serveur", null, true);
+			super(ctx, getString(R.string.getcasurl_failed), null, true);
 			againListener = new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					dialog.cancel();
@@ -204,8 +204,8 @@ public class PaulineActivity extends BaseActivity {
     protected class GetCasUrlTask extends ApiTask<String> {
 
     	public GetCasUrlTask(ResponseHandler<String> handler) {
-			super(PaulineActivity.this, "Synchronization", 
-					"Synchronization avec le serveur en cours...", handler);
+			super(PaulineActivity.this, getString(R.string.loading), 
+					getString(R.string.getcasurl_doing), handler);
 		}
     	
     	@Override
@@ -227,7 +227,7 @@ public class PaulineActivity extends BaseActivity {
     protected class LoginCasResHandler extends DisplayDialogOnError<String> {
 
 		public LoginCasResHandler(Activity ctx) {
-			super(ctx, "Echec de l'identification");
+			super(ctx, getString(R.string.login_failed));
 		}
 
 		@Override
@@ -247,8 +247,8 @@ public class PaulineActivity extends BaseActivity {
     	private String ticket, service;
     	
     	public LoginCasTask(String ticket, String service, ResponseHandler<String> handler) {
-    		super(PaulineActivity.this, "Identification", 
-    				"Connection au serveur en cour...", handler);
+    		super(PaulineActivity.this, getString(R.string.loading), 
+    				getString(R.string.login_doing), handler);
     		this.ticket = ticket;
     		this.service = service;
     	}
@@ -257,7 +257,7 @@ public class PaulineActivity extends BaseActivity {
     	protected String callSoap() throws Exception {
     		String seller = POSS.loginCas(ticket, service);
     		if (seller == null || seller.isEmpty()) {
-    			throw new Exception("Erreur de login Cas, valeur retournée vide.");
+    			throw new Exception("Erreur de login CAS, valeur retournée vide");
     		}
     		return seller;
     	}
@@ -269,7 +269,7 @@ public class PaulineActivity extends BaseActivity {
      */
     protected class LoginAppRespHandler extends DisplayDialogOnError<Boolean> {
 		public LoginAppRespHandler(Activity ctx) {
-			super(ctx, "Echec de l'identification");
+			super(ctx, getString(R.string.login_failed));
 		}
 
 		@Override
@@ -281,8 +281,8 @@ public class PaulineActivity extends BaseActivity {
 
     protected class LoginAppTask extends ApiTask<Boolean> {
     	public LoginAppTask(ResponseHandler<Boolean> handler) {
-    		super(PaulineActivity.this, "Connexion", 
-    				"Connexion au serveur...",  handler);
+    		super(PaulineActivity.this, getString(R.string.login), 
+    				getString(R.string.login_doing),  handler);
     	}
     	
     	@Override
