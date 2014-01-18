@@ -29,15 +29,6 @@ import fr.utc.assos.payutc.api.responsehandler.DisplayDialogOnError;
 public class PaulineActivity extends BaseActivity {
 	public static final String LOG_TAG			= "PaulineActivity";
 	
-	/** URL du serveur */
-	final public static String SERVER_URL = "http://payutc.rox/payutc/server/web/";
-	
-	/** URL vers POSS3 */
-	final public static String POSS_API_URL = SERVER_URL+"POSS3";
-	
-	/** URL vers KEY */
-	final public static String KEY_API_URL = SERVER_URL+"KEY";
-	
 	/** Cas service, sera remplie en lisant la config */
 	final public static String CAS_SERVICE = "http://localhost";
 	
@@ -75,7 +66,7 @@ public class PaulineActivity extends BaseActivity {
         */
         //PBUY = new PBuy(API_HOST, API_PATH, API_NAMESPACE, API_SSL);
         
-	    POSS = new POSS(POSS_API_URL);
+	    POSS = new POSS(getString(R.string.api_url) + "POSS3");
 	    new GetCasUrlTask(new GetCasUrlResponseHandler(this)).execute();
         
         imageCache = new ImageCache(getCacheDir());

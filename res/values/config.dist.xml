@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Uncomment and set the server URL below, with a final slash -->
+    <!--<string name="api_url">http://payutc.rox/payutc/server/web/</string>-->
+</resources>
