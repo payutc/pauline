@@ -1,5 +1,7 @@
 package fr.utc.assos.payutc;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,13 +36,17 @@ public class CasWebView extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setSaveFormData(false);
         settings.setSavePassword(false);
-        webview.loadUrl(casurl+"?service="+PaulineActivity.CAS_SERVICE);
+        webview.loadUrl(casurl);
     }
     
     protected void returnTicket(String ticket) {
-		Intent intent = new Intent();
-		intent.putExtra("ticket", ticket);
-        setResult(RESULT_OK, intent);
+		try {
+			Intent intent = new Intent();
+			intent.putExtra("ticket", URLDecoder.decode(ticket, "UTF-8"));
+	        setResult(RESULT_OK, intent);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		finish();
     }
     
