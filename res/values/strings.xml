@@ -23,4 +23,7 @@
     <string name="setup_instruction">Ce téléphone n\'a pas de clé d\'application. Pour en générer une, choisis un nom.</string>
     <string name="setup_app_name">Nom de l\'application</string>
     <string name="setup_doing">Déclaration de l\'application&#8230;</string>
+    <string name="mode_instructions">Dans quel mode souhaites-tu utiliser l\'application ?</string>
+    <string name="vente_libre">Choisir le produit à chaque vente</string>
+    <string name="vente_produit">Toujours vendre le même produit</string>
 </resources>
