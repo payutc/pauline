@@ -47,9 +47,7 @@ public class FundationsActivity extends BaseActivity {
     public void updateListView() {
         adapter.clear();
         for (Fundation f: fundations) {
-        	if(f.fun_id > 0) {
-        		adapter.add(f.name);        		
-        	}
+       		adapter.add(f.name);        		
         }
     }
 
