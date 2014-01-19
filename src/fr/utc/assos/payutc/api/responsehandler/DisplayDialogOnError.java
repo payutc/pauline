@@ -36,7 +36,8 @@ public abstract class DisplayDialogOnError<T> implements ResponseHandler<T> {
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		builder.setTitle(dialogTitle)
 			.setMessage(computeErrorMessage(ex))
-			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
+			.setCancelable(false)
+			.setNegativeButton(ctx.getString(ctx.getResources().getIdentifier("cancel", "string", ctx.getPackageName())), new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                dialog.cancel();
 		                if (exitOnFailure) {
@@ -44,7 +45,7 @@ public abstract class DisplayDialogOnError<T> implements ResponseHandler<T> {
 		                }
 		           }});
 		if (againListener != null) {
-			builder.setPositiveButton("Encore !", againListener);
+			builder.setPositiveButton(ctx.getString(ctx.getResources().getIdentifier("retry", "string", ctx.getPackageName())), againListener);
 		}
 		builder.create().show();
 	}

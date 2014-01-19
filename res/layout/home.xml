@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:id="@+id/list_view">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="20dp"
+    android:orientation="vertical" >
 
-    
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="@string/mode_instructions"
+        android:textSize="16sp" />
 
-</ListView>
+    <Button
+        android:id="@+id/ButtonModeVL"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ventelibre"
+        android:text="@string/vente_libre"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/ButtonModeVP"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/venteproduit"
+        android:text="@string/vente_produit"
+        android:textSize="14sp" />
+
+</LinearLayout>

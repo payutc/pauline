@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 
@@ -30,30 +30,20 @@ public class HomeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate HomeActivity");
         setContentView(R.layout.home);
-        
-        ListView lv = (ListView)findViewById(R.id.list_view);
-
-        final String[] items = new String[] {"Vente libre", "Vente produit", "Retour au choix de l'asso"};
-        lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item, items));
-
-
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				switch (position) {
-				case 0:
-			    	startShowArticleActivity(PaulineSession.VENTE_LIBRE);
-			    	break;
-			    	
-				case 1:
-			    	startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
-			    	break;
-				    
-				case 2:
-					stop();
-					break;
-				
-				default: break;
-				}
+                
+        Button butProduit = (Button)findViewById(R.id.ButtonModeVP);
+        butProduit.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startShowArticleActivity(PaulineSession.VENTE_LIBRE);
+			}
+		});
+		
+        Button butLibre = (Button)findViewById(R.id.ButtonModeVL);
+        butLibre.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
 			}
 		});
     }

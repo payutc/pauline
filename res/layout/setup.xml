@@ -2,14 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="10dp"
     android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="@string/setup_instruction"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/app_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:ems="10" >
+        android:layout_marginBottom="30dp"
+        android:ems="10"
+        android:hint="@string/setup_app_name"
+        android:inputType="text"
+        android:selectAllOnFocus="true" >
+
         <requestFocus />
     </EditText>
 
@@ -18,6 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:onClick="run"
-        android:text="Go !" />
+        android:text="@string/confirm" />
 
 </LinearLayout>
