@@ -26,7 +26,7 @@ public class DownloadImgTask extends AsyncTask<Item, Object, Object> {
     		catch (Exception e) {
 				Log.w(LOG_TAG, "getImage #"+item.getIdImg()+" error getFromCache. ", e);
 			}
-			if (im==null) {
+			if (im==null && item.getIdImg() != 0) {
 				try {
 					im = PaulineActivity.POSS.getImage64(item.getIdImg(), 120, 120);
 				}
