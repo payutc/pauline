@@ -133,7 +133,7 @@ public class ShowArticleActivity extends BaseActivity {
     protected class GetItemsTaskRespHandler extends DisplayDialogOnError<ArrayList<Item>> {
 
 		public GetItemsTaskRespHandler() {
-			super(ShowArticleActivity.this, "Impossible de récupérer les articles");
+			super(ShowArticleActivity.this, getString(R.string.articles_failed));
 			againListener = new DialogInterface.OnClickListener() {
  	           public void onClick(DialogInterface dialog, int id) {
 	        	   dialog.cancel();
@@ -155,8 +155,8 @@ public class ShowArticleActivity extends BaseActivity {
     protected class GetItemsTask extends ApiTask<ArrayList<Item>> {
     	
     	public GetItemsTask(ResponseHandler<ArrayList<Item>> handler) {
-    		super(ShowArticleActivity.this, "Chargement", 
-    				"Veuillez patienter", handler);
+    		super(ShowArticleActivity.this, getString(R.string.loading), 
+    				getString(R.string.articles_doing), handler);
     	}
     	
 		@Override

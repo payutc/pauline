@@ -3,7 +3,7 @@
     <string name="app_name">Pauline</string>
     <string name="badgez">Badgez !</string>
     <string name="mystore_password">pauline</string>
-    <string name="success_transaction">Succès de la transaction</string>
+    <string name="success_transaction">Transaction réussie !</string>
     <string name="bonjour">Bonjour !</string>
     <string name="payutc">payutc</string>
     <string name="login_instructions">Appuie sur le bouton\npour t\'identifier avec le CAS</string>
@@ -26,4 +26,6 @@
     <string name="mode_instructions">Dans quel mode souhaites-tu utiliser l\'application ?</string>
     <string name="vente_libre">Choisir le produit à chaque vente</string>
     <string name="vente_produit">Toujours vendre le même produit</string>
+    <string name="articles_doing">Récupération de la liste des articles&#8230;</string>
+    <string name="articles_failed">Impossible de récupérer la liste des articles</string>
 </resources>
