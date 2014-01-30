@@ -113,6 +113,8 @@ public class ShowArticleActivity extends BaseActivity {
         	Item i = (Item) parent.getAdapter().getItem(position);
 
         	// ajouter l'item dans le panier
+        	i.incQuantity();
+        	mGridAdapter.notifyDataSetChanged();
             mSession.addItem(i);
 
         	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
@@ -256,6 +258,11 @@ public class ShowArticleActivity extends BaseActivity {
 		case CONFIRM_PAYMENT:
 	    	if (resultCode == RESULT_OK) {
 	    		mSession.clearItems();
+	    		for(int i = 0; i < mGridAdapter.getCount(); i++){
+	    			Item item = mGridAdapter.getItem(i);
+	    			item.setQuantity(0);
+	    		}
+	    		mGridAdapter.notifyDataSetChanged();
 	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
 	        	ib.setImageResource(R.drawable.panier);
 	    		loadProductView();

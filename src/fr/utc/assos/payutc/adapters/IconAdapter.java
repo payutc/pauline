@@ -18,6 +18,7 @@ public class IconAdapter extends ArrayAdapter<Item> {
 	private static class ViewHolder {
 		TextView text;
 		ImageView icon;
+		TextView quantity;
 	}
 	
     public IconAdapter(Context c, int resourceId, ArrayList<Item> items) {
@@ -39,6 +40,7 @@ public class IconAdapter extends ArrayAdapter<Item> {
         	holder = new ViewHolder();
 			holder.text = (TextView) convertView.findViewById(R.id.icon_text);
 			holder.icon = (ImageView) convertView.findViewById(R.id.icon_image);
+			holder.quantity = (TextView) convertView.findViewById(R.id.icon_quantity); 
 			
 			convertView.setTag(holder);
 			
@@ -53,6 +55,15 @@ public class IconAdapter extends ArrayAdapter<Item> {
         }
         else {
         	holder.icon.setImageBitmap(img);
+        }
+        
+        int qte = item.getQuantity();
+        if(qte > 0) {
+        	holder.quantity.setText(String.format("%d", qte));
+        	holder.quantity.setVisibility(View.VISIBLE);
+        }
+        else {
+        	holder.quantity.setVisibility(View.GONE);
         }
         
         return convertView;

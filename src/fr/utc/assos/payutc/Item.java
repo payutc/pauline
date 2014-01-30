@@ -18,6 +18,7 @@ public class Item implements Parcelable {
 	private int mCost;
 	private String mEncodedImg;
 	private Bitmap mImage;
+	private int mQuantity;
 	
 	public Item() {}
 	
@@ -28,6 +29,7 @@ public class Item implements Parcelable {
 		mName = name;
 		mIdImg = idImg;
 		mCost = cost;
+		mQuantity = 0;
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -41,6 +43,7 @@ public class Item implements Parcelable {
 		else
 			mIdImg = 0;
 		mCost = Integer.parseInt((String)ht.get("price"));
+		mQuantity = 0;
 	}
 	
 	public String getStringPrice() {
@@ -126,5 +129,21 @@ public class Item implements Parcelable {
 	
 	public void setImage(Bitmap img) {
 		mImage = img;
+	}
+
+	public int getQuantity() {
+		return mQuantity;
+	}
+
+	public void setQuantity(int mQuantity) {
+		this.mQuantity = mQuantity;
+	}
+	
+	public void incQuantity() {
+		mQuantity++;
+	}
+	
+	public void decQuantity() {
+		mQuantity--;
 	}
 }
