@@ -41,6 +41,8 @@ public class ShowArticleActivity extends BaseActivity {
 	private static final String LOG_TAG = "ShowArticleActivity";
 	
 	private static final int CONFIRM_PAYMENT 	= 1;
+	
+	protected static ArrayList<Item> cachedArticles = new ArrayList<Item>();
 
 	ArrayAdapter<Item> mPanierAdapter;
 	IconAdapter mGridAdapter;
@@ -144,6 +146,9 @@ public class ShowArticleActivity extends BaseActivity {
 
 		@Override
 		public void onSuccess(ArrayList<Item> items) {
+			// Cache the list of articles
+			cachedArticles = items;
+			
 			// init grid (without images)
 			initGridView(items);
 			// then download the images (async)
@@ -260,4 +265,8 @@ public class ShowArticleActivity extends BaseActivity {
 
 		initPanierView();
     }
+	
+	public static ArrayList<Item> getCachedArticlesList() {
+		return cachedArticles;
+	}
 }

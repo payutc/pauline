@@ -148,7 +148,7 @@ public class CustomerInfosActivity extends BaseActivity {
 			if (r.customerDestails == null) {
 				throw new Exception("Aucune informations sur l'utilisateur reçues.");
 			}
-			r.items = PaulineActivity.POSS.getArticles(funId);
+			r.items = ShowArticleActivity.getCachedArticlesList();
 			if (r.items == null) {
 				throw new Exception("Aucun articles reçue.");
 			}
