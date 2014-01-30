@@ -11,6 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -257,12 +260,7 @@ public class ShowArticleActivity extends BaseActivity {
 		switch (requestCode) {
 		case CONFIRM_PAYMENT:
 	    	if (resultCode == RESULT_OK) {
-	    		mSession.clearItems();
-	    		for(int i = 0; i < mGridAdapter.getCount(); i++){
-	    			Item item = mGridAdapter.getItem(i);
-	    			item.setQuantity(0);
-	    		}
-	    		mGridAdapter.notifyDataSetChanged();
+	    		emptyItems();
 	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
 	        	ib.setImageResource(R.drawable.panier);
 	    		loadProductView();
@@ -275,5 +273,35 @@ public class ShowArticleActivity extends BaseActivity {
 	
 	public static ArrayList<Item> getCachedArticlesList() {
 		return cachedArticles;
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    // Inflate the menu items for use in the action bar
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.showarticles_actions, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case R.id.action_empty:
+	            emptyItems();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	private void emptyItems() {
+		mSession.clearItems();
+		for(int i = 0; i < mGridAdapter.getCount(); i++){
+			Item item = mGridAdapter.getItem(i);
+			item.setQuantity(0);
+		}
+		mGridAdapter.notifyDataSetChanged();
+		initPanierView();
 	}
 }

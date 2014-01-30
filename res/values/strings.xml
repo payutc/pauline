@@ -13,6 +13,7 @@
     <string name="ok">OK</string>
     <string name="confirm">Valider</string>
     <string name="retry">Réessayer</string>
+    <string name="action_discard">Effacer les articles sélectionnés</string>
     <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
     <string name="getcasurl_doing">Synchronisation en cours&#8230;</string>
     <string name="login_doing">Connexion à payutc&#8230;</string>
