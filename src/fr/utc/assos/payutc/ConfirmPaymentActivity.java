@@ -69,7 +69,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     			colorFade.setDuration(700);
         		colorFade.setIntValues();
                 colorFade.start();
-    			Toast.makeText(this, R.string.success_transaction, Toast.LENGTH_SHORT).show();
+    			Toast.makeText(this, getString(R.string.transaction_ok), Toast.LENGTH_SHORT).show();
     		}
     	}
     	else {
@@ -80,9 +80,10 @@ public class ConfirmPaymentActivity extends BaseActivity {
     		v.vibrate(pattern, -1);
     		screen.setBackgroundColor(0xffff0000);
     		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    		builder.setTitle("Échec de la transaction")
+    		builder.setTitle(getString(R.string.transaction_failed))
     			.setMessage(lastExceptionMessage)
-    			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
+    			.setCancelable(false)
+    			.setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
     		           public void onClick(DialogInterface dialog, int id) {
    		        			screen.setBackgroundColor(0xffffffff);
     		                dialog.cancel();
@@ -125,9 +126,10 @@ public class ConfirmPaymentActivity extends BaseActivity {
     		v.vibrate(pattern, -1);
     		screen.setBackgroundColor(0xffff0000);
     		AlertDialog.Builder builder = new AlertDialog.Builder(ConfirmPaymentActivity.this);
-    		builder.setTitle("Échec de la transaction")
+    		builder.setTitle(getString(R.string.transaction_failed))
     			.setMessage(ex.getMessage())
-    			.setNegativeButton("J'ai compris", new DialogInterface.OnClickListener() {
+    			.setCancelable(false)
+    			.setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
     		           public void onClick(DialogInterface dialog, int id) {
    		        			screen.setBackgroundColor(0xffffffff);
     		                dialog.cancel();
@@ -154,7 +156,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     			colorFade.setDuration(700);
         		colorFade.setIntValues();
                 colorFade.start();
-    			Toast.makeText(ConfirmPaymentActivity.this, R.string.success_transaction, Toast.LENGTH_SHORT).show();
+    			Toast.makeText(ConfirmPaymentActivity.this, getString(R.string.transaction_ok), Toast.LENGTH_SHORT).show();
 	    	}
 		}
     }
@@ -166,7 +168,7 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	public TransactionTask(String buyerId, ArrayList<Item> items, 
     			TransactionResponseHandler respHandler) {
     		super(ConfirmPaymentActivity.this, "Transaction",
-    				"Transaction en cours...", respHandler);
+    				getString(R.string.transaction_failed), respHandler);
     		itemIds = new ArrayList<Integer>();
 			for (int i=0; i<items.size(); ++i) {
 				Item item = items.get(i);

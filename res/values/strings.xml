@@ -3,7 +3,6 @@
     <string name="app_name">Pauline</string>
     <string name="badgez">Badgez !</string>
     <string name="mystore_password">pauline</string>
-    <string name="success_transaction">Transaction réussie !</string>
     <string name="bonjour">Bonjour !</string>
     <string name="payutc">payutc</string>
     <string name="login_instructions">Appuie sur le bouton\npour t\'identifier avec le CAS</string>
@@ -11,6 +10,7 @@
     <string name="error">Erreur</string>
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
+    <string name="ok">OK</string>
     <string name="confirm">Valider</string>
     <string name="retry">Réessayer</string>
     <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
@@ -28,4 +28,7 @@
     <string name="vente_produit">Toujours vendre le même produit</string>
     <string name="articles_doing">Récupération de la liste des articles&#8230;</string>
     <string name="articles_failed">Impossible de récupérer la liste des articles</string>
+    <string name="transaction_ok">Transaction réussie !</string>
+    <string name="transaction_doing">Transaction en cours&#8230;</string>
+    <string name="transaction_failed">Échec de la transaction</string>
 </resources>

@@ -254,7 +254,7 @@ public class ShowArticleActivity extends BaseActivity {
 	        	ImageButton ib = (ImageButton) findViewById(R.id.button_panier);
 	        	ib.setImageResource(R.drawable.panier);
 	    		loadProductView();
-	    		Toast.makeText(this, R.string.success_transaction, Toast.LENGTH_SHORT).show();
+	    		Toast.makeText(this, getString(R.string.transaction_ok), Toast.LENGTH_SHORT).show();
 	    	}
 		}
 
