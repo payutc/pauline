@@ -28,7 +28,14 @@
     <string name="vente_produit">Toujours vendre le même produit</string>
     <string name="articles_doing">Récupération de la liste des articles&#8230;</string>
     <string name="articles_failed">Impossible de récupérer la liste des articles</string>
+    <string name="transaction">Transaction</string>
     <string name="transaction_ok">Transaction réussie !</string>
     <string name="transaction_doing">Transaction en cours&#8230;</string>
     <string name="transaction_failed">Échec de la transaction</string>
+    <string name="userinfo">Détails d\'un utilisateur</string>
+    <string name="userinfo_doing">Récupération des informations de l\'utilisateur&#8230;</string>
+    <string name="userinfo_failed">Échec de la récupération des informations de l\'utilisateur</string>
+    <string name="canceltrans">Annulation</string>
+    <string name="canceltrans_doing">Annulation de la transaction en cours&#8230;</string>
+    <string name="canceltrans_failed">Impossible d\'annuler la transaction</string>
 </resources>

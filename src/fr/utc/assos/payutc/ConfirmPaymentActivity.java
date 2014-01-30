@@ -167,8 +167,8 @@ public class ConfirmPaymentActivity extends BaseActivity {
     	
     	public TransactionTask(String buyerId, ArrayList<Item> items, 
     			TransactionResponseHandler respHandler) {
-    		super(ConfirmPaymentActivity.this, "Transaction",
-    				getString(R.string.transaction_failed), respHandler);
+    		super(ConfirmPaymentActivity.this, getString(R.string.transaction),
+    				getString(R.string.transaction_doing), respHandler);
     		itemIds = new ArrayList<Integer>();
 			for (int i=0; i<items.size(); ++i) {
 				Item item = items.get(i);
