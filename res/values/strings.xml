@@ -16,6 +16,7 @@
     <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
     <string name="getcasurl_doing">Synchronisation en cours&#8230;</string>
     <string name="login_doing">Connexion à payutc&#8230;</string>
+    <string name="loginapp_doing">Authentification de l\'application&#8230;</string>
     <string name="login_failed">Échec de l\'identification</string>
     <string name="loading">Chargement&#8230;</string>
     <string name="getfundations">Récupération des assos&#8230;</string>
