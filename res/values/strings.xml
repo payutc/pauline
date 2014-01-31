@@ -3,7 +3,6 @@
     <string name="app_name">Pauline</string>
     <string name="badgez">Badgez !</string>
     <string name="mystore_password">pauline</string>
-    <string name="success_transaction">Succès de la transaction</string>
     <string name="bonjour">Bonjour !</string>
     <string name="payutc">payutc</string>
     <string name="login_instructions">Appuie sur le bouton\npour t\'identifier avec le CAS</string>
@@ -11,11 +10,14 @@
     <string name="error">Erreur</string>
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
+    <string name="ok">OK</string>
     <string name="confirm">Valider</string>
     <string name="retry">Réessayer</string>
+    <string name="action_discard">Effacer les articles sélectionnés</string>
     <string name="getcasurl_failed">Échec de la synchronisation avec le serveur</string>
     <string name="getcasurl_doing">Synchronisation en cours&#8230;</string>
     <string name="login_doing">Connexion à payutc&#8230;</string>
+    <string name="loginapp_doing">Authentification de l\'application&#8230;</string>
     <string name="login_failed">Échec de l\'identification</string>
     <string name="loading">Chargement&#8230;</string>
     <string name="getfundations">Récupération des assos&#8230;</string>
@@ -26,4 +28,17 @@
     <string name="mode_instructions">Dans quel mode souhaites-tu utiliser l\'application ?</string>
     <string name="vente_libre">Choisir le produit à chaque vente</string>
     <string name="vente_produit">Toujours vendre le même produit</string>
+    <string name="articles_doing">Récupération des articles&#8230;</string>
+    <string name="articles_failed">Impossible de récupérer la liste des articles</string>
+    <string name="transaction">Transaction</string>
+    <string name="transaction_ok">Transaction réussie !</string>
+    <string name="transaction_doing">Transaction en cours&#8230;</string>
+    <string name="transaction_failed">Échec de la transaction</string>
+    <string name="userinfo">Infos utilisateur</string>
+    <string name="userinfo_doing">Récupération des informations de l\'utilisateur&#8230;</string>
+    <string name="userinfo_failed">Échec de la récupération des informations de l\'utilisateur</string>
+    <string name="canceltrans">Annulation</string>
+    <string name="canceltrans_confirm">Annuler la vente %s ?</string>
+    <string name="canceltrans_doing">Annulation de la transaction en cours&#8230;</string>
+    <string name="canceltrans_failed">Impossible d\'annuler la transaction</string>
 </resources>

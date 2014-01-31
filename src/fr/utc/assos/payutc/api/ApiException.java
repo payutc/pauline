@@ -31,6 +31,14 @@ public class ApiException extends Exception {
 	
 	@Override
 	public String getMessage() {
-		return "Err " + type + "(" + code + ")" + " : " + message;
+		if(!message.isEmpty()) {
+			return message;
+		}
+		
+		String msg = "Erreur " + type;
+		if(!code.equals("0")) {
+			msg += " (" + code + ")";
+		}
+		return msg;
 	}
 }

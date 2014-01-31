@@ -35,7 +35,7 @@ public class HomeActivity extends BaseActivity {
         butProduit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startShowArticleActivity(PaulineSession.VENTE_LIBRE);
+				startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
 			}
 		});
 		
@@ -43,7 +43,7 @@ public class HomeActivity extends BaseActivity {
         butLibre.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startShowArticleActivity(PaulineSession.VENTE_PRODUIT);
+				startShowArticleActivity(PaulineSession.VENTE_LIBRE);
 			}
 		});
     }

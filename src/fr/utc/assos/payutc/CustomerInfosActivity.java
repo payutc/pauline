@@ -44,8 +44,8 @@ public class CustomerInfosActivity extends BaseActivity {
 				final Item i = mAdapter.getItem(position);
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(CustomerInfosActivity.this);
-		    	builder.setTitle("Annuler la vente #"+i.getId())
-		    		   .setMessage("Annuler la vente #"+i.getId()+" "+i.getName()+" "+Item.costToString(i.getCost()/100.0)+ " ?")
+		    	builder.setTitle(getString(R.string.canceltrans))
+		    		   .setMessage(String.format(getString(R.string.canceltrans_confirm), i.getName() +" (" + Item.costToString(i.getCost()/100.0) + ")"))
 		    	       .setCancelable(false)
 		    	       .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
 		    	           public void onClick(DialogInterface dialog, int id) {
@@ -132,8 +132,8 @@ public class CustomerInfosActivity extends BaseActivity {
 		
 		public GetCustomerDetails(Context ctx, String badgeId, int funId,
 				ResponseHandler<GetCustomerDetailsResult> handler) {
-			super(ctx, "Récupération des infos",
-					"Un instant s'il vous plait", handler);
+			super(ctx, ctx.getString(R.string.userinfo),
+					ctx.getString(R.string.userinfo_doing), handler);
 			this.badgeId = badgeId;
 			this.funId = funId;
 		}
@@ -146,11 +146,11 @@ public class CustomerInfosActivity extends BaseActivity {
 			GetCustomerDetailsResult r = new GetCustomerDetailsResult();
 			r.customerDestails = PaulineActivity.POSS.getCustomerDetails(badgeId);
 			if (r.customerDestails == null) {
-				throw new Exception("Aucune informations sur l'utilisateur reçues.");
+				throw new Exception("Aucune information sur l'utilisateur reçue");
 			}
-			r.items = PaulineActivity.POSS.getArticles(funId);
+			r.items = ShowArticleActivity.getCachedArticlesList();
 			if (r.items == null) {
-				throw new Exception("Aucun articles reçue.");
+				throw new Exception("Aucun article en cache");
 			}
 			return r;
 		}
@@ -165,10 +165,7 @@ public class CustomerInfosActivity extends BaseActivity {
 		@Override
 		public void onSuccess(Item i) {
 			String message;
-			message = "La transaction #"+i.getId() +
-					  " " + i.getName() +
-					  " " + Item.costToString(i.getCost()/100.0) +
-					  "a été annulée.";
+			message = "La transaction #" + i.getId() + " a été annulée.";
 			mAdapter.remove(i);
 			money += i.getCost();
 			TextView vMoney = (TextView) findViewById(R.id.money);
@@ -181,16 +178,13 @@ public class CustomerInfosActivity extends BaseActivity {
 	protected class CancelTransaction extends ApiTask<Item> {
 		Item item;
 		public CancelTransaction(Item item) {
-			super(CustomerInfosActivity.this, "Annulation de la transaction en cours...",
-					"Un instant s'il vous plait", new CancelResponseHandler());
+			super(CustomerInfosActivity.this, getString(R.string.canceltrans),
+					getString(R.string.canceltrans_doing), new CancelResponseHandler());
 			this.item = item;
 		}
 
 		@Override
 		protected Item callSoap() throws Exception {
-			// @TODO, could be optimized, get article each time just to
-			// get the name is slow... Maybe the server should return the
-			// name of the objects directly
 			PaulineActivity.POSS.cancelTransaction(mSession.getFunId(), item.getId());
 			return item;
 		}

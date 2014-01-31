@@ -259,7 +259,7 @@ public class PaulineActivity extends BaseActivity {
     protected class LoginAppTask extends ApiTask<Boolean> {
     	public LoginAppTask(ResponseHandler<Boolean> handler) {
     		super(PaulineActivity.this, getString(R.string.login), 
-    				getString(R.string.login_doing),  handler);
+    				getString(R.string.loginapp_doing),  handler);
     	}
     	
     	@Override
