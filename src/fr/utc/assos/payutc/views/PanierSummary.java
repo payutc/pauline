@@ -47,11 +47,16 @@ public class PanierSummary extends TextView {
 	}
 	
 	private void updateText() {
-		String suffixArticles = " article";
-		if (mNbArticles > 1) {
-			suffixArticles += "s";
+		if (mNbArticles == 0) {
+			super.setText("Infos utilisateur");
 		}
-		super.setText(Item.costToString(mTotalCost/100.0)+" ("+mNbArticles+suffixArticles+")");
+		else {
+			String suffixArticles = " article";
+			if (mNbArticles > 1) {
+				suffixArticles += "s";
+			}
+			super.setText("Payer " + Item.costToString(mTotalCost/100.0) + " ("+mNbArticles+suffixArticles+")");	
+		}
 	}
 	
 	@Override

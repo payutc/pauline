@@ -3,91 +3,75 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    
+
+    <TextView
+        android:id="@+id/panier_help"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Touche un article pour le supprimer"
+        android:visibility="gone" />
+
+    <GridView
+        android:id="@+id/show_articles_view"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clipChildren="true"
+        android:columnWidth="72dp"
+        android:gravity="center"
+        android:horizontalSpacing="5dp"
+        android:numColumns="auto_fit"
+        android:scaleType="fitXY"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dp" />
+
+    <ListView
+        android:id="@+id/panier_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/panier_empty"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:text="Le panier est vide"
+        android:textSize="25dp"
+        android:visibility="gone" />
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <ImageButton
-            android:id="@+id/button_panier"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/panier"
-            android:gravity="left"
-            android:onClick="onClickPanier"
-            android:layout_margin="10dp" />
-        
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:padding="10dp"
+            android:src="@drawable/badgez" />
+
         <ImageButton
             android:id="@+id/button_products"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/products"
+            android:layout_margin="10dp"
             android:gravity="left"
             android:onClick="onClickProducts"
-            android:visibility="gone"
-            android:layout_margin="10dp" />
-
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/ok"
-            android:onClick="onClickOk"
-            android:layout_margin="10dp" />
+            android:src="@drawable/products"
+            android:visibility="gone" />
 
         <fr.utc.assos.payutc.views.PanierSummary
             android:id="@+id/show_articles_panier_summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="0 article" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/imageView1"
+            android:gravity="left" />
 
     </RelativeLayout>
-    
-    
-    <TextView
-    android:id="@+id/panier_help"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:gravity="center"
-	android:text="Touche un article pour le supprimer"
-	android:visibility="gone"/>
-    
-    <GridView
-    android:id="@+id/show_articles_view"
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent"
-    android:columnWidth="72dp"
-    android:numColumns="auto_fit"
-    android:verticalSpacing="5dp"
-    android:horizontalSpacing="5dp"
-    android:clipChildren="true"
-    android:stretchMode="columnWidth"
-    android:gravity="center"
-    android:scaleType="fitXY"
-	/>
-    
-    
-    <ListView
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/panier_list" 
-    android:visibility="gone"
-    />
-    
-    <TextView 
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/panier_empty"
-    android:gravity="center"
-    android:textSize="25dp"
-    android:text="Le panier est vide" 
-    android:visibility="gone"
-    />
-    
-    
-    
+
 </LinearLayout>
