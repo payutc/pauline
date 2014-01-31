@@ -34,7 +34,7 @@
     <string name="transaction_ok">Transaction réussie !</string>
     <string name="transaction_doing">Transaction en cours&#8230;</string>
     <string name="transaction_failed">Échec de la transaction</string>
-    <string name="userinfo">Détails d\'un utilisateur</string>
+    <string name="userinfo">Infos utilisateur</string>
     <string name="userinfo_doing">Récupération des informations de l\'utilisateur&#8230;</string>
     <string name="userinfo_failed">Échec de la récupération des informations de l\'utilisateur</string>
     <string name="canceltrans">Annulation</string>
