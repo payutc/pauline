@@ -44,8 +44,8 @@ public class CustomerInfosActivity extends BaseActivity {
 				final Item i = mAdapter.getItem(position);
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(CustomerInfosActivity.this);
-		    	builder.setTitle("Annuler la vente #"+i.getId())
-		    		   .setMessage("Annuler la vente #"+i.getId()+" "+i.getName()+" "+Item.costToString(i.getCost()/100.0)+ " ?")
+		    	builder.setTitle(getString(R.string.canceltrans))
+		    		   .setMessage(String.format(getString(R.string.canceltrans_confirm), i.getName() +" (" + Item.costToString(i.getCost()/100.0) + ")"))
 		    	       .setCancelable(false)
 		    	       .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
 		    	           public void onClick(DialogInterface dialog, int id) {
